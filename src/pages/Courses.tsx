@@ -91,14 +91,14 @@ const courses = [
 
 const Courses = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState("all-levels");
+  const [selectedCategory, setSelectedCategory] = useState("all-categories");
 
   const filteredCourses = courses.filter(course => {
     return (
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedLevel === "" || course.level === selectedLevel) &&
-      (selectedCategory === "" || course.category === selectedCategory)
+      (selectedLevel === "all-levels" || selectedLevel === "" || course.level === selectedLevel) &&
+      (selectedCategory === "all-categories" || selectedCategory === "" || course.category === selectedCategory)
     );
   });
 
@@ -140,7 +140,7 @@ const Courses = () => {
                   <SelectValue placeholder="Level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Levels</SelectItem>
+                  <SelectItem value="all-levels">All Levels</SelectItem>
                   <SelectItem value="Beginner">Beginner</SelectItem>
                   <SelectItem value="Intermediate">Intermediate</SelectItem>
                   <SelectItem value="Advanced">Advanced</SelectItem>
@@ -153,7 +153,7 @@ const Courses = () => {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all-categories">All Categories</SelectItem>
                   <SelectItem value="Fundamentals">Fundamentals</SelectItem>
                   <SelectItem value="Technical Analysis">Technical Analysis</SelectItem>
                   <SelectItem value="Portfolio Management">Portfolio Management</SelectItem>
