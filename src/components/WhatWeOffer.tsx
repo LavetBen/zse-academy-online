@@ -43,33 +43,44 @@ const features = [
 
 export const WhatWeOffer = () => {
   return (
-    <section className="section-padding bg-background">
+    <section className="section-padding bg-gradient-to-b from-white to-blue-50">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4">
             What We Offer
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
             Comprehensive training solutions designed to accelerate your success in Zimbabwe's stock exchange
           </p>
         </div>
 
+        {/* Features */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="card-gradient card-hover border-0">
+            <Card
+              key={index}
+              className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300"
+            >
               <CardHeader>
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-tr from-primary/10 to-blue-200/30 rounded-2xl flex items-center justify-center mb-4">
                   <feature.icon className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl text-secondary">{feature.title}</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
+                <CardTitle className="text-xl font-semibold text-secondary">
+                  {feature.title}
+                </CardTitle>
+                <CardDescription className="text-base leading-relaxed text-gray-600">
                   {feature.description}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {feature.highlights.map((highlight, idx) => (
-                    <Badge key={idx} variant="secondary" className="bg-primary/10 text-primary hover:bg-primary hover:text-white">
+                    <Badge
+                      key={idx}
+                      variant="secondary"
+                      className="bg-gradient-to-r from-primary/10 to-blue-100 text-primary hover:from-primary hover:to-blue-600 hover:text-white transition-colors"
+                    >
                       {highlight}
                     </Badge>
                   ))}
@@ -80,22 +91,22 @@ export const WhatWeOffer = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-20 bg-secondary text-white rounded-3xl p-8 lg:p-12">
-          <div className="grid md:grid-cols-4 gap-8 text-center">
+        <div className="mt-20 rounded-3xl bg-gradient-to-r from-[#0B1E39] via-indigo-900 to-blue-800 text-white p-10 lg:p-14 shadow-xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl lg:text-5xl font-bold text-primary mb-2">5,000+</div>
+              <div className="text-4xl lg:text-5xl font-extrabold text-primary mb-2">5,000+</div>
               <div className="text-blue-200">Active Students</div>
             </div>
             <div>
-              <div className="text-4xl lg:text-5xl font-bold text-primary mb-2">98%</div>
+              <div className="text-4xl lg:text-5xl font-extrabold text-primary mb-2">98%</div>
               <div className="text-blue-200">Success Rate</div>
             </div>
             <div>
-              <div className="text-4xl lg:text-5xl font-bold text-primary mb-2">15+</div>
+              <div className="text-4xl lg:text-5xl font-extrabold text-primary mb-2">15+</div>
               <div className="text-blue-200">Expert Instructors</div>
             </div>
             <div>
-              <div className="text-4xl lg:text-5xl font-bold text-primary mb-2">50+</div>
+              <div className="text-4xl lg:text-5xl font-extrabold text-primary mb-2">50+</div>
               <div className="text-blue-200">Course Modules</div>
             </div>
           </div>
