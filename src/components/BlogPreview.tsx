@@ -38,10 +38,10 @@ export const BlogPreview = () => {
     <section className="section-padding bg-muted/30">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4 text-center">
             Latest Market Insights
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-center">
             Stay informed with expert analysis and insights from Zimbabwe's financial markets
           </p>
         </div>
@@ -56,19 +56,19 @@ export const BlogPreview = () => {
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <CardHeader>
+              <CardHeader className="text-left">
                 <div className="flex items-center justify-between mb-2">
                   <Badge variant="secondary" className="bg-primary/10 text-primary">
                     {post.category}
                   </Badge>
                   <span className="text-sm text-muted-foreground">{post.readTime}</span>
                 </div>
-                <CardTitle className="text-xl line-clamp-2">{post.title}</CardTitle>
-                <CardDescription className="line-clamp-3">
+                <CardTitle className="text-xl line-clamp-2 text-left">{post.title}</CardTitle>
+                <CardDescription className="line-clamp-3 text-left">
                   {post.excerpt}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-left">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">

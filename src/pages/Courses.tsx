@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,10 +111,10 @@ const Courses = () => {
       <section className="bg-hero text-white py-16">
         <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-center">
               Professional Training Courses
             </h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+            <p className="text-xl text-blue-100 max-w-2xl mx-auto text-center">
               Master Zimbabwe Stock Exchange with our comprehensive range of expert-led courses
             </p>
           </div>
@@ -172,53 +173,55 @@ const Courses = () => {
         <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course) => (
-              <Card key={course.id} className="card-hover overflow-hidden">
-                <div className="aspect-video overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
-                      {course.level}
-                    </Badge>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{course.rating}</span>
+                <Link key={course.id} to={`/courses/${course.id}`}>
+                  <Card className="card-hover overflow-hidden h-full">
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={course.image}
+                        alt={course.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
                     </div>
-                  </div>
-                  <CardTitle className="text-xl line-clamp-2">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {course.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="text-sm text-muted-foreground">
-                      Instructor: {course.instructor}
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{course.duration}</span>
+                    <CardHeader className="text-left">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary">
+                          {course.level}
+                        </Badge>
+                        <div className="flex items-center space-x-1">
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <span className="text-sm font-medium">{course.rating}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-4 w-4" />
-                        <span>{course.students.toLocaleString()} students</span>
-                      </div>
-                    </div>
+                      <CardTitle className="text-xl line-clamp-2 text-left">{course.title}</CardTitle>
+                      <CardDescription className="line-clamp-3 text-left">
+                        {course.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-left">
+                      <div className="space-y-3">
+                        <div className="text-sm text-muted-foreground">
+                          Instructor: {course.instructor}
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{course.duration}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Users className="h-4 w-4" />
+                            <span>{course.students.toLocaleString()} students</span>
+                          </div>
+                        </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold text-primary">{course.price}</div>
-                      <Button variant="hero">Enroll Now</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                        <div className="flex items-center justify-between">
+                          <div className="text-2xl font-bold text-primary">{course.price}</div>
+                          <Button variant="hero" onClick={(e) => e.preventDefault()}>Enroll Now</Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>  
+                </Link>
             ))}
           </div>
 

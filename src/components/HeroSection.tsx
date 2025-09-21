@@ -84,17 +84,17 @@ export const HeroSection = () => {
       <div className="relative z-10 max-w-content mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
         <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
           {/* Left Column */}
-          <div className="text-center lg:text-left animate-fade-up">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-snug drop-shadow-xl">
+          <div className="text-left lg:text-left animate-fade-up">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-snug drop-shadow-xl text-left">
               {slides[currentSlide].title}{" "}
               <span className="text-[#00aeef]">Today</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 max-w-xl leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 max-w-xl leading-relaxed text-left">
               Professional training courses designed to help you succeed in Zimbabwe's financial markets. 
               Learn from industry experts and elevate your career with hands-on skills.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-start mb-10">
               <Link to="/signup">
                 <Button
                   size="lg"

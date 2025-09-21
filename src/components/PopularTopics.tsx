@@ -64,10 +64,10 @@ export const PopularTopics = () => {
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-left">
-          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-2">
+          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-2 text-left">
             ZSE Forex & Trading Courses
           </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl text-left">
             Build your trading skills and gain expertise in Zimbabwe's financial markets.
           </p>
         </div>
@@ -111,12 +111,12 @@ export const PopularTopics = () => {
               </div>
 
               {/* Content */}
-              <div className="p-4">
+              <div className="p-4 text-left">
                 <div className="flex items-center mb-2">
                   <topic.icon className="h-5 w-5 text-primary mr-2" />
-                  <h3 className="text-lg font-semibold">{topic.title}</h3>
+                  <h3 className="text-lg font-semibold text-left">{topic.title}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">{topic.description}</p>
+                <p className="text-sm text-muted-foreground mb-3 text-left">{topic.description}</p>
 
                 {/* Rating */}
                 <div className="flex items-center text-sm text-yellow-500 mb-2">

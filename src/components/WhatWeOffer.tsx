@@ -47,10 +47,10 @@ export const WhatWeOffer = () => {
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4 text-center">
             What We Offer
           </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto text-center">
             Comprehensive training solutions designed to accelerate your success in Zimbabwe's stock exchange
           </p>
         </div>
@@ -62,14 +62,14 @@ export const WhatWeOffer = () => {
               key={index}
               className="bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300"
             >
-              <CardHeader>
+              <CardHeader className="text-left">
                 <div className="w-16 h-16 bg-gradient-to-tr from-primary/10 to-blue-200/30 rounded-2xl flex items-center justify-center mb-4">
                   <feature.icon className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-semibold text-secondary">
+                <CardTitle className="text-xl font-semibold text-secondary text-left">
                   {feature.title}
                 </CardTitle>
-                <CardDescription className="text-base leading-relaxed text-gray-600">
+                <CardDescription className="text-base leading-relaxed text-gray-600 text-left">
                   {feature.description}
                 </CardDescription>
               </CardHeader>

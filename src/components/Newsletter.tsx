@@ -37,14 +37,14 @@ export const Newsletter = () => {
           <CardContent className="p-6 sm:p-10 lg:p-14">
             <div className="grid lg:grid-cols-2 gap-10 items-center">
               {/* Left Side */}
-              <div>
+              <div className="text-left">
                 <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Mail className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 text-left">
                   Stay Updated with Market Insights
                 </h2>
-                <p className="text-lg text-gray-600 leading-relaxed">
+                <p className="text-lg text-gray-600 leading-relaxed text-left">
                   Get weekly market analysis, trading tips, and exclusive course updates delivered straight to your inbox.
                 </p>
 
