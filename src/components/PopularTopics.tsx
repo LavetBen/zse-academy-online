@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, DollarSign, BarChart3, Star } from "lucide-react";
@@ -10,6 +11,7 @@ import marketsImg from "@/assets/hero-image.jpg";
 
 const allTopics = [
   {
+    id: 1,
     icon: TrendingUp,
     title: "Forex Trading Basics",
     description: "Learn how to trade Forex and navigate currency markets effectively.",
@@ -23,6 +25,7 @@ const allTopics = [
     category: "Forex",
   },
   {
+    id: 2,
     icon: BarChart3,
     title: "Technical Analysis",
     description: "Master chart patterns, indicators, and trading strategies.",
@@ -36,6 +39,7 @@ const allTopics = [
     category: "Analysis",
   },
   {
+    id: 3,
     icon: DollarSign,
     title: "Financial Markets Overview",
     description: "Understanding bonds, equities, and derivatives in the Zimbabwe Stock Exchange.",
@@ -141,9 +145,11 @@ export const PopularTopics = () => {
                   <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
                     {topic.level}
                   </span>
-                  <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white">
-                    Learn More
-                  </Button>
+                  <Link to={`/courses/${topic.id}`}>
+                    <Button variant="outline" size="sm" className="hover:bg-primary hover:text-white">
+                      Learn More
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>
