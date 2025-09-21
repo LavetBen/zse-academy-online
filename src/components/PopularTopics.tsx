@@ -64,7 +64,7 @@ export const PopularTopics = () => {
     : allTopics.filter(topic => topic.category === activeChip);
 
   return (
-    <section className="section-padding bg-accent/30">
+    <section className="section-padding bg-accent/30 font-[Poppins]">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-left">
@@ -156,12 +156,7 @@ export const PopularTopics = () => {
           ))}
         </div>
 
-        {/* Show All */}
-        <div className="text-left mt-8">
-          <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
-            Show All Courses
-          </Button>
-        </div>
+       
       </div>
     </section>
   );

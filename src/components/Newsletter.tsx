@@ -28,47 +28,33 @@ export const Newsletter = () => {
   };
 
   return (
-    <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 via-white to-indigo-100 overflow-hidden">
+    <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br font-[Poppins] from-blue-50 via-white overflow-hidden">
       {/* Decorative background */}
-      <div className="absolute inset-0 -z-10 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/dots.png')] opacity-40"></div>
+      <div className="absolute inset-0 -z-10 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/dots.png')] opacity-30"></div>
 
       <div className="max-w-6xl mx-auto">
-        <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl overflow-hidden">
+        <Card className="border-0  bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden">
           <CardContent className="p-6 sm:p-10 lg:p-14">
             <div className="grid lg:grid-cols-2 gap-10 items-center">
               {/* Left Side */}
               <div className="text-left">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                  <Mail className="h-8 w-8 text-white" />
-                </div>
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 text-left">
+                
+                <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4">
                   Stay Updated with Market Insights
                 </h2>
-                <p className="text-lg text-gray-600 leading-relaxed text-left">
-                  Get weekly market analysis, trading tips, and exclusive course updates delivered straight to your inbox.
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  Get weekly market analysis, trading tips, and exclusive course
+                  updates delivered straight to your inbox.
                 </p>
-
-                <div className="mt-6 space-y-3">
-                  {[
-                    "Weekly market insights",
-                    "Exclusive trading tips",
-                    "Early access to new courses",
-                  ].map((text, i) => (
-                    <div key={i} className="flex items-center space-x-2 text-gray-600">
-                      <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                      <span>{text}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               {/* Right Side */}
-              <div className="bg-gradient-to-tr from-indigo-100 to-purple-100 rounded-2xl p-6 sm:p-8 shadow-inner">
+              <div className="bg-gradient-to-tr from-blue-50 to-blue-100 rounded-2xl p-6 sm:p-8 shadow-inner">
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-800 mb-2"
+                      className="block text-sm font-medium text-gray-900 mb-2"
                     >
                       Email Address
                     </label>
@@ -78,14 +64,14 @@ export const Newsletter = () => {
                       placeholder="Enter your email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 text-lg border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 transition"
+                      className="h-12 text-lg border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 transition"
                       required
                     />
                   </div>
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full h-12 text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:opacity-90 rounded-xl shadow-md transition"
+                    className="w-full h-12 text-lg bg-gradient-to-r from-blue-600 to-blue hover:opacity-90 rounded-xl shadow-md transition text-white"
                     disabled={isLoading}
                   >
                     {isLoading ? (

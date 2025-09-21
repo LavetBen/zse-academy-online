@@ -35,14 +35,14 @@ const blogPosts = [
 
 export const BlogPreview = () => {
   return (
-    <section className="section-padding bg-muted/30">
+    <section className="section-padding bg-muted/30 font-[Poppins]">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4 text-center">
-            Latest Market Insights
+        <div className="mb-8 text-left">
+          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-2">
+            Latest Marketing Insights
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-center">
-            Stay informed with expert analysis and insights from Zimbabwe's financial markets
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl">
+            Over 35 years of combined experience delivering measurable results for B2B clients of all types and sizes.
           </p>
         </div>
 
@@ -90,11 +90,7 @@ export const BlogPreview = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="hover:bg-primary hover:text-white">
-            View All Articles
-          </Button>
-        </div>
+        
       </div>
     </section>
   );
