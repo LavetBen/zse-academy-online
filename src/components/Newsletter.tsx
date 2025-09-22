@@ -28,7 +28,7 @@ export const Newsletter = () => {
   };
 
   return (
-    <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br font-[Poppins] from-blue-50 via-white overflow-hidden">
+    <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br font-poppins from-blue-50 via-white overflow-hidden">
       {/* Decorative background */}
       <div className="absolute inset-0 -z-10 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/dots.png')] opacity-30"></div>
 

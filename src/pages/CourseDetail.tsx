@@ -144,7 +144,7 @@ const CourseDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background font-[Poppins]">
+    <div className="min-h-screen bg-background font-poppins">
       <Navbar />
 
       {/* Video Modal */}

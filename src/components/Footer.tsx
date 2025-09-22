@@ -32,7 +32,7 @@ const socialLinks = [
 
 export const Footer = () => {
   return (
-    <footer className="bg-[#0B1E39] text-gray-300 font-[Poppins]">
+    <footer className="bg-[#0B1E39] text-gray-300 font-poppins">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand / About */}
