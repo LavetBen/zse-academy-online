@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,14 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { signup, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -56,19 +65,34 @@ const Signup = () => {
 
     setIsLoading(true);
 
-    // Note: This would normally connect to Supabase for user registration
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await signup({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        experience: formData.experience
+      });
+      
       toast({
-        title: "Registration Required",
-        description: "Connect Supabase to enable user registration functionality.",
+        title: "Welcome to ZSE Training!",
+        description: "Your account has been created successfully.",
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Registration Failed",
+        description: "Please try again with different details.",
         variant: "destructive",
       });
-    }, 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-poppins">
       <Navbar />
       
       <section className="section-padding">
@@ -84,12 +108,12 @@ const Signup = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {/* Authentication Notice */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-yellow-800">
-                  <p className="font-medium mb-1">Authentication Setup Required</p>
-                  <p>Connect Supabase to enable user registration functionality.</p>
+              {/* Demo Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
+                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Demo Mode</p>
+                  <p>Fill out the form to create an account and access the dashboard.</p>
                 </div>
               </div>
 
