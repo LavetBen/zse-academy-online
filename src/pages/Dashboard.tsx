@@ -18,7 +18,7 @@ import MyCourses from "./dashboard/MyCourses";
 import Certificates from "./dashboard/Certificates";
 import Analytics from "./dashboard/Analytics";
 import Profile from "./dashboard/Profile";
-import Settings from "./dashboard/Settings";
+import SettingsPage from "./dashboard/Settings";
 
 const sidebarItems = [
   { icon: Home, label: "Dashboard", key: "dashboard" },
@@ -205,7 +205,7 @@ const Dashboard = () => {
           {activeSection === "certificates" && <Certificates />}
           {activeSection === "analytics" && <Analytics />}
           {activeSection === "profile" && <Profile />}
-          {activeSection === "settings" && <Settings />}
+          {activeSection === "settings" && <SettingsPage />}
         </main>
       </div>
     </div>
