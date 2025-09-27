@@ -6,17 +6,18 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  Bell, 
-  Shield, 
-  Palette, 
-  Globe,
-  Mail,
-  Smartphone,
-  Lock,
-  Eye,
-  Save
-} from "lucide-react";
+  faBell, 
+  faShield, 
+  faPalette, 
+  faGlobe,
+  faEnvelope,
+  faMobile,
+  faLock,
+  faEye,
+  faSave
+} from "@fortawesome/free-solid-svg-icons";
 
 const Settings = () => {
   const [notifications, setNotifications] = useState({
@@ -45,7 +46,7 @@ const Settings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Bell className="h-5 w-5 mr-2" />
+              <FontAwesomeIcon icon={faBell} className="h-5 w-5 mr-2" />
               Notifications
             </CardTitle>
             <CardDescription>
@@ -138,7 +139,7 @@ const Settings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Shield className="h-5 w-5 mr-2" />
+              <FontAwesomeIcon icon={faShield} className="h-5 w-5 mr-2" />
               Privacy & Security
             </CardTitle>
             <CardDescription>
@@ -195,7 +196,7 @@ const Settings = () => {
               <Separator />
 
               <Button variant="outline" className="w-full">
-                <Lock className="h-4 w-4 mr-2" />
+                <FontAwesomeIcon icon={faLock} className="h-4 w-4 mr-2" />
                 Change Password
               </Button>
             </div>
@@ -206,7 +207,7 @@ const Settings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Palette className="h-5 w-5 mr-2" />
+              <FontAwesomeIcon icon={faPalette} className="h-5 w-5 mr-2" />
               Appearance
             </CardTitle>
             <CardDescription>
@@ -263,7 +264,7 @@ const Settings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Globe className="h-5 w-5 mr-2" />
+              <FontAwesomeIcon icon={faGlobe} className="h-5 w-5 mr-2" />
               Account Management
             </CardTitle>
             <CardDescription>
@@ -290,7 +291,7 @@ const Settings = () => {
 
       <div className="flex justify-end">
         <Button>
-          <Save className="h-4 w-4 mr-2" />
+          <FontAwesomeIcon icon={faSave} className="h-4 w-4 mr-2" />
           Save All Settings
         </Button>
       </div>

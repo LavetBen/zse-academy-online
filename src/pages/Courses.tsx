@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Users, Star, Search, Filter } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faUsers, faStar, faSearch, faFilter } from "@fortawesome/free-solid-svg-icons";
 
 const courses = [
   {
@@ -126,7 +127,7 @@ const Courses = () => {
         <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search courses..."
                 value={searchTerm}
@@ -188,7 +189,7 @@ const Courses = () => {
                           {course.level}
                         </Badge>
                         <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <FontAwesomeIcon icon={faStar} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                           <span className="text-sm font-medium">{course.rating}</span>
                         </div>
                       </div>
@@ -205,11 +206,11 @@ const Courses = () => {
                         
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
                           <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
+                            <FontAwesomeIcon icon={faClock} className="h-4 w-4" />
                             <span>{course.duration}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <Users className="h-4 w-4" />
+                            <FontAwesomeIcon icon={faUsers} className="h-4 w-4" />
                             <span>{course.students.toLocaleString()} students</span>
                           </div>
                         </div>
@@ -227,7 +228,7 @@ const Courses = () => {
 
           {filteredCourses.length === 0 && (
             <div className="text-center py-12">
-              <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <FontAwesomeIcon icon={faFilter} className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-secondary mb-2">No courses found</h3>
               <p className="text-muted-foreground">Try adjusting your search criteria</p>
             </div>

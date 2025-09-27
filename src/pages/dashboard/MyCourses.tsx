@@ -2,7 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, PlayCircle, Clock, Users } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faPlay, faClock, faUsers } from "@fortawesome/free-solid-svg-icons";
 
 const mockCourses = [
   {
@@ -63,11 +64,11 @@ const MyCourses = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <span className="flex items-center">
-                  <BookOpen className="h-4 w-4 mr-1" />
+                  <FontAwesomeIcon icon={faBook} className="h-4 w-4 mr-1" />
                   {course.completedLessons}/{course.totalLessons} lessons
                 </span>
                 <span className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1" />
+                  <FontAwesomeIcon icon={faClock} className="h-4 w-4 mr-1" />
                   {course.duration}
                 </span>
               </div>
@@ -85,7 +86,7 @@ const MyCourses = () => {
                   Next: {course.nextLesson}
                 </p>
                 <Button className="w-full">
-                  <PlayCircle className="h-4 w-4 mr-2" />
+                  <FontAwesomeIcon icon={faPlay} className="h-4 w-4 mr-2" />
                   Continue Learning
                 </Button>
               </div>

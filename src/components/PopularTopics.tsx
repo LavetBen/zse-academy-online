@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, DollarSign, BarChart3, Star } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowTrendUp, faDollarSign, faChartColumn, faStar } from "@fortawesome/free-solid-svg-icons";
 
 // Images
 import forexImg from "@/assets/hero-image.jpg";
@@ -12,7 +13,7 @@ import marketsImg from "@/assets/hero-image.jpg";
 const allTopics = [
   {
     id: 1,
-    icon: TrendingUp,
+    icon: faArrowTrendUp,
     title: "Forex Trading Basics",
     description: "Learn how to trade Forex and navigate currency markets effectively.",
     students: "1,200",
@@ -26,7 +27,7 @@ const allTopics = [
   },
   {
     id: 2,
-    icon: BarChart3,
+    icon: faChartColumn,
     title: "Technical Analysis",
     description: "Master chart patterns, indicators, and trading strategies.",
     students: "900",
@@ -40,7 +41,7 @@ const allTopics = [
   },
   {
     id: 3,
-    icon: DollarSign,
+    icon: faDollarSign,
     title: "Financial Markets Overview",
     description: "Understanding bonds, equities, and derivatives in the Zimbabwe Stock Exchange.",
     students: "800",
@@ -117,7 +118,7 @@ export const PopularTopics = () => {
               {/* Content */}
               <div className="p-4 text-left">
                 <div className="flex items-center mb-2">
-                  <topic.icon className="h-5 w-5 text-primary mr-2" />
+                  <FontAwesomeIcon icon={topic.icon} className="h-5 w-5 text-primary mr-2" />
                   <h3 className="text-lg font-semibold text-left">{topic.title}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3 text-left">{topic.description}</p>
@@ -126,8 +127,8 @@ export const PopularTopics = () => {
                 <div className="flex items-center text-sm text-yellow-500 mb-2">
                   <span className="font-medium mr-1">{topic.rating}</span>
                   {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
+                    <FontAwesomeIcon
+                      icon={faStar}
                       className={`h-4 w-4 ${i < Math.round(topic.rating) ? "fill-yellow-500 text-yellow-500" : "text-gray-300"}`}
                     />
                   ))}

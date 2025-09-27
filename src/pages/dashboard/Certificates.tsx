@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Award, Download, Share2, Calendar } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAward, faDownload, faShareNodes, faCalendar } from "@fortawesome/free-solid-svg-icons";
 
 const mockCertificates = [
   {
@@ -39,7 +40,7 @@ const Certificates = () => {
           <p className="text-muted-foreground">Your achievements and certifications</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Award className="h-8 w-8 text-primary" />
+          <FontAwesomeIcon icon={faAward} className="h-8 w-8 text-primary" />
           <span className="text-2xl font-bold text-primary">
             {mockCertificates.filter(cert => cert.status === "Completed").length}
           </span>
@@ -51,7 +52,7 @@ const Certificates = () => {
           <Card key={certificate.id} className="relative">
             <CardHeader className="text-center">
               <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <Award className="h-8 w-8 text-primary" />
+                <FontAwesomeIcon icon={faAward} className="h-8 w-8 text-primary" />
               </div>
               <CardTitle className="text-lg">{certificate.title}</CardTitle>
               <CardDescription>Instructor: {certificate.instructor}</CardDescription>
@@ -67,7 +68,7 @@ const Certificates = () => {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Issue Date</span>
                   <span className="flex items-center">
-                    <Calendar className="h-3 w-3 mr-1" />
+                    <FontAwesomeIcon icon={faCalendar} className="h-3 w-3 mr-1" />
                     {certificate.issueDate}
                   </span>
                 </div>
@@ -80,11 +81,11 @@ const Certificates = () => {
               {certificate.status === "Completed" && (
                 <div className="flex space-x-2 pt-2">
                   <Button variant="outline" size="sm" className="flex-1">
-                    <Download className="h-4 w-4 mr-1" />
+                    <FontAwesomeIcon icon={faDownload} className="h-4 w-4 mr-1" />
                     Download
                   </Button>
                   <Button variant="outline" size="sm" className="flex-1">
-                    <Share2 className="h-4 w-4 mr-1" />
+                    <FontAwesomeIcon icon={faShareNodes} className="h-4 w-4 mr-1" />
                     Share
                   </Button>
                 </div>

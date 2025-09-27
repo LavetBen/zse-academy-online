@@ -7,30 +7,31 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Star,
-  Clock,
-  Users,
-  Play,
-  CheckCircle,
-  Globe,
-  Award,
-  FileText,
-  BookOpen,
-  Download,
-  ChevronRight,
-  Heart,
-  BarChart3,
-  Code,
-  Terminal,
-  Sparkles,
-  Calendar,
-  X,
-  TrendingUp,
-  Building,
-  Banknote,
-  ChartNoAxesCombined,
-} from "lucide-react";
+  faStar,
+  faClock,
+  faUsers,
+  faPlay,
+  faCheckCircle,
+  faGlobe,
+  faAward,
+  faFileAlt,
+  faBook,
+  faDownload,
+  faChevronRight,
+  faHeart,
+  faChartColumn,
+  faCode,
+  faTerminal,
+  faMagic,
+  faCalendar,
+  faXmark,
+  faArrowTrendUp,
+  faBuilding,
+  faMoneyBill,
+  faChartLine,
+} from "@fortawesome/free-solid-svg-icons";
 
 const courses = [
   {
@@ -155,7 +156,7 @@ const CourseDetail = () => {
               onClick={closeVideoModal}
               className="absolute -top-10 right-0 text-white hover:text-gray-300 z-10"
             >
-              <X className="h-6 w-6" />
+              <FontAwesomeIcon icon={faXmark} className="h-6 w-6" />
             </button>
             <div className="w-full h-full rounded-lg overflow-hidden">
               <iframe
@@ -184,11 +185,11 @@ const CourseDetail = () => {
             <Link to="/courses" className="hover:text-primary transition-colors">
               All courses
             </Link>
-            <ChevronRight className="h-4 w-4" />
+            <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
             <Link to="/courses/finance" className="hover:text-primary transition-colors">
               Finance & Trading
             </Link>
-            <ChevronRight className="h-4 w-4" />
+            <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
             <span className="text-foreground font-medium">Stock Exchange</span>
           </nav>
         </div>
@@ -226,8 +227,8 @@ const CourseDetail = () => {
                     <span className="font-bold text-primary">{course.rating}</span>
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
+                        <FontAwesomeIcon
+                          icon={faStar}
                           className={`h-5 w-5 ${
                             i < Math.floor(course.rating)
                               ? "fill-yellow-400 text-yellow-400"
@@ -276,7 +277,7 @@ const CourseDetail = () => {
                     <Card>
                       <CardContent className="p-6 space-y-4">
                         <h2 className="text-xl font-bold flex items-center text-left">
-                          <Users className="h-5 w-5 mr-2 text-primary" />
+                          <FontAwesomeIcon icon={faUsers} className="h-5 w-5 mr-2 text-primary" />
                           Who this course is for
                         </h2>
                         <ul className="list-disc pl-6 text-sm space-y-2 text-muted-foreground">
@@ -291,7 +292,7 @@ const CourseDetail = () => {
                     <Card>
                       <CardContent className="p-6">
                         <h2 className="text-xl font-bold flex items-center text-left mb-4">
-                          <Award className="h-5 w-5 mr-2 text-primary" />
+                          <FontAwesomeIcon icon={faAward} className="h-5 w-5 mr-2 text-primary" />
                           Course Requirements
                         </h2>
                         <ul className="list-disc pl-6 text-sm space-y-2 text-muted-foreground">
@@ -341,7 +342,7 @@ const CourseDetail = () => {
                             <div key={modIndex} className="border rounded-lg overflow-hidden">
                               <div className="bg-muted/50 p-4 font-medium flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <ChevronRight className="h-5 w-5 mr-2 transition-transform" />
+                                  <FontAwesomeIcon icon={faChevronRight} className="h-5 w-5 mr-2 transition-transform" />
                                   <span>{module.title}</span>
                                 </div>
                                 <div className="text-sm text-muted-foreground">
@@ -361,7 +362,7 @@ const CourseDetail = () => {
                                     onClick={() => handleLessonClick(module.title, lesson.title)}
                                   >
                                     <div className="flex items-center">
-                                      <Play className="h-4 w-4 mr-3 text-muted-foreground" />
+                                      <FontAwesomeIcon icon={faPlay} className="h-4 w-4 mr-3 text-muted-foreground" />
                                       <span className="text-sm">{lesson.title}</span>
                                     </div>
                                     <div className="text-sm text-muted-foreground">{lesson.duration}</div>
@@ -392,15 +393,15 @@ const CourseDetail = () => {
                             <p className="text-muted-foreground">{course.instructorTitle}</p>
                             <div className="flex items-center mt-2 space-x-4 text-sm">
                               <div className="flex items-center">
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                                <FontAwesomeIcon icon={faStar} className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
                                 <span>4.7 Instructor Rating</span>
                               </div>
                               <div className="flex items-center">
-                                <Users className="h-4 w-4 text-muted-foreground mr-1" />
+                                <FontAwesomeIcon icon={faUsers} className="h-4 w-4 text-muted-foreground mr-1" />
                                 <span>24,850 Students</span>
                               </div>
                               <div className="flex items-center">
-                                <FileText className="h-4 w-4 text-muted-foreground mr-1" />
+                                <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4 text-muted-foreground mr-1" />
                                 <span>5 Courses</span>
                               </div>
                             </div>

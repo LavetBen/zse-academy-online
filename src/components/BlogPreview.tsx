@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar, faUser, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const blogPosts = [
   {
@@ -72,18 +73,18 @@ export const BlogPreview = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">
-                      <User className="h-4 w-4" />
+                      <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
                       <span>{post.author}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Calendar className="h-4 w-4" />
+                      <FontAwesomeIcon icon={faCalendar} className="h-4 w-4" />
                       <span>{post.date}</span>
                     </div>
                   </div>
                 </div>
                 <Button variant="ghost" className="w-full mt-4 group">
                   Read More
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </CardContent>
             </Card>

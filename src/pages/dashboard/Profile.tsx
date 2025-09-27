@@ -7,18 +7,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar,
-  Edit,
-  Save,
-  X,
-  Award,
-  TrendingUp
-} from "lucide-react";
+  faUser, 
+  faEnvelope, 
+  faPhone, 
+  faMapMarker, 
+  faCalendar,
+  faEdit,
+  faSave,
+  faXmark,
+  faAward,
+  faArrowTrendUp
+} from "@fortawesome/free-solid-svg-icons";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -39,9 +40,9 @@ const Profile = () => {
   };
 
   const achievements = [
-    { title: "First Course Completed", date: "Jan 2024", icon: Award },
-    { title: "5 Day Learning Streak", date: "Feb 2024", icon: TrendingUp },
-    { title: "Technical Analysis Master", date: "Mar 2024", icon: Award }
+    { title: "First Course Completed", date: "Jan 2024", icon: faAward },
+    { title: "5 Day Learning Streak", date: "Feb 2024", icon: faArrowTrendUp },
+    { title: "Technical Analysis Master", date: "Mar 2024", icon: faAward }
   ];
 
   return (
@@ -57,12 +58,12 @@ const Profile = () => {
         >
           {isEditing ? (
             <>
-              <X className="h-4 w-4 mr-2" />
+              <FontAwesomeIcon icon={faXmark} className="h-4 w-4 mr-2" />
               Cancel
             </>
           ) : (
             <>
-              <Edit className="h-4 w-4 mr-2" />
+              <FontAwesomeIcon icon={faEdit} className="h-4 w-4 mr-2" />
               Edit Profile
             </>
           )}
@@ -79,7 +80,7 @@ const Profile = () => {
           <CardContent className="space-y-6">
             <div className="flex items-center space-x-4">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                <User className="h-10 w-10 text-primary" />
+                <FontAwesomeIcon icon={faUser} className="h-10 w-10 text-primary" />
               </div>
               <div className="flex-1">
                 <h3 className="text-xl font-semibold">{formData.firstName} {formData.lastName}</h3>
@@ -152,7 +153,7 @@ const Profile = () => {
             {isEditing && (
               <div className="flex space-x-2">
                 <Button onClick={handleSave}>
-                  <Save className="h-4 w-4 mr-2" />
+                  <FontAwesomeIcon icon={faSave} className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
               </div>
@@ -170,7 +171,7 @@ const Profile = () => {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Joined</span>
                 <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
+                  <FontAwesomeIcon icon={faCalendar} className="h-4 w-4 mr-1" />
                   <span>{formData.joinDate}</span>
                 </div>
               </div>
@@ -197,7 +198,7 @@ const Profile = () => {
               {achievements.map((achievement, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <achievement.icon className="h-4 w-4 text-primary" />
+                    <FontAwesomeIcon icon={achievement.icon} className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">{achievement.title}</p>

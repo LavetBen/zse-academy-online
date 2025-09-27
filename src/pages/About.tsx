@@ -3,7 +3,8 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Target, Users, Award, TrendingUp, CheckCircle, ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBullseye, faUsers, faAward, faArrowTrendUp, faCheckCircle, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const team = [
   {
@@ -34,22 +35,22 @@ const team = [
 
 const values = [
   {
-    icon: Target,
+    icon: faBullseye,
     title: "Excellence in Education",
     description: "We deliver world-class financial education tailored to Zimbabwe's unique market environment."
   },
   {
-    icon: Users,
+    icon: faUsers,
     title: "Student Success",
     description: "Our students' career advancement and financial success is our primary measure of achievement."
   },
   {
-    icon: Award,
+    icon: faAward,
     title: "Industry Recognition",
     description: "Our certifications are recognized by leading financial institutions across Zimbabwe and beyond."
   },
   {
-    icon: TrendingUp,
+    icon: faArrowTrendUp,
     title: "Continuous Innovation",
     description: "We constantly update our curriculum to reflect latest market trends and best practices."
   }
@@ -104,7 +105,7 @@ const About = () => {
               </p>
               <Button size="lg" variant="hero">
                 Join Our Community
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-5 w-5" />
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-6">
@@ -146,7 +147,7 @@ const About = () => {
               <Card key={index} className="card-gradient text-center">
                 <CardHeader>
                   <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <value.icon className="h-8 w-8 text-primary" />
+                    <FontAwesomeIcon icon={value.icon} className="h-8 w-8 text-primary" />
                   </div>
                   <CardTitle className="text-xl">{value.title}</CardTitle>
                 </CardHeader>
@@ -215,7 +216,7 @@ const About = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {achievements.map((achievement, index) => (
               <div key={index} className="flex items-center space-x-3">
-                <CheckCircle className="h-6 w-6 text-primary flex-shrink-0" />
+                <FontAwesomeIcon icon={faCheckCircle} className="h-6 w-6 text-primary flex-shrink-0" />
                 <span className="text-blue-100">{achievement}</span>
               </div>
             ))}

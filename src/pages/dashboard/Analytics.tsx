@@ -1,13 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  BarChart3, 
-  TrendingUp, 
-  Clock, 
-  Target,
-  BookOpen,
-  Award
-} from "lucide-react";
+  faChartColumn, 
+  faArrowTrendUp, 
+  faClock, 
+  faBullseye,
+  faBook,
+  faAward
+} from "@fortawesome/free-solid-svg-icons";
 
 const mockAnalytics = {
   weeklyProgress: [
@@ -46,7 +47,7 @@ const Analytics = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faClock} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">{mockAnalytics.monthlyStats.totalHours}</div>
@@ -59,7 +60,7 @@ const Analytics = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Courses Completed</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faBook} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">{mockAnalytics.monthlyStats.coursesCompleted}</div>
@@ -72,7 +73,7 @@ const Analytics = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faAward} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">{mockAnalytics.monthlyStats.averageScore}%</div>
@@ -85,7 +86,7 @@ const Analytics = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Learning Streak</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <FontAwesomeIcon icon={faBullseye} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">{mockAnalytics.monthlyStats.streakDays}</div>
@@ -101,7 +102,7 @@ const Analytics = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <BarChart3 className="h-5 w-5 mr-2" />
+              <FontAwesomeIcon icon={faChartColumn} className="h-5 w-5 mr-2" />
               Weekly Activity
             </CardTitle>
             <CardDescription>Hours spent learning this week</CardDescription>
@@ -127,7 +128,7 @@ const Analytics = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2" />
+              <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 mr-2" />
               Skill Progress
             </CardTitle>
             <CardDescription>Your mastery in different areas</CardDescription>
