@@ -423,7 +423,7 @@ const CourseDetail = () => {
                         <div className="flex items-start justify-between">
                           <div>
                             <h2 className="text-xl font-bold flex items-center text-left">
-                              <Star className="h-5 w-5 mr-2 text-primary" />
+                              <FontAwesomeIcon icon={faStar} className="h-5 w-5 mr-2 text-primary" />
                               Student Reviews
                             </h2>
                             <div className="flex items-center mt-2">
@@ -431,11 +431,12 @@ const CourseDetail = () => {
                               <div>
                                 <div className="flex">
                                   {[...Array(5)].map((_, i) => (
-                                    <Star
+                                    <FontAwesomeIcon
                                       key={i}
+                                      icon={faStar}
                                       className={`h-5 w-5 ${
                                         i < Math.floor(course.rating)
-                                          ? "fill-yellow-400 text-yellow-400"
+                                          ? "text-yellow-400"
                                           : "text-muted-foreground/30"
                                       }`}
                                     />
@@ -468,11 +469,12 @@ const CourseDetail = () => {
                                 <span className="font-semibold">Tinashe Marimo</span>
                                 <div className="flex">
                                   {[...Array(5)].map((_, i) => (
-                                    <Star
+                                    <FontAwesomeIcon
                                       key={i}
+                                      icon={faStar}
                                       className={`h-4 w-4 ${
                                         i < 5
-                                          ? "fill-yellow-400 text-yellow-400"
+                                          ? "text-yellow-400"
                                           : "text-muted-foreground/30"
                                       }`}
                                     />
@@ -494,11 +496,12 @@ const CourseDetail = () => {
                                 <span className="font-semibold">Nomsa Kambanje</span>
                                 <div className="flex">
                                   {[...Array(5)].map((_, i) => (
-                                    <Star
+                                    <FontAwesomeIcon
                                       key={i}
+                                      icon={faStar}
                                       className={`h-4 w-4 ${
                                         i < 4
-                                          ? "fill-yellow-400 text-yellow-400"
+                                          ? "text-yellow-400"
                                           : "text-muted-foreground/30"
                                       }`}
                                     />
@@ -520,8 +523,8 @@ const CourseDetail = () => {
                   <h2 className="text-2xl font-bold mb-6 text-left">Similar Courses</h2>
                   <div className="grid md:grid-cols-2 gap-6">
                     <Card className="p-4 flex">
-                      <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0">
-                        <ChartNoAxesCombined className="h-full w-full p-3 text-muted-foreground" />
+                      <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-muted-foreground" />
                       </div>
                       <div className="ml-4">
                         <h3 className="font-semibold">Advanced Technical Analysis</h3>
@@ -533,8 +536,8 @@ const CourseDetail = () => {
                     </Card>
                     
                     <Card className="p-4 flex">
-                      <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0">
-                        <Banknote className="h-full w-full p-3 text-muted-foreground" />
+                      <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <FontAwesomeIcon icon={faMoneyBill} className="h-8 w-8 text-muted-foreground" />
                       </div>
                       <div className="ml-4">
                         <h3 className="font-semibold">Forex Trading in Zimbabwe</h3>
@@ -569,7 +572,7 @@ const CourseDetail = () => {
                         }
                       }}
                     >
-                      <Play className="h-6 w-6 ml-1 text-black" />
+                      <FontAwesomeIcon icon={faPlay} className="h-6 w-6 ml-1 text-black" />
                     </Button>
                   </div>
                   <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded text-sm font-medium">
@@ -603,7 +606,7 @@ const CourseDetail = () => {
                       className="w-full"
                       onClick={() => setIsWishlisted(!isWishlisted)}
                     >
-                      <Heart className={`h-4 w-4 mr-2 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
+                      <FontAwesomeIcon icon={faHeart} className={`h-4 w-4 mr-2 ${isWishlisted ? "text-red-500" : ""}`} />
                       {isWishlisted ? "Wishlisted" : "Add to wishlist"}
                     </Button>
                   </div>
@@ -616,23 +619,23 @@ const CourseDetail = () => {
                     <h3 className="font-bold text-left mb-2">This course includes:</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <FontAwesomeIcon icon={faClock} className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span>{course.duration} of content</span>
                       </div>
                       <div className="flex items-center">
-                        <TrendingUp className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span>{course.projects} practical exercises</span>
                       </div>
                       <div className="flex items-center">
-                        <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span>{course.articles} articles</span>
                       </div>
                       <div className="flex items-center">
-                        <Download className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <FontAwesomeIcon icon={faDownload} className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span>{course.downloadableResources} downloadable resources</span>
                       </div>
                       <div className="flex items-center">
-                        <Award className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <FontAwesomeIcon icon={faAward} className="h-4 w-4 mr-2 text-muted-foreground" />
                         <span>Certificate of completion</span>
                       </div>
                     </div>
