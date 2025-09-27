@@ -2,17 +2,18 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  TrendingUp, 
-  ChevronRight,
-  LogOut,
-  Home,
-  BookOpen,
-  GraduationCap,
-  BarChart3,
-  Settings as SettingsIcon,
-  User
-} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowTrendUp,
+  faChevronRight,
+  faRightFromBracket,
+  faHome,
+  faBook,
+  faGraduationCap,
+  faChartColumn,
+  faCog,
+  faUser
+} from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import MyCourses from "./dashboard/MyCourses";
 import Certificates from "./dashboard/Certificates";
@@ -21,12 +22,12 @@ import Profile from "./dashboard/Profile";
 import SettingsPage from "./dashboard/Settings";
 
 const sidebarItems = [
-  { icon: Home, label: "Dashboard", key: "dashboard" },
-  { icon: BookOpen, label: "My Courses", key: "courses" },
-  { icon: GraduationCap, label: "Certificates", key: "certificates" },
-  { icon: BarChart3, label: "Analytics", key: "analytics" },
-  { icon: User, label: "Profile", key: "profile" },
-  { icon: SettingsIcon, label: "Settings", key: "settings" }
+  { icon: faHome, label: "Dashboard", key: "dashboard" },
+  { icon: faBook, label: "My Courses", key: "courses" },
+  { icon: faGraduationCap, label: "Certificates", key: "certificates" },
+  { icon: faChartColumn, label: "Analytics", key: "analytics" },
+  { icon: faUser, label: "Profile", key: "profile" },
+  { icon: faCog, label: "Settings", key: "settings" }
 ];
 
 const Dashboard = () => {
@@ -49,7 +50,7 @@ const Dashboard = () => {
         <div className="p-4">
           <div className="flex items-center space-x-3 mb-8">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-primary-foreground" />
+              <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
             </div>
             {!sidebarCollapsed && (
               <span className="font-bold text-lg text-secondary">ZSE Training</span>
@@ -67,7 +68,7 @@ const Dashboard = () => {
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <FontAwesomeIcon icon={item.icon} className="h-5 w-5 flex-shrink-0" />
                 {!sidebarCollapsed && <span className="text-sm font-medium">{item.label}</span>}
               </button>
             ))}
@@ -78,7 +79,7 @@ const Dashboard = () => {
               onClick={handleLogout}
               className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
             >
-              <LogOut className="h-5 w-5 flex-shrink-0" />
+              <FontAwesomeIcon icon={faRightFromBracket} className="h-5 w-5 flex-shrink-0" />
               {!sidebarCollapsed && <span className="text-sm font-medium">Logout</span>}
             </button>
           </div>
@@ -97,7 +98,7 @@ const Dashboard = () => {
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                 className="md:hidden"
               >
-                <ChevronRight className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "" : "rotate-180"}`} />
+                <FontAwesomeIcon icon={faChevronRight} className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "" : "rotate-180"}`} />
               </Button>
               <div>
                 <h1 className="text-2xl font-bold text-secondary">
@@ -157,7 +158,7 @@ const Dashboard = () => {
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors duration-300">
-                        <BookOpen className="h-6 w-6 text-primary" />
+                        <FontAwesomeIcon icon={faBook} className="h-6 w-6 text-primary" />
                       </div>
                       <div className="text-right">
                         <p className="text-3xl font-bold text-primary mb-1">12</p>
@@ -176,7 +177,7 @@ const Dashboard = () => {
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-3 bg-success/10 rounded-xl group-hover:bg-success/20 transition-colors duration-300">
-                        <GraduationCap className="h-6 w-6 text-success" />
+                        <FontAwesomeIcon icon={faGraduationCap} className="h-6 w-6 text-success" />
                       </div>
                       <div className="text-right">
                         <p className="text-3xl font-bold text-success mb-1">3</p>
@@ -195,7 +196,7 @@ const Dashboard = () => {
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-3 bg-orange-500/10 rounded-xl group-hover:bg-orange-500/20 transition-colors duration-300">
-                        <BarChart3 className="h-6 w-6 text-orange-500" />
+                        <FontAwesomeIcon icon={faChartColumn} className="h-6 w-6 text-orange-500" />
                       </div>
                       <div className="text-right">
                         <p className="text-3xl font-bold text-orange-500 mb-1">45</p>
@@ -214,7 +215,7 @@ const Dashboard = () => {
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
                       <div className="p-3 bg-purple-500/10 rounded-xl group-hover:bg-purple-500/20 transition-colors duration-300">
-                        <TrendingUp className="h-6 w-6 text-purple-500" />
+                        <FontAwesomeIcon icon={faArrowTrendUp} className="h-6 w-6 text-purple-500" />
                       </div>
                       <div className="text-right">
                         <p className="text-3xl font-bold text-purple-500 mb-1">7</p>
@@ -236,7 +237,7 @@ const Dashboard = () => {
                     <p className="text-muted-foreground">Jump into your learning journey</p>
                   </div>
                   <div className="p-3 bg-primary/10 rounded-xl">
-                    <TrendingUp className="h-6 w-6 text-primary" />
+                    <FontAwesomeIcon icon={faArrowTrendUp} className="h-6 w-6 text-primary" />
                   </div>
                 </div>
                 
@@ -248,7 +249,7 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10 text-center">
                       <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <BookOpen className="h-8 w-8" />
+                        <FontAwesomeIcon icon={faBook} className="h-8 w-8" />
                       </div>
                       <h3 className="text-xl font-bold mb-2">Continue Learning</h3>
                       <p className="text-primary-foreground/80">Pick up where you left off</p>
@@ -263,7 +264,7 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10 text-center">
                       <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <GraduationCap className="h-8 w-8" />
+                        <FontAwesomeIcon icon={faGraduationCap} className="h-8 w-8" />
                       </div>
                       <h3 className="text-xl font-bold mb-2">View Certificates</h3>
                       <p className="text-white/80">See your achievements</p>
@@ -278,7 +279,7 @@ const Dashboard = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative z-10 text-center">
                       <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <BarChart3 className="h-8 w-8" />
+                        <FontAwesomeIcon icon={faChartColumn} className="h-8 w-8" />
                       </div>
                       <h3 className="text-xl font-bold mb-2">View Analytics</h3>
                       <p className="text-white/80">Track your progress</p>
@@ -293,14 +294,14 @@ const Dashboard = () => {
                 <div className="bg-gradient-to-br from-card via-card to-muted/20 rounded-3xl p-6 border border-border/50 shadow-soft">
                   <h3 className="text-xl font-bold text-foreground mb-4 flex items-center">
                     <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
-                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 text-primary" />
                     </div>
                     Recent Activity
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-xl border border-primary/10">
                       <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-3">
-                        <GraduationCap className="h-5 w-5 text-primary" />
+                        <FontAwesomeIcon icon={faGraduationCap} className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <p className="font-medium text-foreground">Course Completed</p>
@@ -309,7 +310,7 @@ const Dashboard = () => {
                     </div>
                     <div className="flex items-center p-3 bg-gradient-to-r from-success/5 to-transparent rounded-xl border border-success/10">
                       <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center mr-3">
-                        <BookOpen className="h-5 w-5 text-success" />
+                        <FontAwesomeIcon icon={faBook} className="h-5 w-5 text-success" />
                       </div>
                       <div>
                         <p className="font-medium text-foreground">Lesson Progress</p>
@@ -322,7 +323,7 @@ const Dashboard = () => {
                 <div className="bg-gradient-to-br from-card via-card to-accent/20 rounded-3xl p-6 border border-border/50 shadow-soft">
                   <h3 className="text-xl font-bold text-foreground mb-4 flex items-center">
                     <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center mr-3">
-                      <BarChart3 className="h-4 w-4 text-orange-500" />
+                      <FontAwesomeIcon icon={faChartColumn} className="h-4 w-4 text-orange-500" />
                     </div>
                     Learning Goals
                   </h3>

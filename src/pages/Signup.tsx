@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff, User, Mail, Lock, Phone, AlertCircle } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faUser, faEnvelope, faLock, faPhone, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { useToast } from "@/hooks/use-toast";
 
 const Signup = () => {
@@ -110,7 +111,7 @@ const Signup = () => {
             <CardContent className="space-y-6">
               {/* Demo Notice */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <FontAwesomeIcon icon={faExclamationCircle} className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-blue-800">
                   <p className="font-medium mb-1">Demo Mode</p>
                   <p>Fill out the form to create an account and access the dashboard.</p>
@@ -123,7 +124,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
                     <div className="relative mt-1">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faUser} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="firstName"
                         value={formData.firstName}
@@ -137,7 +138,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
                     <div className="relative mt-1">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faUser} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="lastName"
                         value={formData.lastName}
@@ -155,7 +156,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="email">Email Address</Label>
                     <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="email"
                         type="email"
@@ -170,7 +171,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
                     <div className="relative mt-1">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faPhone} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="phone"
                         value={formData.phone}
@@ -203,7 +204,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="password">Password</Label>
                     <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faLock} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
@@ -218,14 +219,14 @@ const Signup = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" /> : <FontAwesomeIcon icon={faEye} className="h-4 w-4" />}
                       </button>
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faLock} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
@@ -240,7 +241,7 @@ const Signup = () => {
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       >
-                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showConfirmPassword ? <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" /> : <FontAwesomeIcon icon={faEye} className="h-4 w-4" />}
                       </button>
                     </div>
                   </div>
