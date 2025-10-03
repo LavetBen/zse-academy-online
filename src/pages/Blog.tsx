@@ -215,10 +215,17 @@ const Blog = () => {
                       </div>
                     </div>
                     
-                    <Button className="w-fit" asChild>
-                      <Link to={`/blog/${featuredPost.id}`}>
+                    <Button 
+                      className="w-fit bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+                      size="lg"
+                      asChild
+                    >
+                      <Link to={`/blog/${featuredPost.id}`} className="flex items-center">
                         Read Full Article
-                        <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-4 w-4" />
+                        <FontAwesomeIcon 
+                          icon={faArrowRight} 
+                          className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-2" 
+                        />
                       </Link>
                     </Button>
                   </div>
@@ -295,10 +302,17 @@ const Blog = () => {
                       ))}
                     </div>
                     
-                    <Button variant="ghost" className="w-full group" asChild>
-                      <Link to={`/blog/${post.id}`}>
-                        Read More
-                        <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <Button 
+                      variant="outline" 
+                      className="w-full group border-2 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 hover:shadow-md" 
+                      asChild
+                    >
+                      <Link to={`/blog/${post.id}`} className="flex items-center justify-center">
+                        Read Full Article
+                        <FontAwesomeIcon 
+                          icon={faArrowRight} 
+                          className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-2" 
+                        />
                       </Link>
                     </Button>
                   </CardContent>
