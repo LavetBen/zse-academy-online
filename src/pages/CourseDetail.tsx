@@ -29,7 +29,7 @@ import {
   TrendingUp,
   Building,
   Banknote,
-  ChartNoAxesCombined,
+  ChartNoAxesCombined, List, User
 } from "lucide-react";
 
 const courses = [
@@ -126,7 +126,7 @@ const CourseDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState<{title: string, youtubeId: string} | null>(null);
+  const [currentVideo, setCurrentVideo] = useState<{ title: string, youtubeId: string } | null>(null);
 
   const course = courses.find((c) => c.id === parseInt(id || "1"));
   if (!course) return <div>Course not found</div>;
@@ -135,7 +135,7 @@ const CourseDetail = () => {
     alert(`Clicked: ${moduleTitle} - ${lessonTitle}`);
   };
 
-  const handleVideoClick = (video: {title: string, youtubeId: string}) => {
+  const handleVideoClick = (video: { title: string, youtubeId: string }) => {
     setCurrentVideo(video);
   };
 
@@ -151,7 +151,7 @@ const CourseDetail = () => {
       {currentVideo && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-black rounded-lg w-full max-w-4xl aspect-video relative">
-            <button 
+            <button
               onClick={closeVideoModal}
               className="absolute -top-10 right-0 text-white hover:text-gray-300 z-10"
             >
@@ -228,11 +228,10 @@ const CourseDetail = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-5 w-5 ${
-                            i < Math.floor(course.rating)
+                          className={`h-5 w-5 ${i < Math.floor(course.rating)
                               ? "fill-yellow-400 text-yellow-400"
                               : "text-muted-foreground/30"
-                          }`}
+                            }`}
                         />
                       ))}
                     </div>
@@ -249,27 +248,35 @@ const CourseDetail = () => {
                 </div>
               </div>
 
-              
 
-             
+
+
 
               {/* Tabs Section */}
               <div className="pt-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-4 mb-8 bg-muted/50 p-1">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-background">
-                      Overview
+                    <TabsTrigger value="overview" className="data-[state=active]:bg-background flex items-center justify-center">
+                      <BookOpen className="h-5 w-5 sm:hidden" /> {/* icon on small */}
+                      <span className="hidden sm:inline">Overview</span> {/* text on sm+ */}
                     </TabsTrigger>
-                    <TabsTrigger value="content" className="data-[state=active]:bg-background">
-                      Course Content
+
+                    <TabsTrigger value="content" className="data-[state=active]:bg-background flex items-center justify-center">
+                      <List className="h-5 w-5 sm:hidden" />
+                      <span className="hidden sm:inline">Course Content</span>
                     </TabsTrigger>
-                    <TabsTrigger value="instructor" className="data-[state=active]:bg-background">
-                      Instructor
+
+                    <TabsTrigger value="instructor" className="data-[state=active]:bg-background flex items-center justify-center">
+                      <User className="h-5 w-5 sm:hidden" />
+                      <span className="hidden sm:inline">Instructor</span>
                     </TabsTrigger>
-                    <TabsTrigger value="reviews" className="data-[state=active]:bg-background">
-                      Reviews
+
+                    <TabsTrigger value="reviews" className="data-[state=active]:bg-background flex items-center justify-center">
+                      <Star className="h-5 w-5 sm:hidden" />
+                      <span className="hidden sm:inline">Reviews</span>
                     </TabsTrigger>
                   </TabsList>
+
 
                   {/* Overview Tab */}
                   <TabsContent value="overview" className="space-y-8">
@@ -301,7 +308,7 @@ const CourseDetail = () => {
                         </ul>
                       </CardContent>
                     </Card>
-                    
+
                     {/* Course Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <Card className="text-center p-4">
@@ -322,7 +329,7 @@ const CourseDetail = () => {
                       </Card>
                     </div>
 
-                    
+
                   </TabsContent>
 
                   {/* Course Content Tab */}
@@ -335,7 +342,7 @@ const CourseDetail = () => {
                             {course.modules.length} modules • {course.modules.reduce((acc, module) => acc + module.lessons.length, 0)} lessons • {course.duration}
                           </div>
                         </div>
-                        
+
                         <div className="space-y-4">
                           {course.modules.map((module, modIndex) => (
                             <div key={modIndex} className="border rounded-lg overflow-hidden">
@@ -352,11 +359,11 @@ const CourseDetail = () => {
                                   }, 0)}m
                                 </div>
                               </div>
-                              
+
                               <div className="divide-y">
                                 {module.lessons.map((lesson, lesIndex) => (
-                                  <div 
-                                    key={lesIndex} 
+                                  <div
+                                    key={lesIndex}
                                     className="p-4 flex items-center justify-between hover:bg-muted/30 cursor-pointer transition-colors"
                                     onClick={() => handleLessonClick(module.title, lesson.title)}
                                   >
@@ -432,11 +439,10 @@ const CourseDetail = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <Star
                                       key={i}
-                                      className={`h-5 w-5 ${
-                                        i < Math.floor(course.rating)
+                                      className={`h-5 w-5 ${i < Math.floor(course.rating)
                                           ? "fill-yellow-400 text-yellow-400"
                                           : "text-muted-foreground/30"
-                                      }`}
+                                        }`}
                                     />
                                   ))}
                                 </div>
@@ -446,7 +452,7 @@ const CourseDetail = () => {
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="bg-muted/50 p-4 rounded-lg">
                             <h3 className="font-medium mb-2">Review this course</h3>
                             <Button variant="outline" size="sm">
@@ -469,11 +475,10 @@ const CourseDetail = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <Star
                                       key={i}
-                                      className={`h-4 w-4 ${
-                                        i < 5
+                                      className={`h-4 w-4 ${i < 5
                                           ? "fill-yellow-400 text-yellow-400"
                                           : "text-muted-foreground/30"
-                                      }`}
+                                        }`}
                                     />
                                   ))}
                                 </div>
@@ -482,7 +487,7 @@ const CourseDetail = () => {
                               <p className="text-sm">This course completely changed my approach to investing on the ZSE. The modules on fundamental analysis helped me identify undervalued stocks that have since performed exceptionally well. Tendai's teaching style makes complex concepts easy to understand.</p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-start space-x-4">
                             <Avatar>
                               <AvatarImage src="https://i.pravatar.cc/50?img=2" />
@@ -495,11 +500,10 @@ const CourseDetail = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <Star
                                       key={i}
-                                      className={`h-4 w-4 ${
-                                        i < 4
+                                      className={`h-4 w-4 ${i < 4
                                           ? "fill-yellow-400 text-yellow-400"
                                           : "text-muted-foreground/30"
-                                      }`}
+                                        }`}
                                     />
                                   ))}
                                 </div>
@@ -530,7 +534,7 @@ const CourseDetail = () => {
                         </div>
                       </div>
                     </Card>
-                    
+
                     <Card className="p-4 flex">
                       <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0">
                         <Banknote className="h-full w-full p-3 text-muted-foreground" />
@@ -544,7 +548,7 @@ const CourseDetail = () => {
                       </div>
                     </Card>
                   </div>
-                  
+
                 </section>
               </div>
             </div>
@@ -553,14 +557,14 @@ const CourseDetail = () => {
             <div className="lg:col-span-1">
               <Card className="sticky top-4 shadow-lg border-0">
                 <div className="relative aspect-video rounded-t-lg overflow-hidden">
-                  <img 
-                    src={course.image} 
-                    alt={course.title} 
-                    className="w-full h-full object-cover" 
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       className="rounded-full h-16 w-16 bg-white/90 hover:bg-white"
                       onClick={() => {
                         if (course.sampleVideos && course.sampleVideos.length > 0) {
