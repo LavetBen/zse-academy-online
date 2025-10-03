@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faPlay, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import heroImage1 from "@/assets/day-trader-using-pc-purchase-sell-stocks-browsing-through-documents.jpg";
 import heroImage2 from "@/assets/diverse-business-analysts-working-evaluate-costs-create-projection.jpg";
@@ -54,7 +55,7 @@ export const HeroSection = () => {
           className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
           onClick={goToPrev}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <FontAwesomeIcon icon={faChevronLeft} className="h-4 w-4" />
         </Button>
         <Button
           variant="outline"
@@ -62,7 +63,7 @@ export const HeroSection = () => {
           className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
           onClick={goToNext}
         >
-          <ChevronRight className="h-4 w-4" />
+          <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
         </Button>
       </div>
 
@@ -101,7 +102,7 @@ export const HeroSection = () => {
                   className="text-lg px-8 py-4 bg-[#00aeef] hover:bg-[#009ad1] text-white shadow-lg hover:shadow-xl transition-all"
                 >
                   Start Learning
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Button
@@ -109,7 +110,7 @@ export const HeroSection = () => {
                 size="lg"
                 className="text-[#00aeef] border-white hover:bg-white/10 backdrop-blur-sm hidden sm:flex"
               >
-                <Play className="mr-2 h-5 w-5" />
+                <FontAwesomeIcon icon={faPlay} className="mr-2 h-5 w-5" />
                 Watch Demo
               </Button>
             </div>

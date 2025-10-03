@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useToast } from "@/hooks/use-toast";
 
 export const Newsletter = () => {
@@ -79,7 +80,7 @@ export const Newsletter = () => {
                     ) : (
                       <>
                         Subscribe Now
-                        <ArrowRight className="ml-2 h-5 w-5" />
+                        <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-5 w-5" />
                       </>
                     )}
                   </Button>

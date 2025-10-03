@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faTimes, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import logo from "../assets/logo.png";
 
 export const Navbar = () => {
@@ -71,7 +72,7 @@ export const Navbar = () => {
                         }`}
                     >
                       {item.name}
-                      <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
+                      <FontAwesomeIcon icon={faChevronDown} className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
                     </button>
 
                     {/* Dropdown Menu */}
@@ -135,7 +136,7 @@ export const Navbar = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg text-gray-600 hover:text-[#00aeef] hover:bg-gray-100 transition-colors"
             >
-              {isOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+              {isOpen ? <FontAwesomeIcon icon={faTimes} className="h-7 w-7" /> : <FontAwesomeIcon icon={faBars} className="h-7 w-7" />}
             </button>
           </div>
         </div>
@@ -161,7 +162,8 @@ export const Navbar = () => {
                         >
                           {item.name}
                         </span>
-                        <ChevronDown
+                        <FontAwesomeIcon
+                          icon={faChevronDown}
                           className={`h-4 w-4 transition-transform ${
                             activeDropdown === item.name ? "rotate-180" : ""
                           }`}

@@ -62,15 +62,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
-      // Note: This is a placeholder implementation
-      // In a real app, this would integrate with Supabase Auth
-      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock user data - replace with actual Supabase authentication
+      // Mock user data for demo purposes
       const mockUser: User = {
-        id: "mock-user-id",
+        id: "demo-user-id",
         email,
         firstName: "John",
         lastName: "Doe",
@@ -80,9 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setUser(mockUser);
       localStorage.setItem("zse_training_user", JSON.stringify(mockUser));
-      
-      // This would throw an error since Supabase isn't connected
-      throw new Error("Authentication requires Supabase integration");
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -94,15 +88,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (userData: SignupData): Promise<void> => {
     setIsLoading(true);
     try {
-      // Note: This is a placeholder implementation
-      // In a real app, this would integrate with Supabase Auth
-      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock user creation - replace with actual Supabase user creation
+      // Mock user creation for demo purposes
       const newUser: User = {
-        id: "mock-new-user-id",
+        id: "demo-new-user-id",
         email: userData.email,
         firstName: userData.firstName,
         lastName: userData.lastName,
@@ -114,9 +105,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setUser(newUser);
       localStorage.setItem("zse_training_user", JSON.stringify(newUser));
-      
-      // This would throw an error since Supabase isn't connected
-      throw new Error("User registration requires Supabase integration");
     } catch (error) {
       console.error("Signup error:", error);
       throw error;

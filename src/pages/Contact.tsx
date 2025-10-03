@@ -7,30 +7,31 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faPhone, faMapMarker, faClock, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { useToast } from "@/hooks/use-toast";
 
 const contactInfo = [
   {
-    icon: Mail,
+    icon: faEnvelope,
     title: "Email Us",
     details: "info@zsetraining.co.zw",
     subtitle: "We'll respond within 24 hours"
   },
   {
-    icon: Phone,
+    icon: faPhone,
     title: "Call Us",
     details: "+263 4 751 951",
     subtitle: "Mon-Fri, 8:00 AM - 5:00 PM"
   },
   {
-    icon: MapPin,
+    icon: faMapMarker,
     title: "Visit Our Office",
     details: "ZSE Building, Sam Nujoma Street",
     subtitle: "Harare, Zimbabwe"
   },
   {
-    icon: Clock,
+    icon: faClock,
     title: "Office Hours",
     details: "Monday - Friday: 8:00 AM - 5:00 PM",
     subtitle: "Saturday: 9:00 AM - 1:00 PM"
@@ -102,7 +103,7 @@ const Contact = () => {
               <Card key={index} className="card-gradient text-center">
                 <CardHeader>
                   <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <info.icon className="h-8 w-8 text-primary" />
+                    <FontAwesomeIcon icon={info.icon} className="h-8 w-8 text-primary" />
                   </div>
                   <CardTitle className="text-lg">{info.title}</CardTitle>
                 </CardHeader>
@@ -215,7 +216,7 @@ const Contact = () => {
                       ) : (
                         <>
                           Send Message
-                          <Send className="ml-2 h-5 w-5" />
+                          <FontAwesomeIcon icon={faPaperPlane} className="ml-2 h-5 w-5" />
                         </>
                       )}
                     </Button>

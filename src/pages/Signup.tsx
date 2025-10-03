@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, EyeOff, User, Mail, Lock, Phone, AlertCircle } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash, faUser, faEnvelope, faLock, faPhone, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { useToast } from "@/hooks/use-toast";
 
 const Signup = () => {
@@ -28,6 +30,14 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { signup, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -56,19 +66,34 @@ const Signup = () => {
 
     setIsLoading(true);
 
-    // Note: This would normally connect to Supabase for user registration
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await signup({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        experience: formData.experience
+      });
+      
       toast({
-        title: "Registration Required",
-        description: "Connect Supabase to enable user registration functionality.",
+        title: "Welcome to ZSE Training!",
+        description: "Your account has been created successfully.",
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Registration Failed",
+        description: "Please try again with different details.",
         variant: "destructive",
       });
-    }, 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background font-poppins">
       <Navbar />
       
       <section className="section-padding">
@@ -84,12 +109,12 @@ const Signup = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {/* Authentication Notice */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-yellow-800">
-                  <p className="font-medium mb-1">Authentication Setup Required</p>
-                  <p>Connect Supabase to enable user registration functionality.</p>
+              {/* Demo Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
+                <FontAwesomeIcon icon={faExclamationCircle} className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Demo Mode</p>
+                  <p>Fill out the form to create an account and access the dashboard.</p>
                 </div>
               </div>
 
@@ -99,7 +124,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
                     <div className="relative mt-1">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faUser} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="firstName"
                         value={formData.firstName}
@@ -113,7 +138,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
                     <div className="relative mt-1">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faUser} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="lastName"
                         value={formData.lastName}
@@ -131,7 +156,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="email">Email Address</Label>
                     <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faEnvelope} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="email"
                         type="email"
@@ -146,7 +171,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
                     <div className="relative mt-1">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faPhone} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="phone"
                         value={formData.phone}
@@ -179,7 +204,7 @@ const Signup = () => {
                   <div>
                     <Label htmlFor="password">Password</Label>
                     <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faLock} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
@@ -194,14 +219,14 @@ const Signup = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" /> : <FontAwesomeIcon icon={faEye} className="h-4 w-4" />}
                       </button>
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="confirmPassword">Confirm Password</Label>
                     <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <FontAwesomeIcon icon={faLock} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
@@ -216,7 +241,7 @@ const Signup = () => {
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       >
-                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showConfirmPassword ? <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" /> : <FontAwesomeIcon icon={faEye} className="h-4 w-4" />}
                       </button>
                     </div>
                   </div>

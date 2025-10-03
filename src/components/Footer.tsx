@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebook, faTwitter, faLinkedin, faInstagram } from "@fortawesome/free-brands-svg-icons";
 import ZSELogo from "@/assets/logo.png";
 
 const footerLinks = {
@@ -24,10 +25,10 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { name: "Facebook", icon: Facebook, href: "https://facebook.com/zse" },
-  { name: "Twitter", icon: Twitter, href: "https://twitter.com/zse" },
-  { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/company/zse" },
-  { name: "Instagram", icon: Instagram, href: "https://instagram.com/zse" },
+  { name: "Facebook", icon: faFacebook, href: "https://facebook.com/zse" },
+  { name: "Twitter", icon: faTwitter, href: "https://twitter.com/zse" },
+  { name: "LinkedIn", icon: faLinkedin, href: "https://linkedin.com/company/zse" },
+  { name: "Instagram", icon: faInstagram, href: "https://instagram.com/zse" },
 ];
 
 export const Footer = () => {
@@ -90,7 +91,7 @@ export const Footer = () => {
                   className="text-gray-400 hover:text-white transition-colors"
                   aria-label={social.name}
                 >
-                  <social.icon className="h-5 w-5" />
+                  <FontAwesomeIcon icon={social.icon} className="h-5 w-5" />
                 </a>
               ))}
             </div>
