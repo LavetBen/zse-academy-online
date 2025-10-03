@@ -8,6 +8,23 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faXmark, 
+  faChevronRight, 
+  faPlay, 
+  faUsers, 
+  faAward,
+  faList,
+  faUser,
+  faStar,
+  faFileAlt,
+  faChartLine,
+  faMoneyBill,
+  faHeart,
+  faClock,
+  faArrowTrendUp,
+  faDownload
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Star,
   Clock,
@@ -31,6 +48,8 @@ import {
   Building,
   Banknote,
   ChartNoAxesCombined,
+  List,
+  User,
 } from "lucide-react";
 
 const courses = [
@@ -264,17 +283,17 @@ const CourseDetail = () => {
                     </TabsTrigger>
 
                     <TabsTrigger value="content" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <List className="h-5 w-5 sm:hidden" />
+                      <FontAwesomeIcon icon={faList} className="h-5 w-5 sm:hidden" />
                       <span className="hidden sm:inline">Course Content</span>
                     </TabsTrigger>
 
                     <TabsTrigger value="instructor" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <User className="h-5 w-5 sm:hidden" />
+                      <FontAwesomeIcon icon={faUser} className="h-5 w-5 sm:hidden" />
                       <span className="hidden sm:inline">Instructor</span>
                     </TabsTrigger>
 
                     <TabsTrigger value="reviews" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <Star className="h-5 w-5 sm:hidden" />
+                      <FontAwesomeIcon icon={faStar} className="h-5 w-5 sm:hidden" />
                       <span className="hidden sm:inline">Reviews</span>
                     </TabsTrigger>
                   </TabsList>
@@ -441,6 +460,7 @@ const CourseDetail = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <FontAwesomeIcon
                                       key={i}
+                                      icon={faStar}
                                       className={`h-5 w-5 ${
                                         i < Math.floor(course.rating)
                                           ? "fill-yellow-400 text-yellow-400"
@@ -478,6 +498,7 @@ const CourseDetail = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <FontAwesomeIcon
                                       key={i}
+                                      icon={faStar}
                                       className={`h-4 w-4 ${
                                         i < 5
                                           ? "fill-yellow-400 text-yellow-400"
@@ -504,6 +525,7 @@ const CourseDetail = () => {
                                   {[...Array(5)].map((_, i) => (
                                     <FontAwesomeIcon
                                       key={i}
+                                      icon={faStar}
                                       className={`h-4 w-4 ${
                                         i < 4
                                           ? "fill-yellow-400 text-yellow-400"
