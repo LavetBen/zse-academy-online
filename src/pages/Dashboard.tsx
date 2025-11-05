@@ -73,7 +73,7 @@ const Dashboard = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg text-secondary">T</span>
+            <span className="font-bold text-lg text-secondary">ZSE</span>
           </div>
           
           <div className="flex items-center space-x-3">
@@ -107,19 +107,10 @@ const Dashboard = () => {
               <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
             </div>
             {!sidebarCollapsed && (
-              <span className="font-bold text-lg text-secondary">T</span>
+              <span className="font-bold text-lg text-secondary">ZSE</span>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="ml-auto hidden lg:flex"
-            >
-              <FontAwesomeIcon 
-                icon={faChevronRight} 
-                className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "" : "rotate-180"}`} 
-              />
-            </Button>
+            
+              
           </div>
 
           {/* Mobile Header in Sidebar */}
@@ -128,7 +119,7 @@ const Dashboard = () => {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-lg text-secondary">T</span>
+              <span className="font-bold text-lg text-secondary">ZSE</span>
             </div>
             <Button
               variant="ghost"

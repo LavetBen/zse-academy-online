@@ -39,7 +39,7 @@ const blogPosts = [
       <h2>Conclusion</h2>
       <p>Understanding market trends is essential for successful investing. By staying informed and adapting to changing conditions, investors can position themselves to capitalize on emerging opportunities in the ZSE.</p>
     `,
-    author: "Dr. Sarah Mukamuri",
+    author: "Dr Mukamuri",
     date: "December 15, 2024",
     category: "Market Analysis",
     readTime: "5 min read",
@@ -69,7 +69,7 @@ const blogPosts = [
       <h2>Strategy 5: Continue Learning</h2>
       <p>The market constantly evolves. Stay informed through courses, books, financial news, and market analysis. The more you learn, the better equipped you'll be to make sound investment decisions.</p>
     `,
-    author: "James Chigumba",
+    author: "Dr Chigumba",
     date: "December 12, 2024",
     category: "Investment Tips",
     readTime: "7 min read",
@@ -102,7 +102,7 @@ const blogPosts = [
       <h2>Conclusion</h2>
       <p>Risk management is not about avoiding risk entirely—it's about understanding, measuring, and controlling it. By implementing these strategies, you can navigate volatile markets with confidence.</p>
     `,
-    author: "Prof. Michael Tendai",
+    author: "Dr Tendai",
     date: "December 10, 2024",
     category: "Risk Management",
     readTime: "6 min read",

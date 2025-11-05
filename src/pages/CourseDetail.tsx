@@ -608,39 +608,8 @@ const CourseDetail = () => {
                 </div>
 
                 <CardContent className="p-6 space-y-4">
-                  <div className="text-left">
-                    <div className="flex items-baseline space-x-2">
-                      <span className="text-3xl font-bold text-primary">{course.price}</span>
-                      <span className="text-lg text-muted-foreground line-through">{course.originalPrice}</span>
-                      <Badge variant="destructive" className="ml-2">
-                        {course.discount}
-                      </Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      Limited time offer
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Button className="w-full" size="lg">
-                      Add to cart
-                    </Button>
-                    <Button className="w-full" size="lg" variant="outline">
-                      Buy now
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => setIsWishlisted(!isWishlisted)}
-                    >
-                      <FontAwesomeIcon icon={faHeart} className={`h-4 w-4 mr-2 ${isWishlisted ? "text-red-500" : ""}`} />
-                      {isWishlisted ? "Wishlisted" : "Add to wishlist"}
-                    </Button>
-                  </div>
-
-                  <div className="text-sm text-center text-muted-foreground pt-2">
-                    30-Day Money-Back Guarantee
-                  </div>
+                  
+                
 
                   <div className="pt-4">
                     <h3 className="font-bold text-left mb-2">This course includes:</h3>

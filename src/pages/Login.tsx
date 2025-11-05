@@ -74,14 +74,7 @@ const Login = () => {
             </CardHeader>
 
             <CardContent className="space-y-6">
-              {/* Demo Notice */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
-                <FontAwesomeIcon icon={faExclamationCircle} className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Demo Mode</p>
-                  <p>Use any email and password to login and access the dashboard.</p>
-                </div>
-              </div>
+             
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>

@@ -25,8 +25,8 @@ const Profile = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "John",
-    lastName: user?.lastName || "Doe", 
+    firstName: user?.name || "John",
+    
     email: user?.email || "john.doe@example.com",
     phone: "+1 (555) 123-4567",
     location: "New York, NY",
@@ -80,7 +80,7 @@ const Profile = () => {
                 <FontAwesomeIcon icon={faUser} className="h-10 w-10 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold">{formData.firstName} {formData.lastName}</h3>
+                <h3 className="text-xl font-semibold">{formData.firstName} </h3>
                 <p className="text-muted-foreground">{formData.email}</p>
                 <Badge variant="secondary" className="mt-1">Intermediate Trader</Badge>
               </div>
@@ -98,15 +98,7 @@ const Profile = () => {
                   disabled={!isEditing}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                  disabled={!isEditing}
-                />
-              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
