@@ -37,10 +37,7 @@ const mockAnalytics = {
 const Analytics = () => {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
-        <p className="text-muted-foreground">Track your learning performance and progress</p>
-      </div>
+      
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

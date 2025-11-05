@@ -13,7 +13,7 @@ import marketsImg from "@/assets/hero-image.jpg";
 const allTopics = [
   {
     id: 1,
-    icon: faArrowTrendUp,
+  
     title: "Forex Trading Basics",
     description: "Learn how to trade Forex and navigate currency markets effectively.",
     students: "1,200",
@@ -27,7 +27,7 @@ const allTopics = [
   },
   {
     id: 2,
-    icon: faChartColumn,
+
     title: "Technical Analysis",
     description: "Master chart patterns, indicators, and trading strategies.",
     students: "900",
@@ -41,7 +41,7 @@ const allTopics = [
   },
   {
     id: 3,
-    icon: faDollarSign,
+
     title: "Financial Markets Overview",
     description: "Understanding bonds, equities, and derivatives in the Zimbabwe Stock Exchange.",
     students: "800",
@@ -118,7 +118,7 @@ export const PopularTopics = () => {
               {/* Content */}
               <div className="p-4 text-left">
                 <div className="flex items-center mb-2">
-                  <FontAwesomeIcon icon={topic.icon} className="h-5 w-5 text-primary mr-2" />
+                 
                   <h3 className="text-lg font-semibold text-left">{topic.title}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3 text-left">{topic.description}</p>

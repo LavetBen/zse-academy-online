@@ -34,18 +34,7 @@ const mockCertificates = [
 const Certificates = () => {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Certificates</h1>
-          <p className="text-muted-foreground">Your achievements and certifications</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <FontAwesomeIcon icon={faAward} className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold text-primary">
-            {mockCertificates.filter(cert => cert.status === "Completed").length}
-          </span>
-        </div>
-      </div>
+      
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {mockCertificates.map((certificate) => (
