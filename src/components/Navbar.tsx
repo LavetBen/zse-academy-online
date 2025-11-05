@@ -1,14 +1,17 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "../assets/logo.png";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -110,23 +113,61 @@ export const Navbar = () => {
             ))}
 
             <div className="flex items-center space-x-3 ml-6">
-              <Link to="/login">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
-                >
-                  Login
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button
-                  size="sm"
-                  className="px-6 py-2 rounded-full bg-[#00aeef] text-white shadow-md hover:bg-[#0095cc] transition"
-                >
-                  Sign Up
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  {user?.role === "admin" && (
+                    <Link to="/admin">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
+                      >
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/dashboard">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
+                    >
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="px-6 py-2 rounded-full border-red-500 text-red-500 hover:bg-red-500/10 hover:shadow-sm transition"
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button
+                      size="sm"
+                      className="px-6 py-2 rounded-full bg-[#00aeef] text-white shadow-md hover:bg-[#0095cc] transition"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -207,25 +248,68 @@ export const Navbar = () => {
                 </div>
               ))}
 
-              {/* Buttons Side by Side */}
-              <div className="flex items-center justify-between gap-3 pt-5 border-t border-gray-200">
-                <Link to="/login" className="w-1/2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
-                  >
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/signup" className="w-1/2">
-                  <Button
-                    size="sm"
-                    className="w-full rounded-full bg-[#00aeef] text-white shadow-md hover:bg-[#0095cc] transition"
-                  >
-                    Sign Up
-                  </Button>
-                </Link>
+              {/* Auth Buttons */}
+              <div className="pt-5 border-t border-gray-200">
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    {user?.role === "admin" && (
+                      <Link to="/admin" className="block">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          Admin
+                        </Button>
+                      </Link>
+                    )}
+                    <Link to="/dashboard" className="block">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={() => {
+                        logout();
+                        navigate("/");
+                        setIsOpen(false);
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="w-full rounded-full border-red-500 text-red-500 hover:bg-red-500/10 transition"
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-3">
+                    <Link to="/login" className="w-1/2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                    <Link to="/signup" className="w-1/2">
+                      <Button
+                        size="sm"
+                        className="w-full rounded-full bg-[#00aeef] text-white shadow-md hover:bg-[#0095cc] transition"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>

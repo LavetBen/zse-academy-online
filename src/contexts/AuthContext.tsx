@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { authService } from "@/services/auth.service";
+import { apiClient } from "@/services/api";
 
 interface User {
   id: string;
@@ -27,30 +28,12 @@ export const useAuth = () => {
   return context;
 };
 
-const API_URL = "http://127.0.0.1:8000/api";
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Get token from localStorage
   const getToken = () => localStorage.getItem("zse_training_token");
-
-  // Axios instance with JWT
-  const axiosInstance = axios.create({
-    baseURL: API_URL,
-  });
-
-  axiosInstance.interceptors.request.use((config) => {
-    const token = getToken();
-    if (token) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
-      };
-    }
-    return config;
-  });
 
   // Fetch current user if token exists
   useEffect(() => {
@@ -61,8 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
-        const response = await axiosInstance.get("/me");
-        setUser(response.data);
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
       } catch (error) {
         console.error("Failed to fetch user:", error);
         setUser(null);
@@ -79,13 +62,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/login`, { email, password });
-      const token = response.data.token;
+      const response = await authService.login({ email, password });
+      const token = response.token;
       localStorage.setItem("zse_training_token", token);
 
       // Fetch user profile
-      const userResponse = await axiosInstance.get("/me");
-      setUser(userResponse.data);
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -98,18 +81,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (name: string, email: string, password: string, passwordConfirmation: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/register`, {
+      const response = await authService.register({
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
       });
-      const token = response.data.token;
+      const token = response.token;
       localStorage.setItem("zse_training_token", token);
 
       // Fetch user profile
-      const userResponse = await axiosInstance.get("/me");
-      setUser(userResponse.data);
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
     } catch (error) {
       console.error("Signup error:", error);
       throw error;

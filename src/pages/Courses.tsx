@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { courseService } from "@/services/course.service";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,46 +44,19 @@ const Courses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const token = localStorage.getItem("zse_training_token");
-        
-        const response = await axios.get<ApiResponse>("http://127.0.0.1:8000/api/courses", {
-          headers: token ? {
-            Authorization: `Bearer ${token}`,
-          } : undefined,
-        });
-
-        console.log("API Response:", response.data); // Debug log
-
-        let coursesData: Course[] = [];
-
-        // Handle different possible response structures
-        if (Array.isArray(response.data)) {
-          // If response.data is directly an array
-          coursesData = response.data;
-        } else if (Array.isArray(response.data?.data)) {
-          // If response.data.data is an array (Laravel pagination format)
-          coursesData = response.data.data;
-        } else if (Array.isArray(response.data?.courses)) {
-          // If response.data.courses is an array
-          coursesData = response.data.courses;
-        } else {
-          console.error("Unexpected API response structure:", response.data);
-          toast({
-            title: "Error",
-            description: "Unexpected data format from server",
-            variant: "destructive",
-          });
-          setCourses([]);
-          return;
-        }
+        const coursesData = await courseService.getAllCourses();
 
         // Transform API response to include mock data for missing fields
-        const coursesWithMockData = coursesData.map((course: Course) => ({
+        const coursesWithMockData = coursesData.map((course) => ({
           ...course,
-          instructor: course.instructor || "ZSE Expert Instructor",
+          instructor: course.instructor?.name || "ZSE Expert Instructor",
           duration: course.duration || `${Math.floor(Math.random() * 12) + 4} weeks`,
-          students: course.students || Math.floor(Math.random() * 2000) + 500,
-          rating: course.rating || (4.5 + Math.random() * 0.5), // Random rating between 4.5-5.0
+          students: Math.floor(Math.random() * 2000) + 500,
+          rating: 4.5 + Math.random() * 0.5, // Random rating between 4.5-5.0
+          category: course.category?.name || "General",
+          level: course.level || "Beginner",
+          thumbnail_url: course.thumbnail || "",
+          is_published: true,
         }));
 
         setCourses(coursesWithMockData);
@@ -93,10 +66,8 @@ const Courses = () => {
         let errorMessage = "Unable to load courses. Please try again later.";
         
         if (error.response) {
-          // Server responded with error status
           errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
         } else if (error.request) {
-          // Request was made but no response received
           errorMessage = "No response from server. Please check your connection.";
         }
         

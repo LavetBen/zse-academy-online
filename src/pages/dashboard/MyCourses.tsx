@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { courseService } from "@/services/course.service";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -83,23 +83,13 @@ const MyCourses = () => {
     const fetchCourses = async () => {
       if (!user) return;
 
-      const token = localStorage.getItem("zse_training_token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       try {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const response = await axios.get("http://127.0.0.1:8000/api/my/courses", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const data = await courseService.getMyCourses();
 
-        const enrolledCourses = response.data.map((course: any, index: number) => {
+        const enrolledCourses = data.map((course: any, index: number) => {
           let status: "completed" | "in-progress" | "not-started" = "not-started";
           let certificateReceived = false;
           
