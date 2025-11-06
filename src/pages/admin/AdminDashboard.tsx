@@ -18,14 +18,15 @@ import {
   faXmark,
   faChevronRight,
   faGraduationCap,
-  faCog
+  faCog,faBookAtlas
 } from "@fortawesome/free-solid-svg-icons";
 
 const sidebarItems = [
   { icon: faHome, label: "Dashboard", key: "dashboard" },
   { icon: faBook, label: "Courses", key: "courses" },
-  { icon: faUsers, label: "Users", key: "users" },
-  { icon: faChartLine, label: "Analytics", key: "analytics" }
+  { icon: faUsers, label: "Students", key: "users" },
+  { icon: faBookAtlas, label: "Blog", key: "Blog" },
+  { icon: faChartLine, label: "Analytics", key: "Analytics" }
 ];
 
 const AdminDashboard = () => {
