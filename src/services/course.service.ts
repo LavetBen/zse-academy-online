@@ -18,6 +18,10 @@ export interface Course {
   };
   contents?: any[];
   thumbnail?: string;
+  is_enrolled?: boolean;
+  progress?: number;
+  thumbnail_url?: string;
+  is_published?: boolean;
 }
 
 export const courseService = {
@@ -38,6 +42,11 @@ export const courseService = {
 
   enrollCourse: async (id: string | number) => {
     const response = await apiClient.post(API_ENDPOINTS.ENROLL_COURSE(id));
+    return response.data;
+  },
+
+  enrollInCourse: async (courseId: string | number): Promise<any> => {
+    const response = await apiClient.post(API_ENDPOINTS.ENROLL_COURSE(courseId));
     return response.data;
   },
 

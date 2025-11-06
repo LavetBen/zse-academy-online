@@ -15,17 +15,17 @@ export const API_ENDPOINTS = {
   ENROLL_COURSE: (id: string | number) => `/courses/${id}/enroll`,
   
   // Admin endpoints
-  ADMIN_COURSES: "/admin/courses",
+  ADMIN_COURSES: "/courses",
   ADMIN_USERS: "/admin/users",
-  ADMIN_CREATE_COURSE: "/admin/courses",
-  ADMIN_UPDATE_COURSE: (id: string | number) => `/admin/courses/${id}`,
-  ADMIN_DELETE_COURSE: (id: string | number) => `/admin/courses/${id}`,
+  ADMIN_CREATE_COURSE: "/courses",
+  ADMIN_UPDATE_COURSE: (id: string | number) => `/courses/${id}`,
+  ADMIN_DELETE_COURSE: (id: string | number) => `/courses/${id}`,
   
   // Course Content endpoints
-  ADMIN_COURSE_CONTENT: (courseId: string | number) => `/admin/courses/${courseId}/content`,
-  ADMIN_CREATE_CONTENT: (courseId: string | number) => `/admin/courses/${courseId}/content`,
-  ADMIN_UPDATE_CONTENT: (courseId: string | number, contentId: string | number) => `/admin/courses/${courseId}/content/${contentId}`,
-  ADMIN_DELETE_CONTENT: (courseId: string | number, contentId: string | number) => `/admin/courses/${courseId}/content/${contentId}`,
+  ADMIN_COURSE_CONTENT: (courseId: string | number) => `/courses/${courseId}/contents`,
+  ADMIN_CREATE_CONTENT: (courseId: string | number) => `/courses/${courseId}/contents`,
+  ADMIN_UPDATE_CONTENT: (courseId: string | number, contentId: string | number) => `/courses/${courseId}/contents/${contentId}`,
+  ADMIN_DELETE_CONTENT: (courseId: string | number, contentId: string | number) => `/courses/${courseId}/contents/${contentId}`,
   
   // Blog endpoints
   BLOG_POSTS: "/blog",
