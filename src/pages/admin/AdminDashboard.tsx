@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ManageCourses from "./ManageCourses";
 import ManageUsers from "./ManageUsers";
+import ManageBlog from "./ManageBlog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -309,6 +310,7 @@ const AdminDashboard = () => {
 
           {activeSection === "courses" && <ManageCourses />}
           {activeSection === "users" && <ManageUsers />}
+          {activeSection === "Blog" && <ManageBlog />}
           {activeSection === "analytics" && (
             <Card className="bg-gradient-to-br from-card via-card to-muted/30 border-border/50 shadow-soft">
               <CardHeader>

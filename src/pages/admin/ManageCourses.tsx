@@ -83,7 +83,6 @@ const ManageCourses = () => {
     description: "",
     price: "",
     category: "",
-    category_id: "",
     level: "",
     thumbnail_url: "",
     duration: "",
@@ -127,19 +126,20 @@ const ManageCourses = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const courseData = {
+      const courseData: any = {
         title: formData.title,
         description: formData.description,
-        category: formData.category,
-        category_id: formData.category_id
-          ? parseInt(formData.category_id)
-          : null,
         level: formData.level,
         price: formData.price ? parseFloat(formData.price) : 0,
         thumbnail_url: formData.thumbnail_url || null,
         duration: formData.duration,
         is_published: formData.is_published,
       };
+
+      // Only include category if it's not empty
+      if (formData.category) {
+        courseData.category = formData.category;
+      }
 
       if (editingCourse) {
         await courseService.updateCourse(editingCourse.id, courseData);
@@ -184,7 +184,6 @@ const ManageCourses = () => {
       description: "",
       price: "",
       category: "",
-      category_id: "",
       level: "",
       thumbnail_url: "",
       duration: "",
@@ -199,8 +198,7 @@ const ManageCourses = () => {
       title: course.title || "",
       description: course.description || "",
       price: course.price?.toString() || "",
-      category: course.category || "",
-      category_id: course.category_id?.toString() || "",
+      category: typeof course.category === 'object' ? course.category.name : (course.category || ""),
       level: course.level || "",
       thumbnail_url: course.thumbnail_url || "",
       duration: course.duration || "",
@@ -215,7 +213,6 @@ const ManageCourses = () => {
     );
     setFormData({
       ...formData,
-      category_id: value,
       category: selectedCategory ? selectedCategory.name : "",
     });
   };
@@ -302,9 +299,9 @@ const ManageCourses = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="category_id">Category</Label>
+                      <Label htmlFor="category">Category</Label>
                       <Select
-                        value={formData.category_id}
+                        value={formData.category}
                         onValueChange={handleCategoryChange}
                       >
                         <SelectTrigger className="bg-gray-50 dark:bg-gray-800">
@@ -481,7 +478,9 @@ const ManageCourses = () => {
                           ${course.price || 0}
                         </span>
                         <span>Level: {course.level || "Not set"}</span>
-                        <span>Category: {course.category || "Uncategorized"}</span>
+                        <span>
+                          Category: {typeof course.category === 'object' ? course.category.name : (course.category || "Uncategorized")}
+                        </span>
                         {course.duration && (
                           <span>Duration: {course.duration}</span>
                         )}
