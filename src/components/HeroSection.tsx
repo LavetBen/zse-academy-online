@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faPlay, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import heroImage1 from "@/assets/day-trader-using-pc-purchase-sell-stocks-browsing-through-documents.jpg";
 import heroImage2 from "@/assets/diverse-business-analysts-working-evaluate-costs-create-projection.jpg";
 import heroImage3 from "@/assets/business-analyst-looking-into-statistics-reports-detect-any-obstacles.jpg";
 
@@ -11,7 +10,7 @@ export const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
-    { image: heroImage1, title: "Master the Zimbabwe Stock Exchange" },
+   
     { image: heroImage2, title: "Expert Financial Market Training" },
     { image: heroImage3, title: "Advance Your Career in Finance" },
   ];

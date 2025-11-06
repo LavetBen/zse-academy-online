@@ -1,45 +1,43 @@
-import { apiClient } from "./api";
-import { API_ENDPOINTS } from "@/constants/api";
+import axios from "axios";
+
+const API_URL = "http://127.0.0.1:8000/api/blogs";
 
 export interface BlogPost {
   id: number;
   title: string;
   content: string;
-  excerpt?: string;
-  thumbnail_url?: string;
-  author?: {
-    id: number;
-    name: string;
-  };
-  category?: string;
-  is_published?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  image?: string;
+  user?: { name: string };
 }
 
+const getToken = () => localStorage.getItem("zse_training_token");
+
 export const blogService = {
-  getAllPosts: async (): Promise<BlogPost[]> => {
-    const response = await apiClient.get(API_ENDPOINTS.BLOG_POSTS);
-    return response.data.data || response.data;
+  getAllPosts: async () => {
+    const res = await axios.get(API_URL,{
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return res.data;
   },
 
-  getPostById: async (id: string | number): Promise<BlogPost> => {
-    const response = await apiClient.get(API_ENDPOINTS.BLOG_POST_DETAIL(id));
-    return response.data;
+  createPost: async (data: Omit<BlogPost, "id">) => {
+    const res = await axios.post(API_URL, data, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return res.data;
   },
 
-  createPost: async (postData: Partial<BlogPost>) => {
-    const response = await apiClient.post(API_ENDPOINTS.BLOG_POSTS, postData);
-    return response.data;
+  updatePost: async (id: number, data: Partial<BlogPost>) => {
+    const res = await axios.put(`${API_URL}/${id}`, data, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return res.data;
   },
 
-  updatePost: async (id: string | number, postData: Partial<BlogPost>) => {
-    const response = await apiClient.put(`${API_ENDPOINTS.BLOG_POSTS}/${id}`, postData);
-    return response.data;
-  },
-
-  deletePost: async (id: string | number) => {
-    const response = await apiClient.delete(`${API_ENDPOINTS.BLOG_POSTS}/${id}`);
-    return response.data;
+  deletePost: async (id: number) => {
+    const res = await axios.delete(`${API_URL}/${id}`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    return res.data;
   },
 };

@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { blogService, BlogPost } from "@/services/blog.service";
-import { Switch } from "@/components/ui/switch";
 
 const ManageBlog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -19,10 +19,7 @@ const ManageBlog = () => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    excerpt: "",
-    thumbnail_url: "",
-    category: "",
-    is_published: true,
+    image: "",
   });
 
   useEffect(() => {
@@ -33,6 +30,7 @@ const ManageBlog = () => {
     try {
       const data = await blogService.getAllPosts();
       setPosts(data);
+      console.log(data);
     } catch (error) {
       toast.error("Failed to fetch blog posts");
       console.error(error);
@@ -76,41 +74,36 @@ const ManageBlog = () => {
     setFormData({
       title: post.title,
       content: post.content,
-      excerpt: post.excerpt || "",
-      thumbnail_url: post.thumbnail_url || "",
-      category: post.category || "",
-      is_published: post.is_published ?? true,
+      image: post.image || "",
     });
     setIsDialogOpen(true);
   };
 
   const resetForm = () => {
-    setFormData({
-      title: "",
-      content: "",
-      excerpt: "",
-      thumbnail_url: "",
-      category: "",
-      is_published: true,
-    });
+    setFormData({ title: "", content: "", image: "" });
     setEditingPost(null);
   };
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.category?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPosts = posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
           Manage Blog Posts
         </h2>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => {
-          setIsDialogOpen(open);
-          if (!open) resetForm();
-        }}>
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) resetForm();
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="gap-2">
               <FontAwesomeIcon icon={faPlus} />
@@ -131,49 +124,46 @@ const ManageBlog = () => {
                   required
                 />
               </div>
-              <div>
-                <Label htmlFor="excerpt">Excerpt</Label>
-                <Textarea
-                  id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  rows={2}
-                />
-              </div>
+
               <div>
                 <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
+                <ReactQuill
+                  theme="snow"
                   value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  required
-                  rows={8}
+                  onChange={(value) => setFormData({ ...formData, content: value })}
+                  modules={{
+                    toolbar: [
+                      [{ header: [1, 2, 3, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      ["link", "image"],
+                      ["clean"],
+                    ],
+                  }}
+                  formats={[
+                    "header",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strike",
+                    "list",
+                    "bullet",
+                    "link",
+                    "image",
+                  ]}
+                  style={{ minHeight: "200px" }}
                 />
               </div>
+
               <div>
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="image">Image URL</Label>
                 <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  id="image"
+                  value={formData.image}
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 />
               </div>
-              <div>
-                <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
-                <Input
-                  id="thumbnail_url"
-                  value={formData.thumbnail_url}
-                  onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="is_published"
-                  checked={formData.is_published}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
-                />
-                <Label htmlFor="is_published">Published</Label>
-              </div>
+
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1">
                   {editingPost ? "Update Post" : "Create Post"}
@@ -194,16 +184,21 @@ const ManageBlog = () => {
         </Dialog>
       </div>
 
+      {/* Search Bar */}
       <div className="relative">
-        <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <FontAwesomeIcon
+          icon={faSearch}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
         <Input
-          placeholder="Search posts by title or category..."
+          placeholder="Search posts by title or content..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10"
         />
       </div>
 
+      {/* Posts List */}
       <div className="grid gap-4">
         {filteredPosts.map((post) => (
           <Card key={post.id} className="hover:shadow-lg transition-shadow">
@@ -211,49 +206,37 @@ const ManageBlog = () => {
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
-                  <div className="flex gap-2 flex-wrap">
-                    {post.category && (
-                      <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded">
-                        {post.category}
-                      </span>
-                    )}
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      post.is_published ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'
-                    }`}>
-                      {post.is_published ? 'Published' : 'Draft'}
-                    </span>
-                  </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleEdit(post)}
-                  >
+                  <Button variant="outline" size="icon" onClick={() => handleEdit(post)}>
                     <FontAwesomeIcon icon={faEdit} />
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => handleDelete(post.id)}
-                  >
+                  <Button variant="destructive" size="icon" onClick={() => handleDelete(post.id)}>
                     <FontAwesomeIcon icon={faTrash} />
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {post.excerpt && (
-                <p className="text-muted-foreground line-clamp-2">{post.excerpt}</p>
+              {post.image && (
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="rounded-md mb-3 max-h-40 object-cover w-full"
+                />
               )}
-              {post.author && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  By {post.author.name}
-                </p>
+              {/* Render HTML content safely */}
+              <div
+                className="text-muted-foreground line-clamp-3"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
+              {post.user && (
+                <p className="text-sm text-muted-foreground mt-2">By {post.user.name}</p>
               )}
             </CardContent>
           </Card>
         ))}
+
         {filteredPosts.length === 0 && (
           <Card>
             <CardContent className="py-8 text-center text-muted-foreground">

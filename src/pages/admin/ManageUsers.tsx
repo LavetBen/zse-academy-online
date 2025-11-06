@@ -5,35 +5,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUser, faBook } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from "@/components/ui/badge";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  created_at: string;
+interface Enrollment {
+  user_id: number;
+  user_name: string;
+  user_email: string;
+  course_id: number;
+  course_title: string;
+  course_description: string;
+  category_id?: number | null;
+  category_name?: string | null;
+  progress: number;
+  status: string;
+  enrolled_at: string;
 }
 
-const ManageUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
+const ManageEnrollments = () => {
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchUsers();
+    fetchEnrollments();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchEnrollments = async () => {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.ADMIN_USERS);
-      setUsers(response.data.data || response.data);
+      const response = await apiClient.get(API_ENDPOINTS.ADMIN_ENROLLMENTS);
+      setEnrollments(response.data.data || response.data);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to fetch users",
+        description: "Failed to fetch enrollments",
         variant: "destructive",
       });
     } finally {
@@ -41,27 +47,31 @@ const ManageUsers = () => {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEnrollments = enrollments.filter(
+    (enroll) =>
+      enroll.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      enroll.user_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      enroll.course_title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
-    return <div className="text-center py-8">Loading users...</div>;
+    return <div className="text-center py-8">Loading enrollments...</div>;
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Manage Users</CardTitle>
+        <CardTitle>Manage Enrollments</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
           <div className="relative">
-            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+            />
             <Input
-              placeholder="Search users..."
+              placeholder="Search enrollments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -70,8 +80,8 @@ const ManageUsers = () => {
         </div>
 
         <div className="space-y-4">
-          {filteredUsers.map((user) => (
-            <Card key={user.id}>
+          {filteredEnrollments.map((enroll) => (
+            <Card key={`${enroll.user_id}-${enroll.course_id}`}>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -79,16 +89,23 @@ const ManageUsers = () => {
                       <FontAwesomeIcon icon={faUser} className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">{user.name}</h3>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <h3 className="font-semibold">{enroll.user_name}</h3>
+                      <p className="text-sm text-muted-foreground">{enroll.user_email}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <FontAwesomeIcon icon={faBook} className="text-muted-foreground" />
+                        <span className="text-sm">{enroll.course_title}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                      {user.role || "user"}
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge variant={enroll.status === "active" ? "default" : "secondary"}>
+                      {enroll.status}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(user.created_at).toLocaleDateString()}
+                      Progress: {enroll.progress}%
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      Enrolled: {new Date(enroll.enrolled_at).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
@@ -96,9 +113,15 @@ const ManageUsers = () => {
             </Card>
           ))}
         </div>
+
+        {filteredEnrollments.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            No enrollments found
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 };
 
-export default ManageUsers;
+export default ManageEnrollments;
