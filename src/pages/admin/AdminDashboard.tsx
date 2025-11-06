@@ -26,7 +26,7 @@ const sidebarItems = [
   { icon: faBook, label: "Courses", key: "courses" },
   { icon: faUsers, label: "Students", key: "users" },
   { icon: faBookAtlas, label: "Blog", key: "Blog" },
-  { icon: faChartLine, label: "Analytics", key: "Analytics" }
+  { icon: faChartLine, label: "Analytics", key: "analytics" }
 ];
 
 const AdminDashboard = () => {
