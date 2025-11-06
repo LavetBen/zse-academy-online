@@ -61,4 +61,25 @@ export const courseService = {
     const response = await apiClient.get(API_ENDPOINTS.ADMIN_COURSES);
     return response.data;
   },
+
+  // Course Content Management
+  getCourseContent: async (courseId: string | number) => {
+    const response = await apiClient.get(API_ENDPOINTS.ADMIN_COURSE_CONTENT(courseId));
+    return response.data;
+  },
+
+  createCourseContent: async (courseId: string | number, contentData: any) => {
+    const response = await apiClient.post(API_ENDPOINTS.ADMIN_CREATE_CONTENT(courseId), contentData);
+    return response.data;
+  },
+
+  updateCourseContent: async (courseId: string | number, contentId: string | number, contentData: any) => {
+    const response = await apiClient.put(API_ENDPOINTS.ADMIN_UPDATE_CONTENT(courseId, contentId), contentData);
+    return response.data;
+  },
+
+  deleteCourseContent: async (courseId: string | number, contentId: string | number) => {
+    const response = await apiClient.delete(API_ENDPOINTS.ADMIN_DELETE_CONTENT(courseId, contentId));
+    return response.data;
+  },
 };

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { courseService, Course } from "@/services/course.service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faEdit, faTrash, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faEdit, faTrash, faSearch, faList } from "@fortawesome/free-solid-svg-icons";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const ManageCourses = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,7 +122,7 @@ const ManageCourses = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="bg-gradient-to-br from-card via-card to-muted/30 border-border/50 shadow-soft">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Manage Courses</CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -205,7 +207,7 @@ const ManageCourses = () => {
 
           <div className="space-y-4">
             {filteredCourses.map((course) => (
-              <Card key={course.id}>
+              <Card key={course.id} className="bg-gradient-to-br from-card to-accent/20 hover:shadow-medium transition-all">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -218,6 +220,14 @@ const ManageCourses = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => navigate(`/admin/courses/${course.id}/content`)}
+                        title="Manage Content"
+                      >
+                        <FontAwesomeIcon icon={faList} className="h-4 w-4" />
+                      </Button>
                       <Button size="sm" variant="outline" onClick={() => openEditDialog(course)}>
                         <FontAwesomeIcon icon={faEdit} className="h-4 w-4" />
                       </Button>

@@ -21,6 +21,12 @@ export const API_ENDPOINTS = {
   ADMIN_UPDATE_COURSE: (id: string | number) => `/admin/courses/${id}`,
   ADMIN_DELETE_COURSE: (id: string | number) => `/admin/courses/${id}`,
   
+  // Course Content endpoints
+  ADMIN_COURSE_CONTENT: (courseId: string | number) => `/admin/courses/${courseId}/content`,
+  ADMIN_CREATE_CONTENT: (courseId: string | number) => `/admin/courses/${courseId}/content`,
+  ADMIN_UPDATE_CONTENT: (courseId: string | number, contentId: string | number) => `/admin/courses/${courseId}/content/${contentId}`,
+  ADMIN_DELETE_CONTENT: (courseId: string | number, contentId: string | number) => `/admin/courses/${courseId}/content/${contentId}`,
+  
   // Blog endpoints
   BLOG_POSTS: "/blog",
   BLOG_POST_DETAIL: (id: string | number) => `/blog/${id}`,
