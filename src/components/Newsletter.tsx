@@ -29,11 +29,11 @@ export const Newsletter = () => {
   };
 
   return (
-    <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br font-poppins from-blue-50 via-white overflow-hidden">
+    <section className="relative py-16 bg-gradient-to-br font-poppins from-blue-50 via-white overflow-hidden">
       {/* Decorative background */}
       <div className="absolute inset-0 -z-10 bg-[url('https://www.toptal.com/designers/subtlepatterns/patterns/dots.png')] opacity-30"></div>
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="border-0  bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden">
           <CardContent className="p-6 sm:p-10 lg:p-14">
             <div className="grid lg:grid-cols-2 gap-10 items-center">

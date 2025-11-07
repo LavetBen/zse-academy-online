@@ -75,7 +75,7 @@ const features = [
 export const WhatWeOffer = () => {
   return (
     <section className="section-padding bg-white font-poppins">
-      <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-left">
           <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-2 text-left">
