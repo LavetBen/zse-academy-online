@@ -25,11 +25,7 @@ const Login = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate]);
+  // Don't auto-redirect on mount - let login handle it
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -45,7 +41,7 @@ const Login = () => {
         title: "Welcome back!",
         description: "Successfully logged in.",
       });
-      navigate("/dashboard");
+      // Don't auto-redirect, let user use the profile menu to go to dashboard
     } catch (error) {
       toast({
         title: "Login Failed",

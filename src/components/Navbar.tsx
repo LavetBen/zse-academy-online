@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faChevronDown, faUser, faGauge, faRightFromBracket, faUserShield } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "../assets/logo.png";
 
@@ -122,30 +130,45 @@ export const Navbar = () => {
                         size="sm"
                         className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
                       >
+                        <FontAwesomeIcon icon={faUserShield} className="mr-2 h-4 w-4" />
                         Admin
                       </Button>
                     </Link>
                   )}
-                  <Link to="/dashboard">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
-                    >
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Button
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
-                    size="sm"
-                    variant="outline"
-                    className="px-6 py-2 rounded-full border-red-500 text-red-500 hover:bg-red-500/10 hover:shadow-sm transition"
-                  >
-                    Logout
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
+                      >
+                        <FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" />
+                        <span className="hidden lg:inline">{user?.name || 'Account'}</span>
+                        <FontAwesomeIcon icon={faChevronDown} className="ml-2 h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/dashboard" className="flex items-center cursor-pointer">
+                          <FontAwesomeIcon icon={faGauge} className="mr-2 h-4 w-4" />
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          logout();
+                          navigate("/");
+                        }}
+                        className="cursor-pointer text-red-600 focus:text-red-600"
+                      >
+                        <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-4 w-4" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
                 <>
@@ -260,6 +283,7 @@ export const Navbar = () => {
                           className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
                           onClick={() => setIsOpen(false)}
                         >
+                          <FontAwesomeIcon icon={faUserShield} className="mr-2 h-4 w-4" />
                           Admin
                         </Button>
                       </Link>
@@ -271,6 +295,7 @@ export const Navbar = () => {
                         className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
                         onClick={() => setIsOpen(false)}
                       >
+                        <FontAwesomeIcon icon={faGauge} className="mr-2 h-4 w-4" />
                         Dashboard
                       </Button>
                     </Link>
@@ -284,6 +309,7 @@ export const Navbar = () => {
                       variant="outline"
                       className="w-full rounded-full border-red-500 text-red-500 hover:bg-red-500/10 transition"
                     >
+                      <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-4 w-4" />
                       Logout
                     </Button>
                   </div>

@@ -177,10 +177,12 @@ export const PopularTopics = () => {
         </div>
 
         {/* View All Button - Left Aligned */}
-        <div className="text-left mt-8 sm:mt-12">
-          <Button variant="outline" className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
-            View All Courses
-          </Button>
+        <div className="text-left mt-6">
+          <Link to="/courses" className="inline-block">
+            <Button variant="outline" className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
+              View All Courses
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
