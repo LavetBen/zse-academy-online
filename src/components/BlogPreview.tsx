@@ -9,7 +9,7 @@ const blogPosts = [
   {
     title: "Understanding ZSE Market Trends in 2024",
     excerpt: "Comprehensive analysis of current market trends and what they mean for investors in Zimbabwe's financial sector.",
-    author: "Dr. Sarah Mukamuri",
+    author: "Dr Mukamuri",
     date: "December 15, 2024",
     category: "Market Analysis",
     readTime: "5 min read",
@@ -18,7 +18,7 @@ const blogPosts = [
   {
     title: "Top 5 Investment Strategies for Beginners",
     excerpt: "Essential investment strategies every beginner should know before entering the Zimbabwe Stock Exchange.",
-    author: "James Chigumba",
+    author: "Dr Chigumba",
     date: "December 12, 2024",
     category: "Investment Tips",
     readTime: "7 min read",
@@ -27,7 +27,7 @@ const blogPosts = [
   {
     title: "Risk Management in Volatile Markets",
     excerpt: "Learn how to protect your investments during market uncertainty with proven risk management techniques.",
-    author: "Prof. Michael Tendai",
+    author: "Prof Tendai",
     date: "December 10, 2024",
     category: "Risk Management",
     readTime: "6 min read",
