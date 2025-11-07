@@ -71,7 +71,7 @@ export const PopularTopics = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header - Left Aligned */}
         <div className="mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium mb-3">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-sm text-xs font-medium mb-3">
             <FontAwesomeIcon icon={faStar} className="h-3 w-3" />
             Most Popular Courses
           </div>
@@ -88,7 +88,7 @@ export const PopularTopics = () => {
           {allTopics.map((topic) => (
             <Card 
               key={topic.id} 
-              className="group bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 hover:border-primary/20 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="group bg-white rounded-lg overflow-hidden border border-gray-200 hover:border-primary/20 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             >
               {/* Course Image with Gradient Overlay */}
               <div className="relative overflow-hidden">
@@ -101,7 +101,7 @@ export const PopularTopics = () => {
                 
                 {/* Badge */}
                 {topic.badge && (
-                  <span className={`absolute top-3 left-3 ${getBadgeColor(topic.badge)} text-white text-xs px-2 py-1 rounded-full font-semibold`}>
+                  <span className={`absolute top-3 left-3 ${getBadgeColor(topic.badge)} text-white text-xs px-2 py-1 rounded-sm font-semibold`}>
                     {topic.badge}
                   </span>
                 )}
@@ -111,7 +111,7 @@ export const PopularTopics = () => {
               <div className="p-4 sm:p-6">
                 {/* Level Badge */}
                 <div className="flex justify-between items-start mb-2 sm:mb-3">
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
+                  <span className={`inline-block px-2 py-1 rounded-sm text-xs font-semibold ${
                     topic.level === "Beginner" ? "bg-green-100 text-green-600" :
                     topic.level === "Intermediate" ? "bg-blue-100 text-blue-600" :
                     "bg-purple-100 text-purple-600"
@@ -150,7 +150,7 @@ export const PopularTopics = () => {
                 </div>
 
                 {/* Meta Information */}
-                <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
+                <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mb-4">
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className="flex items-center gap-1">
                       <FontAwesomeIcon icon={faUsers} className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -163,13 +163,10 @@ export const PopularTopics = () => {
                   </div>
                 </div>
 
-                {/* Footer */}
-                <div className="flex justify-between items-center pt-3 sm:pt-4 border-t border-gray-100">
-                  <div className="text-left">
-                    <span className="text-lg sm:text-xl font-bold text-secondary">Free</span>
-                  </div>
-                  <Link to={`/courses/${topic.id}`} className="flex-1 max-w-[120px] sm:max-w-[140px]">
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all duration-300 hover:shadow-lg text-xs sm:text-sm">
+                {/* Enroll Now Button - Aligned in card body */}
+                <div className="mt-4">
+                  <Link to={`/courses/${topic.id}`}>
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg text-sm">
                       Enroll Now
                     </Button>
                   </Link>
@@ -181,7 +178,7 @@ export const PopularTopics = () => {
 
         {/* View All Button - Left Aligned */}
         <div className="text-left mt-8 sm:mt-12">
-          <Button variant="outline" className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
+          <Button variant="outline" className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
             View All Courses
           </Button>
         </div>
