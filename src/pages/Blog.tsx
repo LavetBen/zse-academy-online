@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -17,119 +17,214 @@ import {
   faTag,
   faFire,
   faChartLine,
-  faNewspaper
+  faNewspaper,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "Understanding ZSE Market Trends in 2024",
-    excerpt: "Comprehensive analysis of current market trends and what they mean for investors in Zimbabwe's financial sector. Explore the latest developments and future outlook.",
-    author: "Dr. Sarah Mukamuri",
-    date: "December 15, 2024",
-    category: "Market Analysis",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop",
-    featured: true,
-    tags: ["ZSE", "Market Trends", "Analysis", "2024"]
-  },
-  {
-    id: 2,
-    title: "Top 5 Investment Strategies for Beginners",
-    excerpt: "Essential investment strategies every beginner should know before entering the Zimbabwe Stock Exchange. Learn from the experts and start your journey.",
-    author: "James Chigumba",
-    date: "December 12, 2024",
-    category: "Investment Tips",
-    readTime: "7 min read",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop",
-    featured: false,
-    tags: ["Investment", "Beginners", "Strategy", "Tips"]
-  },
-  {
-    id: 3,
-    title: "Risk Management in Volatile Markets",
-    excerpt: "Learn how to protect your investments during market uncertainty with proven risk management techniques. Essential knowledge for every investor.",
-    author: "Prof. Michael Tendai",
-    date: "December 10, 2024",
-    category: "Risk Management",
-    readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&h=400&fit=crop",
-    featured: false,
-    tags: ["Risk Management", "Volatility", "Protection", "Markets"]
-  },
-  {
-    id: 4,
-    title: "Digital Banking Revolution in Zimbabwe",
-    excerpt: "How digital banking is transforming the financial landscape in Zimbabwe and what it means for investors and businesses moving forward.",
-    author: "Chipo Madziva",
-    date: "December 8, 2024",
-    category: "Fintech",
-    readTime: "8 min read",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop",
-    featured: false,
-    tags: ["Digital Banking", "Fintech", "Zimbabwe", "Innovation"]
-  },
-  {
-    id: 5,
-    title: "Currency Dynamics and Investment Impact",
-    excerpt: "Understanding how currency fluctuations affect investment decisions in the Zimbabwean context. A comprehensive guide for investors.",
-    author: "Robert Mapfumo",
-    date: "December 5, 2024",
-    category: "Currency Analysis",
-    readTime: "9 min read",
-    image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=600&h=400&fit=crop",
-    featured: false,
-    tags: ["Currency", "Investment", "Analysis", "Economics"]
-  },
-  {
-    id: 6,
-    title: "Sustainable Investing in African Markets",
-    excerpt: "The rise of ESG investing in Africa and how Zimbabwe is positioning itself in the sustainable investment landscape.",
-    author: "Dr. Patience Gombe",
-    date: "December 3, 2024",
-    category: "Sustainable Finance",
-    readTime: "10 min read",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop",
-    featured: false,
-    tags: ["ESG", "Sustainable", "Africa", "Investment"]
-  }
-];
+// Types based on your Laravel API response
+interface BlogPost {
+  id: number;
+  user_id: number;
+  title: string;
+  content: string;
+  image: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  excerpt?: string;
+  category?: string;
+  read_time?: string;
+  tags?: string[];
+  featured?: boolean;
+}
 
 const categories = ["All", "Market Analysis", "Investment Tips", "Risk Management", "Fintech", "Currency Analysis", "Sustainable Finance"];
 
 const Blog = () => {
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  // Fetch blog posts from Laravel API
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        console.log('Fetching blog posts from API...');
+        const response = await fetch('http://127.0.0.1:8000/api/public/blogs');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('API Response:', data); // Debug log
+        
+        // The response is an array directly, not nested under data.data
+        const posts = Array.isArray(data) ? data : data.data || data;
+        
+        // Transform the API data to match our frontend structure
+        const transformedPosts = posts.map((post: any) => ({
+          id: post.id,
+          user_id: post.user_id,
+          title: post.title,
+          content: post.content,
+          image: post.image || getFallbackImage(post.id),
+          created_at: post.created_at,
+          updated_at: post.updated_at,
+          author: post.user ? { name: post.user.name, email: post.user.email } : { name: "Anonymous Author", email: "" },
+          excerpt: generateExcerpt(post.content),
+          category: getRandomCategory(),
+          read_time: calculateReadTime(post.content),
+          tags: generateTags(post.title),
+          featured: post.id === 1 // Make first post featured, or use your own logic
+        }));
+        
+        console.log('Transformed posts:', transformedPosts); // Debug log
+        setBlogPosts(transformedPosts);
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+        setError('Failed to load blog posts. Please try again later.');
+        
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
+  // Helper functions to transform API data
+  const generateExcerpt = (content: string, maxLength: number = 150) => {
+    // Remove HTML tags for excerpt
+    const plainText = content.replace(/<[^>]*>/g, '');
+    if (plainText.length <= maxLength) return plainText;
+    return plainText.substring(0, maxLength) + '...';
+  };
+
+  const calculateReadTime = (content: string) => {
+    // Remove HTML tags for word count
+    const plainText = content.replace(/<[^>]*>/g, '');
+    const wordsPerMinute = 200;
+    const words = plainText.split(/\s+/).length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return `${minutes} min read`;
+  };
+
+  const getRandomCategory = () => {
+    const categories = ["Market Analysis", "Investment Tips", "Risk Management", "Fintech", "Currency Analysis"];
+    return categories[Math.floor(Math.random() * categories.length)];
+  };
+
+  const generateTags = (title: string) => {
+    const words = title.split(/\s+/).slice(0, 3);
+    return words.map(word => word.replace(/[^\w]/g, ''));
+  };
+
+  const getFallbackImage = (id: number) => {
+    const fallbackImages = [
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop"
+    ];
+    return fallbackImages[id % fallbackImages.length];
+  };
+
+ 
+
+  // Filter posts based on search and category
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+                         post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const featuredPost = blogPosts.find(post => post.featured);
+  const featuredPost = filteredPosts.find(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured);
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Invalid date';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background font-poppins">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <FontAwesomeIcon 
+              icon={faSpinner} 
+              className="h-12 w-12 text-primary animate-spin mb-4" 
+            />
+            <h3 className="text-xl font-semibold mb-2">Loading Blog Posts</h3>
+            <p className="text-muted-foreground">Fetching the latest articles...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error && blogPosts.length === 0) {
+    return (
+      <div className="min-h-screen bg-background font-poppins">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <FontAwesomeIcon 
+              icon={faNewspaper} 
+              className="h-16 w-16 text-muted-foreground mb-4" 
+            />
+            <h3 className="text-xl font-semibold mb-2">Unable to Load Blog</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background font-poppins">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-6">
-            <div className="flex items-center justify-center space-x-2 text-primary">
-              <FontAwesomeIcon icon={faNewspaper} className="h-8 w-8" />
-              <h1 className="text-4xl sm:text-5xl font-bold">
-                ZSE Academy Blog
-              </h1>
-            </div>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Stay informed with the latest insights, market analysis, and expert opinions on Zimbabwe's financial markets and investment opportunities.
-            </p>
+      <section className="relative py-20 bg-gradient-to-br from-primary/5 to-primary/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="flex justify-center mb-6">
+            <FontAwesomeIcon icon={faNewspaper} className="h-16 w-16 text-primary" />
           </div>
+          <h3 className="text-4xl md:text-6xl font-bold mb-6">
+            Financial Insights
+            <span className="block text-primary mt-2">Blog</span>
+          </h3>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            Stay updated with the latest market analysis, investment strategies, and financial trends in Zimbabwe
+          </p>
         </div>
       </section>
 
@@ -159,6 +254,13 @@ const Blog = () => {
               </SelectContent>
             </Select>
           </div>
+          {error && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800 text-sm">
+                <strong>Note:</strong> {error} Showing available content.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -175,9 +277,13 @@ const Blog = () => {
               <div className="grid lg:grid-cols-2">
                 <div className="aspect-video lg:aspect-auto">
                   <img
-                    src={featuredPost.image}
+                    src={featuredPost.image || getFallbackImage(featuredPost.id)}
                     alt={featuredPost.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback if image fails to load
+                      e.currentTarget.src = getFallbackImage(featuredPost.id);
+                    }}
                   />
                 </div>
                 <div className="p-8 flex flex-col justify-center">
@@ -202,15 +308,15 @@ const Blog = () => {
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="flex items-center space-x-1">
                           <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
-                          <span>{featuredPost.author}</span>
+                          <span>{featuredPost.author?.name}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <FontAwesomeIcon icon={faCalendar} className="h-4 w-4" />
-                          <span>{featuredPost.date}</span>
+                          <span>{formatDate(featuredPost.created_at)}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <FontAwesomeIcon icon={faClock} className="h-4 w-4" />
-                          <span>{featuredPost.readTime}</span>
+                          <span>{featuredPost.read_time}</span>
                         </div>
                       </div>
                     </div>
@@ -257,9 +363,13 @@ const Blog = () => {
                 <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 group">
                   <div className="aspect-video overflow-hidden">
                     <img
-                      src={post.image}
+                      src={post.image || getFallbackImage(post.id)}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        // Fallback if image fails to load
+                        e.currentTarget.src = getFallbackImage(post.id);
+                      }}
                     />
                   </div>
                   <CardHeader>
@@ -269,7 +379,7 @@ const Blog = () => {
                       </Badge>
                       <span className="text-sm text-muted-foreground flex items-center">
                         <FontAwesomeIcon icon={faClock} className="h-3 w-3 mr-1" />
-                        {post.readTime}
+                        {post.read_time}
                       </span>
                     </div>
                     <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
@@ -284,23 +394,25 @@ const Blog = () => {
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="flex items-center space-x-1">
                           <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
-                          <span>{post.author}</span>
+                          <span>{post.author?.name}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <FontAwesomeIcon icon={faCalendar} className="h-4 w-4" />
-                          <span>{post.date}</span>
+                          <span>{formatDate(post.created_at)}</span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {post.tags.slice(0, 3).map((tag, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          <FontAwesomeIcon icon={faTag} className="h-2 w-2 mr-1" />
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {post.tags.slice(0, 3).map((tag, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            <FontAwesomeIcon icon={faTag} className="h-2 w-2 mr-1" />
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                     
                     <Button 
                       variant="outline" 
