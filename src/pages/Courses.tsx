@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faClock, 
@@ -224,73 +223,12 @@ const Courses = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         
-        {/* Header Section Skeleton */}
-        <section className="bg-white border-b">
-          <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-32" />
-                <Skeleton className="h-4 w-64" />
-              </div>
-            </div>
-            <div className="mt-6">
-              <Skeleton className="h-4 w-32 mb-3" />
-              <div className="flex flex-wrap gap-2">
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} className="h-8 w-24" />
-                ))}
-              </div>
-            </div>
+        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex justify-center items-center py-12">
+            <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-primary animate-spin" />
+            <span className="ml-2 text-lg">Loading courses...</span>
           </div>
-        </section>
-
-        {/* Filters Section Skeleton */}
-        <section className="py-6 bg-accent/30">
-          <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <Skeleton className="h-10 flex-1 max-w-md" />
-              <div className="flex gap-4">
-                <Skeleton className="h-10 w-40" />
-                <Skeleton className="h-10 w-48" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Courses Grid Skeleton */}
-        <section className="section-padding">
-          <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, index) => (
-                <Card key={index} className="overflow-hidden border border-gray-200">
-                  <Skeleton className="aspect-video w-full" />
-                  <div className="p-5 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Skeleton className="h-5 w-24" />
-                      <Skeleton className="h-5 w-20" />
-                    </div>
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <div className="space-y-2">
-                      {[...Array(4)].map((_, i) => (
-                        <div key={i} className="flex justify-between">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-4 w-16" />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-9 w-24" />
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-        
+        </div>
         <Footer />
       </div>
     );
@@ -300,7 +238,7 @@ const Courses = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-     
+   
 
       {/* Header Section */}
       <section className="bg-white border-b">

@@ -61,7 +61,7 @@ export const Navbar = () => {
               <img
                 src={logo}
                 alt="Logo"
-                className="h-14 w-14 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
+                className="h-10 w-20 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
               />
             </Link>
           </div>
