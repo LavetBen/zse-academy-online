@@ -19,8 +19,10 @@ import {
   faXmark,
   faChevronRight,
   faGraduationCap,
-  faCog,faBookAtlas
+  faCog,
+  faBookAtlas
 } from "@fortawesome/free-solid-svg-icons";
+import logo from "@/assets/logo.png"; // Import the logo
 
 const sidebarItems = [
   { icon: faHome, label: "Dashboard", key: "dashboard" },
@@ -74,10 +76,12 @@ const AdminDashboard = () => {
                 className="h-5 w-5 text-foreground" 
               />
             </Button>
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-lg text-secondary">ZSE Admin</span>
+            <img 
+              src={logo} 
+              alt="ZSE Logo" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className="font-bold text-lg text-secondary">Admin</span>
           </div>
           
           <Badge variant="secondary" className="bg-destructive/10 text-destructive text-xs">
@@ -103,21 +107,33 @@ const AdminDashboard = () => {
         <div className="p-4 h-full flex flex-col">
           {/* Desktop Logo & Toggle */}
           <div className="hidden lg:flex items-center space-x-3 mb-8">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <img 
+              src={logo} 
+              alt="ZSE Logo" 
+              className={`object-contain transition-all duration-300 ${
+                sidebarCollapsed ? "h-12 w-12" : "h-14 w-14"
+              }`}
+            />
             {!sidebarCollapsed && (
-              <span className="font-bold text-lg text-secondary">ZSE Admin</span>
+              <div className="flex flex-col">
+               
+                <span className="text-xs text-muted-foreground leading-tight">Admin Panel</span>
+              </div>
             )}
           </div>
 
           {/* Mobile Header in Sidebar */}
           <div className="lg:hidden flex items-center justify-between mb-6 pb-4 border-b border-border">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
+              <img 
+                src={logo} 
+                alt="ZSE Logo" 
+                className="h-12 w-12 object-contain"
+              />
+              <div className="flex flex-col">
+               
+                <span className="text-xs text-muted-foreground leading-tight">Admin Panel</span>
               </div>
-              <span className="font-bold text-lg text-secondary">ZSE Admin</span>
             </div>
             <Button
               variant="ghost"
@@ -197,9 +213,16 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
-            <Badge variant="secondary" className="bg-destructive/10 text-destructive">
-              Admin Access
-            </Badge>
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="bg-destructive/10 text-destructive">
+                Admin Access
+              </Badge>
+              <img 
+                src={logo} 
+                alt="ZSE Logo" 
+                className="h-10 w-10 object-contain"
+              />
+            </div>
           </div>
         </header>
 
