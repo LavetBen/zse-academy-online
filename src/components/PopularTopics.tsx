@@ -12,7 +12,8 @@ import {
   faUsers, 
   faClock, 
   faChartLine,
-  faSpinner 
+  faSpinner,
+  faArrowRight
 } from "@fortawesome/free-solid-svg-icons";
 
 interface Category {
@@ -380,12 +381,17 @@ export const PopularTopics = () => {
           })}
         </div>
 
-        {/* View All Button - Left Aligned */}
+        {/* View All Courses Link */}
         <div className="text-left mt-6">
-          <Link to="/courses" className="inline-block">
-            <Button variant="outline" className="px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-lg font-semibold border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300">
-              View All Courses
-            </Button>
+          <Link 
+            to="/courses"
+            className="inline-flex items-center text-primary hover:text-primary/80 transition-all group font-medium text-lg story-link"
+          >
+            View All Courses
+            <FontAwesomeIcon 
+              icon={faArrowRight} 
+              className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" 
+            />
           </Link>
         </div>
       </div>

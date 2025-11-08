@@ -141,14 +141,18 @@ export const BlogPreview = () => {
           </div>
         )}
 
-        {/* View All Blogs Button */}
+        {/* View All Blogs Link */}
         <div className="text-center mt-12">
-          <Button asChild variant="outline" size="lg" className="border-2 border-primary text-primary hover:bg-primary hover:text-white">
-            <Link to="/blog" className="flex items-center">
-              View All Blog Posts
-              <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+          <Link 
+            to="/blog" 
+            className="inline-flex items-center text-primary hover:text-primary/80 transition-all group font-medium text-lg story-link"
+          >
+            View All Blog Posts
+            <FontAwesomeIcon 
+              icon={faArrowRight} 
+              className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" 
+            />
+          </Link>
         </div>
       </div>
     </section>
