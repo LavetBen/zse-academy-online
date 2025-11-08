@@ -16,25 +16,8 @@ import {
   faShare,
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
-
-interface BlogPost {
-  id: number;
-  user_id: number;
-  title: string;
-  content: string;
-  image: string | null;
-  created_at: string;
-  updated_at: string;
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-  excerpt?: string;
-  category?: string;
-  read_time?: string;
-  tags?: string[];
-}
+import { blogService, type BlogPost } from "@/services/blog.service";
+import { transformBlogPost, formatDate, getFallbackImage } from "@/utils/blogHelpers";
 
 const BlogPost = () => {
   const { id } = useParams();
@@ -43,45 +26,17 @@ const BlogPost = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch blog post from Laravel API
+  // Fetch blog post
   useEffect(() => {
     const fetchBlogPost = async () => {
+      if (!id) return;
       try {
         setLoading(true);
         setError(null);
-        
-        console.log('Fetching blog post from API...');
-        const response = await fetch(`http://127.0.0.1:8000/api/public/blogs/${id}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('API Response:', data); // Debug log
-        
-        // Transform the API data
-        const transformedPost = {
-          id: data.id,
-          user_id: data.user_id,
-          title: data.title,
-          content: data.content,
-          image: data.image || getFallbackImage(data.id),
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          author: data.user ? { name: data.user.name, email: data.user.email } : { name: "Anonymous Author", email: "" },
-          excerpt: generateExcerpt(data.content),
-          category: getRandomCategory(),
-          read_time: calculateReadTime(data.content),
-          tags: generateTags(data.title),
-        };
-        
-        console.log('Transformed post:', transformedPost); // Debug log
+        const data = await blogService.getPostById(id);
+        const transformedPost = transformBlogPost(data);
         setPost(transformedPost);
-        
-        // Fetch related posts (you might want to create a separate API endpoint for this)
         fetchRelatedPosts(transformedPost);
-        
       } catch (err) {
         console.error('Error fetching blog post:', err);
         setError('Failed to load blog post. Please try again later.');
@@ -89,94 +44,19 @@ const BlogPost = () => {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchBlogPost();
-    }
+    fetchBlogPost();
   }, [id]);
-
-  // Helper functions to transform API data
-  const generateExcerpt = (content: string, maxLength: number = 150) => {
-    // Remove HTML tags for excerpt
-    const plainText = content.replace(/<[^>]*>/g, '');
-    if (plainText.length <= maxLength) return plainText;
-    return plainText.substring(0, maxLength) + '...';
-  };
-
-  const calculateReadTime = (content: string) => {
-    // Remove HTML tags for word count
-    const plainText = content.replace(/<[^>]*>/g, '');
-    const wordsPerMinute = 200;
-    const words = plainText.split(/\s+/).length;
-    const minutes = Math.ceil(words / wordsPerMinute);
-    return `${minutes} min read`;
-  };
-
-  const getRandomCategory = () => {
-    const categories = ["Market Analysis", "Investment Tips", "Risk Management", "Fintech", "Currency Analysis"];
-    return categories[Math.floor(Math.random() * categories.length)];
-  };
-
-  const generateTags = (title: string) => {
-    const words = title.split(/\s+/).slice(0, 3);
-    return words.map(word => word.replace(/[^\w]/g, ''));
-  };
-
-  const getFallbackImage = (id: number) => {
-    const fallbackImages = [
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop"
-    ];
-    return fallbackImages[id % fallbackImages.length];
-  };
 
   const fetchRelatedPosts = async (currentPost: BlogPost) => {
     try {
-      // Fetch all posts and filter for related ones
-      const response = await fetch('http://127.0.0.1:8000/api/blogs');
-      if (response.ok) {
-        const data = await response.json();
-        const posts = Array.isArray(data) ? data : data.data || data;
-        
-        // Filter out current post and take first 3 as related
-        const related = posts
-          .filter((p: any) => p.id !== currentPost.id)
-          .slice(0, 3)
-          .map((post: any) => ({
-            id: post.id,
-            user_id: post.user_id,
-            title: post.title,
-            content: post.content,
-            image: post.image || getFallbackImage(post.id),
-            created_at: post.created_at,
-            updated_at: post.updated_at,
-            author: post.user ? { name: post.user.name, email: post.user.email } : { name: "Anonymous Author", email: "" },
-            excerpt: generateExcerpt(post.content),
-            category: getRandomCategory(),
-            read_time: calculateReadTime(post.content),
-            tags: generateTags(post.title),
-          }));
-        
-        setRelatedPosts(related);
-      }
+      const data = await blogService.getPublicPosts();
+      const related = data
+        .filter((p: any) => p.id !== currentPost.id)
+        .slice(0, 3)
+        .map(transformBlogPost);
+      setRelatedPosts(related);
     } catch (error) {
       console.error('Error fetching related posts:', error);
-    }
-  };
-
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch (error) {
-      return 'Invalid date';
     }
   };
 

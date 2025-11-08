@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faChevronDown, faUser, faGauge, faRightFromBracket, faUserShield } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faChevronDown, faUser, faGauge, faRightFromBracket, faUserShield, faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "../assets/logo.png";
 
@@ -49,6 +49,11 @@ export const Navbar = () => {
 
   const toggleDropdown = (name: string) => {
     setActiveDropdown(activeDropdown === name ? null : name);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
 
   return (
@@ -159,8 +164,7 @@ export const Navbar = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         onClick={() => {
-                          logout();
-                          navigate("/");
+                          handleLogout();
                         }}
                         className="cursor-pointer text-red-600 focus:text-red-600"
                       >
@@ -194,8 +198,68 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile menu button + Auth Icons */}
+          <div className="md:hidden flex items-center space-x-2">
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                  >
+                    <FontAwesomeIcon icon={faUser} className="h-5 w-5 text-[#00aeef]" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="flex items-center cursor-pointer">
+                      <FontAwesomeIcon icon={faGauge} className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  {user?.role === "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center cursor-pointer">
+                        <FontAwesomeIcon icon={faUserShield} className="mr-2 h-4 w-4" />
+                        Admin
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                  >
+                    <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                  >
+                    <FontAwesomeIcon icon={faSignInAlt} className="h-5 w-5 text-[#00aeef]" />
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button
+                    size="icon"
+                    className="h-9 w-9 bg-[#00aeef] hover:bg-[#0095cc]"
+                  >
+                    <FontAwesomeIcon icon={faUserPlus} className="h-5 w-5" />
+                  </Button>
+                </Link>
+              </>
+            )}
+            
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg text-gray-600 hover:text-[#00aeef] hover:bg-gray-100 transition-colors"
@@ -301,8 +365,7 @@ export const Navbar = () => {
                     </Link>
                     <Button
                       onClick={() => {
-                        logout();
-                        navigate("/");
+                        handleLogout();
                         setIsOpen(false);
                       }}
                       size="sm"

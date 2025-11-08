@@ -20,27 +20,8 @@ import {
   faNewspaper,
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
-
-// Types based on your Laravel API response
-interface BlogPost {
-  id: number;
-  user_id: number;
-  title: string;
-  content: string;
-  image: string | null;
-  created_at: string;
-  updated_at: string;
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-  excerpt?: string;
-  category?: string;
-  read_time?: string;
-  tags?: string[];
-  featured?: boolean;
-}
+import { blogService, BlogPost } from "@/services/blog.service";
+import { transformBlogPost, formatDate, getFallbackImage } from "@/utils/blogHelpers";
 
 const categories = ["All", "Market Analysis", "Investment Tips", "Risk Management", "Fintech", "Currency Analysis", "Sustainable Finance"];
 
@@ -51,93 +32,27 @@ const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Fetch blog posts from Laravel API
+  // Fetch blog posts
   useEffect(() => {
     const fetchBlogPosts = async () => {
       try {
         setLoading(true);
         setError(null);
-        
-        console.log('Fetching blog posts from API...');
-        const response = await fetch('http://127.0.0.1:8000/api/public/blogs');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('API Response:', data); // Debug log
-        
-        // The response is an array directly, not nested under data.data
-        const posts = Array.isArray(data) ? data : data.data || data;
-        
-        // Transform the API data to match our frontend structure
-        const transformedPosts = posts.map((post: any) => ({
-          id: post.id,
-          user_id: post.user_id,
-          title: post.title,
-          content: post.content,
-          image: post.image || getFallbackImage(post.id),
-          created_at: post.created_at,
-          updated_at: post.updated_at,
-          author: post.user ? { name: post.user.name, email: post.user.email } : { name: "Anonymous Author", email: "" },
-          excerpt: generateExcerpt(post.content),
-          category: getRandomCategory(),
-          read_time: calculateReadTime(post.content),
-          tags: generateTags(post.title),
-          featured: post.id === 1 // Make first post featured, or use your own logic
+        const data = await blogService.getPublicPosts();
+        const transformedPosts = data.map((post, index) => ({
+          ...transformBlogPost(post),
+          featured: index === 0
         }));
-        
-        console.log('Transformed posts:', transformedPosts); // Debug log
         setBlogPosts(transformedPosts);
       } catch (err) {
         console.error('Error fetching blog posts:', err);
         setError('Failed to load blog posts. Please try again later.');
-        
       } finally {
         setLoading(false);
       }
     };
-
     fetchBlogPosts();
   }, []);
-
-  // Helper functions to transform API data
-  const generateExcerpt = (content: string, maxLength: number = 150) => {
-    // Remove HTML tags for excerpt
-    const plainText = content.replace(/<[^>]*>/g, '');
-    if (plainText.length <= maxLength) return plainText;
-    return plainText.substring(0, maxLength) + '...';
-  };
-
-  const calculateReadTime = (content: string) => {
-    // Remove HTML tags for word count
-    const plainText = content.replace(/<[^>]*>/g, '');
-    const wordsPerMinute = 200;
-    const words = plainText.split(/\s+/).length;
-    const minutes = Math.ceil(words / wordsPerMinute);
-    return `${minutes} min read`;
-  };
-
-  const getRandomCategory = () => {
-    const categories = ["Market Analysis", "Investment Tips", "Risk Management", "Fintech", "Currency Analysis"];
-    return categories[Math.floor(Math.random() * categories.length)];
-  };
-
-  const generateTags = (title: string) => {
-    const words = title.split(/\s+/).slice(0, 3);
-    return words.map(word => word.replace(/[^\w]/g, ''));
-  };
-
-  const getFallbackImage = (id: number) => {
-    const fallbackImages = [
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop"
-    ];
-    return fallbackImages[id % fallbackImages.length];
-  };
 
  
 
@@ -152,20 +67,6 @@ const Blog = () => {
 
   const featuredPost = filteredPosts.find(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured);
-
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch (error) {
-      return 'Invalid date';
-    }
-  };
 
   if (loading) {
     return (

@@ -1,43 +1,59 @@
-import axios from "axios";
-
-const API_URL = "http://127.0.0.1:8000/api/blogs";
+import { apiClient } from "./api";
+import { API_ENDPOINTS } from "@/constants/api";
 
 export interface BlogPost {
   id: number;
+  user_id: number;
   title: string;
   content: string;
-  image?: string;
-  user?: { name: string };
+  image: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  author?: { name: string; email: string };
+  excerpt?: string;
+  category?: string;
+  read_time?: string;
+  tags?: string[];
+  featured?: boolean;
 }
 
-const getToken = () => localStorage.getItem("zse_training_token");
-
 export const blogService = {
-  getAllPosts: async () => {
-    const res = await axios.get(API_URL,{
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  getAllPosts: async (): Promise<BlogPost[]> => {
+    const res = await apiClient.get(API_ENDPOINTS.BLOGS);
     return res.data;
   },
 
-  createPost: async (data: Omit<BlogPost, "id">) => {
-    const res = await axios.post(API_URL, data, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  getPublicPosts: async (): Promise<BlogPost[]> => {
+    const res = await apiClient.get("/public/blogs");
     return res.data;
   },
 
-  updatePost: async (id: number, data: Partial<BlogPost>) => {
-    const res = await axios.put(`${API_URL}/${id}`, data, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  getLatestPosts: async (): Promise<BlogPost[]> => {
+    const res = await apiClient.get("/blogs/latest");
     return res.data;
   },
 
-  deletePost: async (id: number) => {
-    const res = await axios.delete(`${API_URL}/${id}`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+  getPostById: async (id: string | number): Promise<BlogPost> => {
+    const res = await apiClient.get(`/public/blogs/${id}`);
     return res.data;
+  },
+
+  createPost: async (data: Omit<BlogPost, "id" | "user_id" | "created_at" | "updated_at">): Promise<BlogPost> => {
+    const res = await apiClient.post(API_ENDPOINTS.BLOG_CREATE, data);
+    return res.data;
+  },
+
+  updatePost: async (id: number, data: Partial<BlogPost>): Promise<BlogPost> => {
+    const res = await apiClient.put(API_ENDPOINTS.BLOG_UPDATE(id), data);
+    return res.data;
+  },
+
+  deletePost: async (id: number): Promise<void> => {
+    await apiClient.delete(API_ENDPOINTS.BLOG_DELETE(id));
   },
 };
