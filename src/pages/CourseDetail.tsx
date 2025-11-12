@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,11 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faXmark, 
-  faChevronRight, 
-  faPlay, 
-  faUsers, 
+import {
+  faXmark,
+  faChevronRight,
+  faChevronLeft,
+  faPlay,
+  faUsers,
   faAward,
   faList,
   faUser,
@@ -23,179 +24,761 @@ import {
   faHeart,
   faClock,
   faArrowTrendUp,
-  faDownload
+  faDownload,
+  faCheck,
+  faForward,
+  faBackward,
+  faExternalLink,
+  faVideo,
+  faExclamationTriangle,
+  faRefresh,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  Star,
-  Clock,
-  Users,
-  Play,
-  CheckCircle,
-  Globe,
-  Award,
-  FileText,
-  BookOpen,
-  Download,
-  ChevronRight,
-  Heart,
-  BarChart3,
-  Code,
-  Terminal,
-  Sparkles,
-  Calendar,
-  X,
-  TrendingUp,
-  Building,
-  Banknote,
-  ChartNoAxesCombined,
-  List,
-  User,
-} from "lucide-react";
+import { Star, BookOpen } from "lucide-react";
 
-const courses = [
-  {
-    id: 1,
-    title: "Zimbabwe Stock Exchange: Complete Trading & Investment Course",
-    description:
-      "Master stock market trading on the Zimbabwe Stock Exchange. Learn fundamental and technical analysis, portfolio management, and trading strategies tailored to the Zimbabwean market.",
-    instructor: "Tendai Moyo",
-    instructorTitle: "Chief Analyst at Harare Capital Markets",
-    instructorAvatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    duration: "8 weeks",
-    students: 12453,
-    rating: 4.7,
-    reviewCount: 2850,
-    level: "Beginner to Advanced",
-    originalPrice: "$199.99",
-    price: "$149.99",
-    discount: "25% off",
-    category: "Finance & Trading",
-    language: "English",
-    certificate: true,
-    projects: 15,
-    articles: 42,
-    downloadableResources: 65,
-    lastUpdated: "10/2024",
-    image:
-      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop",
-    // Add sample videos for the course preview with YouTube IDs
-    sampleVideos: [
-      {
-        title: "Introduction to Zimbabwe Stock Exchange",
-        duration: "04:15",
-        youtubeId: "lc0upwOb7q4"
-      },
-      {
-        title: "Understanding ZSE Listed Companies",
-        duration: "05:32",
-        youtubeId: "lc0upwOb7q4"
-      },
-      {
-        title: "Trading Strategies for Zimbabwean Market",
-        duration: "06:45",
-        youtubeId: "lc0upwOb7q4"
+// Define TypeScript interfaces based on your API response
+interface Slide {
+  id: number;
+  course_content_id: number;
+  title: string;
+  type: string;
+  file_path: string | null;
+  url: string;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Content {
+  id: number;
+  course_id: number;
+  title: string;
+  description: string;
+  position: number;
+  created_at: string;
+  updated_at: string;
+  slides: Slide[];
+}
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  is_active: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Course {
+  id: number;
+  user_id: number;
+  title: string;
+  description: string;
+  category: Category;
+  category_id: number;
+  level: string;
+  price: string;
+  thumbnail_url: string;
+  is_published: number;
+  created_at: string;
+  updated_at: string;
+  is_enrolled: boolean;
+  contents: Content[];
+}
+
+// Video Player Component with Fallback
+const VideoContentPlayer = ({ 
+  content 
+}: { 
+  content: {
+    title: string;
+    type: string;
+    url: string;
+    youtubeId?: string;
+  } 
+}) => {
+  const [useFallback, setUseFallback] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Enhanced YouTube ID extraction
+  const getYouTubeId = (url: string): string | null => {
+    if (!url) return null;
+
+    // Remove any tracking parameters and clean the URL
+    const cleanUrl = url
+      .replace(/\?si=.*$/, '') // Remove ?si parameters
+      .replace(/&t=.*$/, '')   // Remove timestamp parameters
+      .split('&')[0];          // Take only the first parameter
+
+    const patterns = [
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
+      /youtube\.com\/watch\?v=([^"&?\/\s]{11})/,
+      /youtu\.be\/([^"&?\/\s]{11})/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = cleanUrl.match(pattern);
+      if (match) {
+        return match[1];
       }
-    ],
-    learningPoints: [
-      "Master ZSE trading mechanisms and market structure",
-      "Analyze Zimbabwean companies using fundamental analysis",
-      "Develop technical trading strategies for ZSE",
-      "Build a diversified portfolio for the Zimbabwean market",
-      "Understand regulatory framework and compliance requirements",
-    ],
-    modules: [
-      {
-        title: "Module 1: Introduction to Zimbabwe Stock Exchange",
-        lessons: [
-          { title: "History and evolution of ZSE", duration: "25m" },
-          { title: "Market structure and key participants", duration: "30m" },
-          { title: "Understanding the ZSE All-Share Index", duration: "35m" },
-        ],
-      },
-      {
-        title: "Module 2: Fundamental Analysis of ZSE Listed Companies",
-        lessons: [
-          { title: "Economic analysis for Zimbabwe context", duration: "40m" },
-          { title: "Industry analysis techniques", duration: "35m" },
-          { title: "Company financial statement analysis", duration: "45m" },
-        ],
-      },
-      {
-        title: "Module 3: Technical Analysis for ZSE Trading",
-        lessons: [
-          { title: "Chart patterns and trends specific to ZSE", duration: "40m" },
-          { title: "Technical indicators for Zimbabwean stocks", duration: "35m" },
-          { title: "Volume analysis and market sentiment", duration: "30m" },
-        ],
-      },
-      {
-        title: "Module 4: Trading Strategies & Portfolio Management",
-        lessons: [
-          { title: "Developing a ZSE trading plan", duration: "35m" },
-          { title: "Risk management for volatile markets", duration: "40m" },
-          { title: "Building a balanced portfolio on ZSE", duration: "45m" },
-        ],
-      },
-    ],
-  },
-];
+    }
+
+    return null;
+  };
+
+  // Enhanced embed URL with additional parameters to avoid restrictions
+  const getYouTubeEmbedUrl = (youtubeId: string): string => {
+    const params = new URLSearchParams({
+      autoplay: '1',
+      rel: '0', // Don't show related videos
+      modestbranding: '1', // Less YouTube branding
+      showinfo: '0', // Don't show video info
+      iv_load_policy: '3', // Don't show annotations
+      enablejsapi: '1', // Enable JS API
+      origin: window.location.origin, // Set origin to current domain
+      widget_referrer: window.location.origin, // Set referrer
+    });
+
+    return `https://www.youtube-nocookie.com/embed/${youtubeId}?${params.toString()}`;
+  };
+
+  const youtubeId = content.youtubeId || getYouTubeId(content.url);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setUseFallback(false);
+  }, [content.url]);
+
+  if (useFallback || !youtubeId) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 p-8">
+        <div className="text-center max-w-md">
+          <FontAwesomeIcon icon={faExclamationTriangle} className="h-16 w-16 text-amber-500 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Video Content</h3>
+          <p className="text-gray-600 mb-4 text-center">
+            Unable to load embedded video. This may be due to YouTube restrictions. 
+            Please watch directly on YouTube.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            <Button asChild variant="outline">
+              <a 
+                href={content.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2"
+              >
+                <FontAwesomeIcon icon={faExternalLink} className="h-4 w-4" />
+                <span>Watch on YouTube</span>
+              </a>
+            </Button>
+            <Button 
+              onClick={() => {
+                setUseFallback(false);
+                setIsLoading(true);
+              }}
+              variant="secondary"
+            >
+              <FontAwesomeIcon icon={faRefresh} className="h-4 w-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-full relative">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading video...</p>
+          </div>
+        </div>
+      )}
+      <iframe
+        width="100%"
+        height="100%"
+        src={getYouTubeEmbedUrl(youtubeId)}
+        title={content.title}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+        className="w-full h-full"
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setIsLoading(false);
+          setUseFallback(true);
+        }}
+        style={{ opacity: isLoading ? 0 : 1 }}
+      />
+    </div>
+  );
+};
 
 const CourseDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState<{ title: string, youtubeId: string } | null>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentContent, setCurrentContent] = useState<{
+    title: string;
+    type: string;
+    url: string;
+    youtubeId?: string;
+    currentSlideIndex: number;
+    totalSlides: number;
+    contentId: number;
+    slides: Slide[];
+  } | null>(null);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+  const token = localStorage.getItem("zse_training_token");
 
-  const course = courses.find((c) => c.id === parseInt(id || "1"));
-  if (!course) return <div>Course not found</div>;
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+  }, [token, navigate]);
 
-  const handleLessonClick = (moduleTitle: string, lessonTitle: string) => {
-    alert(`Clicked: ${moduleTitle} - ${lessonTitle}`);
+  // Fetch course data from API
+  useEffect(() => {
+    const fetchCourse = async () => {
+      // Check authentication before making API call
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/courses/${id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Token is invalid, redirect to login
+            localStorage.removeItem("zse_training_token");
+            navigate("/login");
+            return;
+          }
+          throw new Error(`Failed to fetch course: ${response.status}`);
+        }
+
+        const courseData = await response.json();
+        setCourse(courseData);
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("401")) {
+          localStorage.removeItem("zse_training_token");
+          navigate("/login");
+          return;
+        }
+        setError(err instanceof Error ? err.message : "Failed to fetch course");
+        console.error("Error fetching course:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id && token) {
+      fetchCourse();
+    }
+  }, [id, token, navigate]);
+
+  const handleContentClick = (slide: Slide, contentIndex: number, slideIndex: number) => {
+    // Check authentication before allowing content access
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const content = course?.contents[contentIndex];
+    if (!content) return;
+
+    setSlideDirection('right');
+    
+    if (slide.type === "video") {
+      const youtubeId = getYouTubeId(slide.url);
+      setCurrentContent({
+        title: slide.title,
+        type: slide.type,
+        url: slide.url,
+        youtubeId: youtubeId || undefined,
+        currentSlideIndex: slideIndex,
+        totalSlides: content.slides.length,
+        contentId: content.id,
+        slides: content.slides,
+      });
+    } else if (slide.type === "ppt") {
+      setCurrentContent({
+        title: slide.title,
+        type: slide.type,
+        url: slide.url,
+        currentSlideIndex: slideIndex,
+        totalSlides: content.slides.length,
+        contentId: content.id,
+        slides: content.slides,
+      });
+    }
   };
 
-  const handleVideoClick = (video: { title: string, youtubeId: string }) => {
-    setCurrentVideo(video);
+  const closeContentModal = () => {
+    setCurrentContent(null);
   };
 
-  const closeVideoModal = () => {
-    setCurrentVideo(null);
+  const navigateToSlide = (newIndex: number) => {
+    if (!currentContent) return;
+
+    // Determine slide direction for animation
+    setSlideDirection(newIndex > currentContent.currentSlideIndex ? 'right' : 'left');
+    
+    setTimeout(() => {
+      const newSlide = currentContent.slides[newIndex];
+      if (newSlide.type === "video") {
+        const youtubeId = getYouTubeId(newSlide.url);
+        setCurrentContent(prev => prev ? {
+          ...prev,
+          title: newSlide.title,
+          type: newSlide.type,
+          url: newSlide.url,
+          youtubeId: youtubeId || undefined,
+          currentSlideIndex: newIndex,
+        } : null);
+      } else if (newSlide.type === "ppt") {
+        setCurrentContent(prev => prev ? {
+          ...prev,
+          title: newSlide.title,
+          type: newSlide.type,
+          url: newSlide.url,
+          currentSlideIndex: newIndex,
+        } : null);
+      }
+    }, 50);
   };
+
+  const navigateToNextSlide = () => {
+    if (!currentContent) return;
+    const nextIndex = currentContent.currentSlideIndex + 1;
+    if (nextIndex < currentContent.totalSlides) {
+      navigateToSlide(nextIndex);
+    }
+  };
+
+  const navigateToPreviousSlide = () => {
+    if (!currentContent) return;
+    const prevIndex = currentContent.currentSlideIndex - 1;
+    if (prevIndex >= 0) {
+      navigateToSlide(prevIndex);
+    }
+  };
+
+  const handleFinishContent = () => {
+    // Here you would typically mark the content as completed in your backend
+    console.log(`Finished content ${currentContent?.contentId}`);
+    closeContentModal();
+  };
+
+  // Extract YouTube ID from URL
+  const getYouTubeId = (url: string): string | null => {
+    if (!url) return null;
+
+    const cleanUrl = url
+      .replace(/\?si=.*$/, '')
+      .replace(/&t=.*$/, '')
+      .split('&')[0];
+
+    const patterns = [
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
+      /youtube\.com\/watch\?v=([^"&?\/\s]{11})/,
+      /youtu\.be\/([^"&?\/\s]{11})/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = cleanUrl.match(pattern);
+      if (match) {
+        return match[1];
+      }
+    }
+
+    return null;
+  };
+
+  // Check if URL is a PowerPoint file
+  const isPowerPointUrl = (url: string): boolean => {
+    return url.toLowerCase().includes('.ppt') || url.toLowerCase().includes('.pptx');
+  };
+
+  // Get embed URL for PowerPoint
+  const getPowerPointEmbedUrl = (url: string): string => {
+    // For Google Drive PowerPoint files
+    if (url.includes('drive.google.com')) {
+      const fileId = url.match(/\/d\/([^\/]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
+    }
+    // For direct PowerPoint URLs, we'll use Google Docs viewer as fallback
+    return `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+  };
+
+  // Get sample videos from course content
+  const getSampleVideos = (): {
+    title: string;
+    duration: string;
+    youtubeId: string;
+  }[] => {
+    if (!course) return [];
+
+    const videos: { title: string; duration: string; youtubeId: string }[] = [];
+
+    course.contents.forEach((content) => {
+      content.slides.forEach((slide) => {
+        if (slide.type === "video" && slide.url) {
+          const youtubeId = getYouTubeId(slide.url);
+          if (youtubeId) {
+            videos.push({
+              title: slide.title,
+              duration: "05:00",
+              youtubeId: youtubeId,
+            });
+          }
+        }
+      });
+    });
+
+    return videos.slice(0, 3);
+  };
+
+  // Calculate total lessons count
+  const getTotalLessons = (): number => {
+    if (!course) return 0;
+    return course.contents.reduce(
+      (total, content) => total + content.slides.length,
+      0
+    );
+  };
+
+  // Format price
+  const formatPrice = (price: string): string => {
+    return `$${parseFloat(price).toFixed(2)}`;
+  };
+
+  // Custom Slides Controller Component
+  const SlidesController = () => {
+    if (!currentContent) return null;
+
+    const isFirstSlide = currentContent.currentSlideIndex === 0;
+    const isLastSlide = currentContent.currentSlideIndex === currentContent.totalSlides - 1;
+    const progressPercentage = ((currentContent.currentSlideIndex + 1) / currentContent.totalSlides) * 100;
+
+    return (
+      <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium text-gray-700">
+              Slide {currentContent.currentSlideIndex + 1} of {currentContent.totalSlides}
+            </span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            {/* Progress Bar */}
+            <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all duration-300 ease-out"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            
+            {/* Navigation Buttons */}
+            <div className="flex items-center space-x-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={navigateToPreviousSlide}
+                disabled={isFirstSlide}
+                className="h-8 w-8 p-0"
+              >
+                <FontAwesomeIcon icon={faChevronLeft} className="h-3 w-3" />
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={navigateToNextSlide}
+                disabled={isLastSlide}
+                className="h-8 w-8 p-0"
+              >
+                <FontAwesomeIcon icon={faChevronRight} className="h-3 w-3" />
+              </Button>
+
+              {isLastSlide ? (
+                <Button
+                  onClick={handleFinishContent}
+                  size="sm"
+                  className="h-8 bg-green-600 hover:bg-green-700"
+                >
+                  <FontAwesomeIcon icon={faCheck} className="h-3 w-3 mr-1" />
+                  Finish
+                </Button>
+              ) : (
+                <Button
+                  onClick={navigateToNextSlide}
+                  size="sm"
+                  className="h-8"
+                  disabled={isLastSlide}
+                >
+                  <FontAwesomeIcon icon={faForward} className="h-3 w-3 mr-1" />
+                  Next
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Slide Navigation Dots */}
+        <div className="flex justify-center space-x-2">
+          {currentContent.slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => navigateToSlide(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                index === currentContent.currentSlideIndex
+                  ? 'bg-primary scale-125'
+                  : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+              title={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Render content in modal based on type
+  const renderContentModal = () => {
+    if (!currentContent) return null;
+
+    const slideAnimationClass = slideDirection === 'right' 
+      ? 'animate-slide-in-right' 
+      : 'animate-slide-in-left';
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg w-full max-w-6xl aspect-video relative flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 border-b bg-white">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={closeContentModal}
+                className="text-gray-600 hover:text-gray-800 transition-colors p-2 rounded-lg hover:bg-gray-100"
+              >
+                <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
+              </button>
+              <div>
+                <h3 className="font-semibold text-lg">{currentContent.title}</h3>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Badge variant="outline" className="text-xs capitalize">
+                    {currentContent.type}
+                  </Badge>
+                  <span>Module Content</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Quick Navigation */}
+            <div className="flex items-center space-x-2">
+              <select
+                value={currentContent.currentSlideIndex}
+                onChange={(e) => navigateToSlide(parseInt(e.target.value))}
+                className="text-sm border rounded px-2 py-1 bg-white"
+              >
+                {currentContent.slides.map((slide, index) => (
+                  <option key={index} value={index}>
+                    Slide {index + 1}: {slide.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {/* Content Area with Animation */}
+          <div className="flex-1 relative bg-gray-900">
+            <div className={`w-full h-full ${slideAnimationClass}`}>
+              {currentContent.type === "video" ? (
+                <VideoContentPlayer content={currentContent} />
+              ) : currentContent.type === "ppt" ? (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={getPowerPointEmbedUrl(currentContent.url)}
+                  title={currentContent.title}
+                  frameBorder="0"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                  <div className="text-center">
+                    <FontAwesomeIcon icon={faFileAlt} className="h-16 w-16 text-gray-400 mb-4" />
+                    <p className="text-lg font-semibold">Unsupported Content Type</p>
+                    <p className="text-gray-600 mt-2">
+                      <a 
+                        href={currentContent.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Click here to view the content
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Custom Slides Controller */}
+            <SlidesController />
+          </div>
+
+          {/* Keyboard Shortcuts Info */}
+          <div className="absolute top-4 right-4 bg-black/70 text-white text-xs p-2 rounded opacity-0 hover:opacity-100 transition-opacity">
+            <div>← Previous Slide</div>
+            <div>→ Next Slide</div>
+            <div>ESC Close</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (!currentContent) return;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          navigateToPreviousSlide();
+          break;
+        case 'ArrowRight':
+          navigateToNextSlide();
+          break;
+        case 'Escape':
+          closeContentModal();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentContent]);
+
+  // Show loading state while checking authentication
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-background font-poppins">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Redirecting to login...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background font-poppins">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading course...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !course) {
+    return (
+      <div className="min-h-screen bg-background font-poppins">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-destructive">Error</h2>
+            <p className="mt-2 text-muted-foreground">
+              {error || "Course not found"}
+            </p>
+            <Button asChild className="mt-4">
+              <Link to="/courses">Back to Courses</Link>
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const sampleVideos = getSampleVideos();
+  const totalLessons = getTotalLessons();
 
   return (
     <div className="min-h-screen bg-background font-poppins">
       <Navbar />
 
-      {/* Video Modal */}
-      {currentVideo && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-black rounded-lg w-full max-w-4xl aspect-video relative">
-            <button
-              onClick={closeVideoModal}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 z-10"
-            >
-              <FontAwesomeIcon icon={faXmark} className="h-6 w-6" />
-            </button>
-            <div className="w-full h-full rounded-lg overflow-hidden">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${currentVideo.youtubeId}?autoplay=1`}
-                title={currentVideo.title}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full h-full"
-              ></iframe>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-4">
-              <h3 className="font-semibold">{currentVideo.title}</h3>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Content Modal */}
+      {renderContentModal()}
+
+      {/* Add CSS animations */}
+      <style jsx>{`
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out;
+        }
+        
+        .animate-slide-in-left {
+          animation: slideInLeft 0.3s ease-out;
+        }
+      `}</style>
 
       {/* Breadcrumb */}
       <div className="bg-muted/40 py-3">
@@ -205,16 +788,14 @@ const CourseDetail = () => {
               All courses
             </Link>
             <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
-            <Link to="/courses/finance" className="hover:text-primary transition-colors">
-              Finance & Trading
-            </Link>
-            <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
-            <span className="text-foreground font-medium">Stock Exchange</span>
+            <span className="text-foreground font-medium">
+              {course.category.name}
+            </span>
           </nav>
         </div>
       </div>
 
-      {/* Course Header - Inspired by Udemy's layout */}
+      {/* Course Header */}
       <section className="py-8 lg:py-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-8">
@@ -222,14 +803,20 @@ const CourseDetail = () => {
             <div className="lg:col-span-2 space-y-6">
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-emerald-200">
-                    Bestseller
+                  <Badge
+                    variant="secondary"
+                    className="bg-emerald-100 text-emerald-800 border-emerald-200"
+                  >
+                    {course.is_enrolled ? "Enrolled" : "Available"}
                   </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  <Badge
+                    variant="secondary"
+                    className="bg-primary/10 text-primary"
+                  >
                     {course.level}
                   </Badge>
                   <Badge variant="outline" className="text-accent-foreground">
-                    {course.category}
+                    {course.category.name}
                   </Badge>
                 </div>
 
@@ -243,75 +830,109 @@ const CourseDetail = () => {
 
                 <div className="flex flex-wrap items-center gap-4 text-left">
                   <div className="flex items-center space-x-1">
-                    <span className="font-bold text-primary">{course.rating}</span>
+                    <span className="font-bold text-primary">4.7</span>
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
                           className={`h-5 w-5 ${
-                            i < Math.floor(course.rating)
+                            i < 4
                               ? "fill-yellow-400 text-yellow-400"
                               : "text-muted-foreground/30"
-                            }`}
+                          }`}
                         />
                       ))}
                     </div>
                     <span className="text-muted-foreground">
-                      ({course.reviewCount.toLocaleString()} ratings)
+                      (2850 ratings)
                     </span>
                   </div>
-                  <div className="text-muted-foreground">
-                    {course.students.toLocaleString()} students
-                  </div>
+                  <div className="text-muted-foreground">12,453 students</div>
                   <div className="text-muted-foreground text-sm">
-                    Last updated {course.lastUpdated}
+                    Last updated{" "}
+                    {new Date(course.updated_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </div>
                 </div>
               </div>
 
-
-
-
-
               {/* Tabs Section */}
               <div className="pt-4">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <Tabs
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                  className="w-full"
+                >
                   <TabsList className="grid w-full grid-cols-4 mb-8 bg-muted/50 p-1">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <BookOpen className="h-5 w-5 sm:hidden" /> {/* icon on small */}
-                      <span className="hidden sm:inline">Overview</span> {/* text on sm+ */}
+                    <TabsTrigger
+                      value="overview"
+                      className="data-[state=active]:bg-background flex items-center justify-center"
+                    >
+                      <BookOpen className="h-5 w-5 sm:hidden" />
+                      <span className="hidden sm:inline">Overview</span>
                     </TabsTrigger>
 
-                    <TabsTrigger value="content" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <FontAwesomeIcon icon={faList} className="h-5 w-5 sm:hidden" />
+                    <TabsTrigger
+                      value="content"
+                      className="data-[state=active]:bg-background flex items-center justify-center"
+                    >
+                      <FontAwesomeIcon
+                        icon={faList}
+                        className="h-5 w-5 sm:hidden"
+                      />
                       <span className="hidden sm:inline">Course Content</span>
                     </TabsTrigger>
 
-                    <TabsTrigger value="instructor" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <FontAwesomeIcon icon={faUser} className="h-5 w-5 sm:hidden" />
+                    <TabsTrigger
+                      value="instructor"
+                      className="data-[state=active]:bg-background flex items-center justify-center"
+                    >
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        className="h-5 w-5 sm:hidden"
+                      />
                       <span className="hidden sm:inline">Instructor</span>
                     </TabsTrigger>
 
-                    <TabsTrigger value="reviews" className="data-[state=active]:bg-background flex items-center justify-center">
-                      <FontAwesomeIcon icon={faStar} className="h-5 w-5 sm:hidden" />
+                    <TabsTrigger
+                      value="reviews"
+                      className="data-[state=active]:bg-background flex items-center justify-center"
+                    >
+                      <FontAwesomeIcon
+                        icon={faStar}
+                        className="h-5 w-5 sm:hidden"
+                      />
                       <span className="hidden sm:inline">Reviews</span>
                     </TabsTrigger>
                   </TabsList>
-
 
                   {/* Overview Tab */}
                   <TabsContent value="overview" className="space-y-8">
                     <Card>
                       <CardContent className="p-6 space-y-4">
                         <h2 className="text-xl font-bold flex items-center text-left">
-                          <FontAwesomeIcon icon={faUsers} className="h-5 w-5 mr-2 text-primary" />
+                          <FontAwesomeIcon
+                            icon={faUsers}
+                            className="h-5 w-5 mr-2 text-primary"
+                          />
                           Who this course is for
                         </h2>
                         <ul className="list-disc pl-6 text-sm space-y-2 text-muted-foreground">
-                          <li>Beginner investors looking to start trading on the Zimbabwe Stock Exchange</li>
-                          <li>Experienced traders wanting to expand their knowledge of the ZSE</li>
-                          <li>Finance students seeking practical knowledge of the Zimbabwean market</li>
-                          <li>Professionals in financial services targeting Zimbabwean markets</li>
+                          <li>
+                            Beginner investors looking to start their journey
+                          </li>
+                          <li>
+                            Experienced professionals wanting to expand their
+                            knowledge
+                          </li>
+                          <li>
+                            Students seeking practical knowledge in this field
+                          </li>
+                          <li>
+                            Anyone interested in learning about {course.title}
+                          </li>
                         </ul>
                       </CardContent>
                     </Card>
@@ -319,13 +940,21 @@ const CourseDetail = () => {
                     <Card>
                       <CardContent className="p-6">
                         <h2 className="text-xl font-bold flex items-center text-left mb-4">
-                          <FontAwesomeIcon icon={faAward} className="h-5 w-5 mr-2 text-primary" />
+                          <FontAwesomeIcon
+                            icon={faAward}
+                            className="h-5 w-5 mr-2 text-primary"
+                          />
                           Course Requirements
                         </h2>
                         <ul className="list-disc pl-6 text-sm space-y-2 text-muted-foreground">
-                          <li>Basic understanding of financial concepts (helpful but not required)</li>
+                          <li>
+                            Basic understanding of the subject (helpful but not
+                            required)
+                          </li>
                           <li>Access to a computer with internet connection</li>
-                          <li>Interest in learning about the Zimbabwe Stock Exchange and investment strategies</li>
+                          <li>
+                            Interest in learning and applying new concepts
+                          </li>
                         </ul>
                       </CardContent>
                     </Card>
@@ -333,24 +962,38 @@ const CourseDetail = () => {
                     {/* Course Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <Card className="text-center p-4">
-                        <div className="text-2xl font-bold text-primary">{course.projects}+</div>
-                        <div className="text-sm text-muted-foreground">Practical Exercises</div>
+                        <div className="text-2xl font-bold text-primary">
+                          {totalLessons}+
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Lessons
+                        </div>
                       </Card>
                       <Card className="text-center p-4">
-                        <div className="text-2xl font-bold text-primary">{course.duration}</div>
-                        <div className="text-sm text-muted-foreground">Duration</div>
+                        <div className="text-2xl font-bold text-primary">
+                          {course.contents.length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Modules
+                        </div>
                       </Card>
                       <Card className="text-center p-4">
-                        <div className="text-2xl font-bold text-primary">{course.students.toLocaleString().slice(0, -3)}K+</div>
-                        <div className="text-sm text-muted-foreground">Students</div>
+                        <div className="text-2xl font-bold text-primary">
+                          12.4K+
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Students
+                        </div>
                       </Card>
                       <Card className="text-center p-4">
-                        <div className="text-2xl font-bold text-primary">100%</div>
-                        <div className="text-sm text-muted-foreground">Practical</div>
+                        <div className="text-2xl font-bold text-primary">
+                          100%
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Practical
+                        </div>
                       </Card>
                     </div>
-
-
                   </TabsContent>
 
                   {/* Course Content Tab */}
@@ -358,43 +1001,94 @@ const CourseDetail = () => {
                     <Card>
                       <CardContent className="p-6">
                         <div className="flex justify-between items-center mb-6">
-                          <h2 className="text-xl font-bold text-left">Course Content</h2>
+                          <h2 className="text-xl font-bold text-left">
+                            Course Content
+                          </h2>
                           <div className="text-sm text-muted-foreground">
-                            {course.modules.length} modules • {course.modules.reduce((acc, module) => acc + module.lessons.length, 0)} lessons • {course.duration}
+                            {course.contents.length} modules • {totalLessons}{" "}
+                            lessons
                           </div>
                         </div>
 
                         <div className="space-y-4">
-                          {course.modules.map((module, modIndex) => (
-                            <div key={modIndex} className="border rounded-lg overflow-hidden">
+                          {course.contents.map((content, contentIndex) => (
+                            <div
+                              key={content.id}
+                              className="border rounded-lg overflow-hidden"
+                            >
                               <div className="bg-muted/50 p-4 font-medium flex items-center justify-between">
                                 <div className="flex items-center">
-                                  <FontAwesomeIcon icon={faChevronRight} className="h-5 w-5 mr-2 transition-transform" />
-                                  <span>{module.title}</span>
+                                  <FontAwesomeIcon
+                                    icon={faChevronRight}
+                                    className="h-5 w-5 mr-2 transition-transform"
+                                  />
+                                  <span>{content.title}</span>
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                  {module.lessons.length} lessons •{" "}
-                                  {module.lessons.reduce((total, lesson) => {
-                                    const mins = parseInt(lesson.duration);
-                                    return total + (isNaN(mins) ? 0 : mins);
-                                  }, 0)}m
+                                  {content.slides.length} lessons
                                 </div>
                               </div>
 
                               <div className="divide-y">
-                                {module.lessons.map((lesson, lesIndex) => (
+                                {content.slides.map((slide, slideIndex) => (
                                   <div
-                                    key={lesIndex}
+                                    key={slide.id}
                                     className="p-4 flex items-center justify-between hover:bg-muted/30 cursor-pointer transition-colors"
-                                    onClick={() => handleLessonClick(module.title, lesson.title)}
+                                    onClick={() => handleContentClick(slide, contentIndex, slideIndex)}
                                   >
-                                    <div className="flex items-center">
-                                      <FontAwesomeIcon icon={faPlay} className="h-4 w-4 mr-3 text-muted-foreground" />
-                                      <span className="text-sm">{lesson.title}</span>
+                                    <div className="flex items-center space-x-3">
+                                      <div className={`p-2 rounded ${
+                                        slide.type === "video" 
+                                          ? "bg-blue-100 text-blue-600" 
+                                          : "bg-purple-100 text-purple-600"
+                                      }`}>
+                                        <FontAwesomeIcon
+                                          icon={
+                                            slide.type === "video"
+                                              ? faPlay
+                                              : faFileAlt
+                                          }
+                                          className="h-4 w-4"
+                                        />
+                                      </div>
+                                      <div>
+                                        <span className="text-sm font-medium">
+                                          {slide.title}
+                                        </span>
+                                        <div className="flex items-center space-x-2 mt-1">
+                                          <Badge 
+                                            variant="outline" 
+                                            className={`text-xs ${
+                                              slide.type === "video" 
+                                                ? "border-blue-200 text-blue-700" 
+                                                : "border-purple-200 text-purple-700"
+                                            }`}
+                                          >
+                                            {slide.type === "video" ? "Video" : "Presentation"}
+                                          </Badge>
+                                          {slide.type === "video" && getYouTubeId(slide.url) && (
+                                            <Badge variant="secondary" className="text-xs bg-red-100 text-red-700 border-red-200">
+                                              YouTube
+                                            </Badge>
+                                          )}
+                                          {slide.type === "ppt" && isPowerPointUrl(slide.url) && (
+                                            <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700 border-orange-200">
+                                              PowerPoint
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div className="text-sm text-muted-foreground">{lesson.duration}</div>
+                                    <div className="text-sm text-muted-foreground">
+                                      Click to view
+                                    </div>
                                   </div>
                                 ))}
+                                {content.slides.length === 0 && (
+                                  <div className="p-4 text-center text-muted-foreground text-sm">
+                                    No content available yet
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -407,35 +1101,54 @@ const CourseDetail = () => {
                   <TabsContent value="instructor">
                     <Card>
                       <CardContent className="p-6 space-y-6">
-                        <h2 className="text-xl font-bold mb-6 text-left">About the Instructor</h2>
+                        <h2 className="text-xl font-bold mb-6 text-left">
+                          About the Instructor
+                        </h2>
                         <div className="flex items-start space-x-6 text-left">
                           <Avatar className="h-20 w-20 flex-shrink-0">
-                            <AvatarImage src={course.instructorAvatar} alt={course.instructor} />
-                            <AvatarFallback>
-                              {course.instructor.split(" ").map((n) => n[0]).join("")}
-                            </AvatarFallback>
+                            <AvatarFallback>IN</AvatarFallback>
                           </Avatar>
                           <div>
-                            <h3 className="font-semibold text-lg">{course.instructor}</h3>
-                            <p className="text-muted-foreground">{course.instructorTitle}</p>
+                            <h3 className="font-semibold text-lg">
+                              Instructor
+                            </h3>
+                            <p className="text-muted-foreground">
+                              Course Expert
+                            </p>
                             <div className="flex items-center mt-2 space-x-4 text-sm">
                               <div className="flex items-center">
-                                <FontAwesomeIcon icon={faStar} className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
+                                <FontAwesomeIcon
+                                  icon={faStar}
+                                  className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1"
+                                />
                                 <span>4.7 Instructor Rating</span>
                               </div>
                               <div className="flex items-center">
-                                <FontAwesomeIcon icon={faUsers} className="h-4 w-4 text-muted-foreground mr-1" />
-                                <span>24,850 Students</span>
+                                <FontAwesomeIcon
+                                  icon={faUsers}
+                                  className="h-4 w-4 text-muted-foreground mr-1"
+                                />
+                                <span>12,453 Students</span>
                               </div>
                               <div className="flex items-center">
-                                <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4 text-muted-foreground mr-1" />
-                                <span>5 Courses</span>
+                                <FontAwesomeIcon
+                                  icon={faFileAlt}
+                                  className="h-4 w-4 text-muted-foreground mr-1"
+                                />
+                                <span>Multiple Courses</span>
                               </div>
                             </div>
                             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
-                              <p>Tendai Moyo is a seasoned financial analyst with over 15 years of experience in African markets, specializing in the Zimbabwe Stock Exchange. He has worked with leading financial institutions in Harare and has been a regular commentator on ZBC Business Hour.</p>
-                              <p>As Chief Analyst at Harare Capital Markets, Tendai has developed trading strategies that have consistently outperformed the ZSE All-Share Index. His research on market trends in emerging economies has been published in several international finance journals.</p>
-                              <p>Tendai is passionate about democratizing financial knowledge and has trained thousands of investors across Zimbabwe. He believes that informed investing is key to wealth creation in emerging markets.</p>
+                              <p>
+                                Experienced instructor with deep knowledge in
+                                this field. Passionate about sharing knowledge
+                                and helping students achieve their learning
+                                goals.
+                              </p>
+                              <p>
+                                Dedicated to providing high-quality educational
+                                content and practical learning experiences.
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -450,11 +1163,16 @@ const CourseDetail = () => {
                         <div className="flex items-start justify-between">
                           <div>
                             <h2 className="text-xl font-bold flex items-center text-left">
-                              <FontAwesomeIcon icon={faStar} className="h-5 w-5 mr-2 text-primary" />
+                              <FontAwesomeIcon
+                                icon={faStar}
+                                className="h-5 w-5 mr-2 text-primary"
+                              />
                               Student Reviews
                             </h2>
                             <div className="flex items-center mt-2">
-                              <span className="text-3xl font-bold mr-2">{course.rating}</span>
+                              <span className="text-3xl font-bold mr-2">
+                                4.7
+                              </span>
                               <div>
                                 <div className="flex">
                                   {[...Array(5)].map((_, i) => (
@@ -462,22 +1180,24 @@ const CourseDetail = () => {
                                       key={i}
                                       icon={faStar}
                                       className={`h-5 w-5 ${
-                                        i < Math.floor(course.rating)
+                                        i < 4
                                           ? "fill-yellow-400 text-yellow-400"
                                           : "text-muted-foreground/30"
-                                        }`}
+                                      }`}
                                     />
                                   ))}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                  Course Rating • {course.reviewCount.toLocaleString()} reviews
+                                  Course Rating • 2,850 reviews
                                 </div>
                               </div>
                             </div>
                           </div>
 
                           <div className="bg-muted/50 p-4 rounded-lg">
-                            <h3 className="font-medium mb-2">Review this course</h3>
+                            <h3 className="font-medium mb-2">
+                              Review this course
+                            </h3>
                             <Button variant="outline" size="sm">
                               Add a review
                             </Button>
@@ -493,7 +1213,9 @@ const CourseDetail = () => {
                             </Avatar>
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-1">
-                                <span className="font-semibold">Tinashe Marimo</span>
+                                <span className="font-semibold">
+                                  Tinashe Marimo
+                                </span>
                                 <div className="flex">
                                   {[...Array(5)].map((_, i) => (
                                     <FontAwesomeIcon
@@ -503,40 +1225,19 @@ const CourseDetail = () => {
                                         i < 5
                                           ? "fill-yellow-400 text-yellow-400"
                                           : "text-muted-foreground/30"
-                                        }`}
+                                      }`}
                                     />
                                   ))}
                                 </div>
                               </div>
-                              <p className="text-sm text-muted-foreground mb-2">2 weeks ago</p>
-                              <p className="text-sm">This course completely changed my approach to investing on the ZSE. The modules on fundamental analysis helped me identify undervalued stocks that have since performed exceptionally well. Tendai's teaching style makes complex concepts easy to understand.</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-start space-x-4">
-                            <Avatar>
-                              <AvatarImage src="https://i.pravatar.cc/50?img=2" />
-                              <AvatarFallback>NK</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-1">
-                                <span className="font-semibold">Nomsa Kambanje</span>
-                                <div className="flex">
-                                  {[...Array(5)].map((_, i) => (
-                                    <FontAwesomeIcon
-                                      key={i}
-                                      icon={faStar}
-                                      className={`h-4 w-4 ${
-                                        i < 4
-                                          ? "fill-yellow-400 text-yellow-400"
-                                          : "text-muted-foreground/30"
-                                        }`}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                              <p className="text-sm text-muted-foreground mb-2">1 month ago</p>
-                              <p className="text-sm">As someone new to stock trading, I found this course incredibly valuable. The practical exercises helped me apply what I learned immediately. The section on risk management is particularly helpful for navigating the Zimbabwean market volatility.</p>
+                              <p className="text-sm text-muted-foreground mb-2">
+                                2 weeks ago
+                              </p>
+                              <p className="text-sm">
+                                This course completely changed my approach. The
+                                modules helped me understand complex concepts
+                                easily.
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -545,37 +1246,52 @@ const CourseDetail = () => {
                   </TabsContent>
                 </Tabs>
 
-                {/* Student Also Bought Section */}
+                {/* Similar Courses Section */}
                 <section className="mt-12">
-                  <h2 className="text-2xl font-bold mb-6 text-left">Similar Courses</h2>
+                  <h2 className="text-2xl font-bold mb-6 text-left">
+                    Similar Courses
+                  </h2>
                   <div className="grid md:grid-cols-2 gap-6">
                     <Card className="p-4 flex">
                       <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        <FontAwesomeIcon icon={faChartLine} className="h-8 w-8 text-muted-foreground" />
+                        <FontAwesomeIcon
+                          icon={faChartLine}
+                          className="h-8 w-8 text-muted-foreground"
+                        />
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold">Advanced Technical Analysis</h3>
+                        <h3 className="font-semibold">Advanced Topics</h3>
                         <div className="flex items-center mt-1">
-                          <span className="text-sm font-medium text-primary">$99.99</span>
-                          <span className="text-sm text-muted-foreground line-through ml-2">$129.99</span>
+                          <span className="text-sm font-medium text-primary">
+                            $99.99
+                          </span>
+                          <span className="text-sm text-muted-foreground line-through ml-2">
+                            $129.99
+                          </span>
                         </div>
                       </div>
                     </Card>
 
                     <Card className="p-4 flex">
                       <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        <FontAwesomeIcon icon={faMoneyBill} className="h-8 w-8 text-muted-foreground" />
+                        <FontAwesomeIcon
+                          icon={faMoneyBill}
+                          className="h-8 w-8 text-muted-foreground"
+                        />
                       </div>
                       <div className="ml-4">
-                        <h3 className="font-semibold">Forex Trading in Zimbabwe</h3>
+                        <h3 className="font-semibold">Related Course</h3>
                         <div className="flex items-center mt-1">
-                          <span className="text-sm font-medium text-primary">$89.99</span>
-                          <span className="text-sm text-muted-foreground line-through ml-2">$119.99</span>
+                          <span className="text-sm font-medium text-primary">
+                            $89.99
+                          </span>
+                          <span className="text-sm text-muted-foreground line-through ml-2">
+                            $119.99
+                          </span>
                         </div>
                       </div>
                     </Card>
                   </div>
-
                 </section>
               </div>
             </div>
@@ -585,53 +1301,110 @@ const CourseDetail = () => {
               <Card className="sticky top-4 shadow-lg border-0">
                 <div className="relative aspect-video rounded-t-lg overflow-hidden">
                   <img
-                    src={course.image}
+                    src={course.thumbnail_url}
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <Button
-                      size="lg"
-                      className="rounded-full h-16 w-16 bg-white/90 hover:bg-white"
-                      onClick={() => {
-                        if (course.sampleVideos && course.sampleVideos.length > 0) {
-                          handleVideoClick(course.sampleVideos[0]);
-                        }
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faPlay} className="h-6 w-6 ml-1 text-black" />
-                    </Button>
-                  </div>
-                  <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded text-sm font-medium">
-                    Preview
-                  </div>
+                  {sampleVideos.length > 0 && (
+                    <>
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <Button
+                          size="lg"
+                          className="rounded-full h-16 w-16 bg-white/90 hover:bg-white"
+                          onClick={() => {
+                            const firstVideo = sampleVideos[0];
+                            // Find the actual slide to get proper indices
+                            let foundSlide: Slide | null = null;
+                            let contentIndex = -1;
+                            let slideIndex = -1;
+
+                            course.contents.forEach((content, cIndex) => {
+                              content.slides.forEach((slide, sIndex) => {
+                                if (slide.type === "video" && getYouTubeId(slide.url) === firstVideo.youtubeId) {
+                                  foundSlide = slide;
+                                  contentIndex = cIndex;
+                                  slideIndex = sIndex;
+                                }
+                              });
+                            });
+
+                            if (foundSlide) {
+                              handleContentClick(foundSlide, contentIndex, slideIndex);
+                            }
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faPlay}
+                            className="h-6 w-6 ml-1 text-black"
+                          />
+                        </Button>
+                      </div>
+                      <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded text-sm font-medium">
+                        Preview
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <CardContent className="p-6 space-y-4">
-                  
-                
+                  <div className="flex items-center justify-between">
+                    <div className="text-3xl font-bold text-primary">
+                      {formatPrice(course.price)}
+                    </div>
+                    {course.is_enrolled && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-800"
+                      >
+                        Enrolled
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    {course.is_enrolled ? (
+                      <Button className="w-full bg-green-600 hover:bg-green-700">
+                        Continue Learning
+                      </Button>
+                    ) : (
+                      <Button className="w-full">Enroll Now</Button>
+                    )}
+                    <Button variant="outline" className="w-full">
+                      Add to Wishlist
+                    </Button>
+                  </div>
 
                   <div className="pt-4">
-                    <h3 className="font-bold text-left mb-2">This course includes:</h3>
+                    <h3 className="font-bold text-left mb-2">
+                      This course includes:
+                    </h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center">
-                        <FontAwesomeIcon icon={faClock} className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{course.duration} of content</span>
+                        <FontAwesomeIcon
+                          icon={faClock}
+                          className="h-4 w-4 mr-2 text-muted-foreground"
+                        />
+                        <span>{totalLessons} lessons</span>
                       </div>
                       <div className="flex items-center">
-                        <FontAwesomeIcon icon={faArrowTrendUp} className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{course.projects} practical exercises</span>
+                        <FontAwesomeIcon
+                          icon={faArrowTrendUp}
+                          className="h-4 w-4 mr-2 text-muted-foreground"
+                        />
+                        <span>{course.contents.length} modules</span>
                       </div>
                       <div className="flex items-center">
-                        <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{course.articles} articles</span>
+                        <FontAwesomeIcon
+                          icon={faDownload}
+                          className="h-4 w-4 mr-2 text-muted-foreground"
+                        />
+                        <span>Downloadable resources</span>
                       </div>
                       <div className="flex items-center">
-                        <FontAwesomeIcon icon={faDownload} className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span>{course.downloadableResources} downloadable resources</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon icon={faAward} className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <FontAwesomeIcon
+                          icon={faAward}
+                          className="h-4 w-4 mr-2 text-muted-foreground"
+                        />
                         <span>Certificate of completion</span>
                       </div>
                     </div>
