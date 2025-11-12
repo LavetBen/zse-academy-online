@@ -15,7 +15,18 @@ import {
   faFileAlt, 
   faBook,
   faClock,
-  faLink
+  faLink,
+  faUpload,
+  faFilePdf,
+  faFileImage,
+  faFileWord,
+  faFileExcel,
+  faFilePowerpoint,
+  faBars,
+  faXmark,
+  faChevronRight,
+  faList,
+  faLayerGroup
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Dialog,
@@ -34,15 +45,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import logo from "@/assets/logo.png";
 
 interface CourseContent {
   id: number;
   title: string;
   description: string;
-  type: "video" | "document" | "lesson";
+  type: "video" | "document" | "lesson" | "resource";
   url?: string;
   duration?: string;
   position: number;
+  file_name?: string;
+  file_type?: string;
+  file_size?: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -54,15 +69,26 @@ const ManageCourseContent = () => {
   const [loading, setLoading] = useState(true);
   const [editingContent, setEditingContent] = useState<CourseContent | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isResourceDialogOpen, setIsResourceDialogOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    type: "lesson" as "video" | "document" | "lesson",
+    type: "lesson" as "video" | "document" | "lesson" | "resource",
     url: "",
     duration: "",
     position: 0,
+  });
+
+  const [resourceFormData, setResourceFormData] = useState({
+    title: "",
+    description: "",
+    position: 0,
+    file: null as File | null,
   });
 
   useEffect(() => {
@@ -74,7 +100,6 @@ const ManageCourseContent = () => {
   const fetchContents = async () => {
     try {
       const data = await courseService.getCourseContent(courseId!);
-      // Sort contents by position
       const sortedContents = (data.data || data).sort((a: CourseContent, b: CourseContent) => 
         a.position - b.position
       );
@@ -93,7 +118,6 @@ const ManageCourseContent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Prepare data according to backend validation
       const contentData = {
         title: formData.title,
         description: formData.description || null,
@@ -151,7 +175,6 @@ const ManageCourseContent = () => {
   };
 
   const resetForm = () => {
-    // Set default position to next available position
     const nextPosition = contents.length > 0 ? Math.max(...contents.map(c => c.position)) + 1 : 0;
     
     setFormData({ 
@@ -163,6 +186,83 @@ const ManageCourseContent = () => {
       position: nextPosition 
     });
     setEditingContent(null);
+  };
+
+  const resetResourceForm = () => {
+    const nextPosition = contents.length > 0 ? Math.max(...contents.map(c => c.position)) + 1 : 0;
+    setResourceFormData({
+      title: "",
+      description: "",
+      position: nextPosition,
+      file: null,
+    });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const maxSize = 50 * 1024 * 1024; // 50MB
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "Error",
+          description: "File size must be less than 50MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setResourceFormData({ ...resourceFormData, file });
+    }
+  };
+
+  const handleResourceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!resourceFormData.file) {
+      toast({
+        title: "Error",
+        description: "Please select a file to upload",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingFile(true);
+    
+    try {
+      const contentData = {
+        title: resourceFormData.title,
+        description: resourceFormData.description || null,
+        type: "resource",
+        position: resourceFormData.position,
+        file_name: resourceFormData.file.name,
+        file_type: resourceFormData.file.type,
+        file_size: resourceFormData.file.size,
+        url: URL.createObjectURL(resourceFormData.file),
+      };
+
+      await courseService.createCourseContent(courseId!, contentData);
+      
+      toast({ 
+        title: "Success", 
+        description: "Resource uploaded successfully",
+        className: "bg-green-50 text-green-900 border-green-200"
+      });
+      
+      fetchContents();
+      setIsResourceDialogOpen(false);
+      resetResourceForm();
+    } catch (error: any) {
+      console.error("Error uploading resource:", error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to upload resource",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingFile(false);
+    }
   };
 
   const openEditDialog = (content: CourseContent) => {
@@ -184,9 +284,45 @@ const ManageCourseContent = () => {
         return faVideo;
       case "document":
         return faFileAlt;
+      case "resource":
+        return faFileAlt;
       default:
         return faBook;
     }
+  };
+
+  const getFileIcon = (fileName?: string) => {
+    if (!fileName) return faFileAlt;
+    
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'pdf':
+        return faFilePdf;
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'gif':
+      case 'webp':
+        return faFileImage;
+      case 'doc':
+      case 'docx':
+        return faFileWord;
+      case 'xls':
+      case 'xlsx':
+        return faFileExcel;
+      case 'ppt':
+      case 'pptx':
+        return faFilePowerpoint;
+      default:
+        return faFileAlt;
+    }
+  };
+
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
   };
 
   const getTypeColor = (type: string) => {
@@ -195,6 +331,8 @@ const ManageCourseContent = () => {
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "document":
         return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "resource":
+        return "bg-amber-50 text-amber-700 border-amber-200";
       default:
         return "bg-purple-50 text-purple-700 border-purple-200";
     }
@@ -206,299 +344,494 @@ const ManageCourseContent = () => {
         return "from-blue-50 to-blue-25";
       case "document":
         return "from-emerald-50 to-emerald-25";
+      case "resource":
+        return "from-amber-50 to-amber-25";
       default:
         return "from-purple-50 to-purple-25";
     }
   };
 
+  const sidebarItems = [
+    { icon: faList, label: "Content List", key: "list" },
+    { icon: faLayerGroup, label: "Resources", key: "resources" },
+  ];
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground">
-            <FontAwesomeIcon icon={faArrowLeft} className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-        </div>
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
-            <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} className="p-6 bg-gray-50 rounded-lg animate-pulse border">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1 space-y-3">
-                      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-4 bg-gray-200 rounded w-full"></div>
-                      <div className="flex gap-4">
-                        <div className="h-5 bg-gray-200 rounded w-20"></div>
-                        <div className="h-5 bg-gray-200 rounded w-16"></div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="h-9 w-9 bg-gray-200 rounded"></div>
-                      <div className="h-9 w-9 bg-gray-200 rounded"></div>
-                    </div>
+      <div className="min-h-screen bg-background">
+        <div className="animate-pulse p-6">
+          <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, index) => (
+              <div key={index} className="p-6 bg-gray-50 rounded-lg border">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1 space-y-3">
+                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-full"></div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate(-1)} 
-          className="text-muted-foreground hover:text-foreground transition-colors group"
-        >
-          <FontAwesomeIcon 
-            icon={faArrowLeft} 
-            className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" 
-          />
-          Back
-        </Button>
+    <div className="min-h-screen bg-background font-poppins">
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-white border-b border-border px-4 py-3 sticky top-0 z-50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Button variant="ghost" size="sm" onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)} className="p-2">
+              <FontAwesomeIcon icon={mobileSidebarOpen ? faXmark : faBars} className="h-5 w-5" />
+            </Button>
+            <img src={logo} alt="ZSE Logo" className="h-10 w-10 object-contain" />
+            <span className="font-bold text-lg">Course Content</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+            <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
+          </Button>
+        </div>
+      </header>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileSidebarOpen && (
+        <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileSidebarOpen(false)} />
+      )}
+
+      {/* Sidebar */}
+      <div className={`fixed left-0 top-0 h-full bg-white border-r border-border z-40 transition-all duration-300
+        ${sidebarCollapsed ? "w-16" : "w-64"}
+        ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <div className="p-4 h-full flex flex-col">
+          <div className="hidden lg:flex items-center space-x-3 mb-8">
+            <img src={logo} alt="ZSE Logo" className={`object-contain transition-all ${sidebarCollapsed ? "h-12 w-12" : "h-14 w-14"}`} />
+            {!sidebarCollapsed && (
+              <div className="flex flex-col">
+                <span className="font-bold text-secondary">Course Content</span>
+                <span className="text-xs text-muted-foreground">Management</span>
+              </div>
+            )}
+          </div>
+
+          <div className="lg:hidden flex items-center justify-between mb-6 pb-4 border-b">
+            <div className="flex items-center space-x-3">
+              <img src={logo} alt="ZSE Logo" className="h-12 w-12" />
+              <span className="font-bold">Content</span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setMobileSidebarOpen(false)}>
+              <FontAwesomeIcon icon={faXmark} className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <nav className="space-y-2 flex-1">
+            <Button
+              onClick={() => navigate(-1)}
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
+            >
+              <FontAwesomeIcon icon={faArrowLeft} className="mr-2 h-4 w-4" />
+              {(!sidebarCollapsed || mobileSidebarOpen) && <span>Back to Courses</span>}
+            </Button>
+            
+            <div className="pt-4 border-t mt-4">
+              <p className="text-xs text-muted-foreground px-3 mb-2">
+                {!sidebarCollapsed && "CONTENT SECTIONS"}
+              </p>
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.key}
+                  className="w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <FontAwesomeIcon icon={item.icon} className="h-5 w-5" />
+                  {(!sidebarCollapsed || mobileSidebarOpen) && <span>{item.label}</span>}
+                </button>
+              ))}
+            </div>
+          </nav>
+        </div>
       </div>
 
-      {/* Main Content Card */}
-      <Card className="border-border/50 shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
-          <div>
-            <CardTitle className="text-2xl font-bold">Course Content</CardTitle>
-            <p className="text-muted-foreground mt-1">
-              Manage lessons, videos, and documents for your course
-            </p>
-          </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
-                <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" />
-                Add Content
+      {/* Main Content */}
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"}`}>
+        {/* Desktop Header */}
+        <header className="hidden lg:block bg-white border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+                <FontAwesomeIcon icon={faChevronRight} className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "" : "rotate-180"}`} />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-xl">
-                  {editingContent ? "Edit Content" : "Add New Content"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label htmlFor="title" className="text-sm font-medium">Title *</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      required
-                      placeholder="Enter content title"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="description" className="text-sm font-medium">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Enter content description"
-                      rows={3}
-                      className="mt-1 resize-none"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="type" className="text-sm font-medium">Content Type</Label>
-                      <Select
-                        value={formData.type}
-                        onValueChange={(value: "video" | "document" | "lesson") =>
-                          setFormData({ ...formData, type: value })
-                        }
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="lesson">Lesson</SelectItem>
-                          <SelectItem value="video">Video</SelectItem>
-                          <SelectItem value="document">Document</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="position" className="text-sm font-medium">Display Order</Label>
-                      <Input
-                        id="position"
-                        type="number"
-                        min="0"
-                        value={formData.position}
-                        onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) || 0 })}
-                        required
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="url" className="text-sm font-medium">
-                      <FontAwesomeIcon icon={faLink} className="mr-2 h-3 w-3" />
-                      Resource URL
-                    </Label>
-                    <Input
-                      id="url"
-                      type="url"
-                      value={formData.url}
-                      onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                      placeholder="https://example.com/resource"
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="duration" className="text-sm font-medium">
-                      <FontAwesomeIcon icon={faClock} className="mr-2 h-3 w-3" />
-                      Duration
-                    </Label>
-                    <Input
-                      id="duration"
-                      value={formData.duration}
-                      onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                      placeholder="e.g., 30 minutes, 1 hour"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex justify-end gap-3 pt-4 border-t">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setIsDialogOpen(false)}
-                    className="min-w-24"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="min-w-24 bg-primary hover:bg-primary/90"
-                  >
-                    {editingContent ? "Update" : "Create"}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </CardHeader>
-        
-        <CardContent>
-          <div className="space-y-4">
-            {contents.length === 0 ? (
-              <div className="text-center py-16 text-muted-foreground border-2 border-dashed rounded-lg">
-                <FontAwesomeIcon icon={faBook} className="h-16 w-16 mx-auto mb-4 opacity-30" />
-                <h3 className="text-xl font-semibold mb-2">No content yet</h3>
-                <p className="mb-6">Start building your course by adding the first piece of content</p>
-                <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
-                  <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" />
-                  Add Your First Content
-                </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-secondary">Course Content Management</h1>
+                <p className="text-muted-foreground">Manage lessons, videos, and resources</p>
               </div>
-            ) : (
-              contents.map((content) => (
-                <Card 
-                  key={content.id} 
-                  className={`border-l-4 border-l-primary bg-gradient-to-r ${getTypeGradient(content.type)} hover:shadow-md transition-all duration-200`}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1 flex items-start gap-4">
-                        <div className={`p-3 rounded-lg border ${getTypeColor(content.type)}`}>
-                          <FontAwesomeIcon icon={getContentIcon(content.type)} className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-3">
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="p-4 lg:p-6 bg-gradient-to-br from-muted/30 via-background to-accent/20 min-h-screen">
+          <div className="space-y-6">
+            {/* Main Content Card */}
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-4">
+                <div>
+                  <CardTitle className="text-2xl font-bold">Course Content</CardTitle>
+                  <p className="text-muted-foreground mt-1">
+                    Manage lessons, videos, and documents for your course
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
+                        <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" />
+                        Add Content
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl">
+                          {editingContent ? "Edit Content" : "Add New Content"}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <Label htmlFor="title" className="text-sm font-medium">Title *</Label>
+                            <Input
+                              id="title"
+                              value={formData.title}
+                              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                              required
+                              placeholder="Enter content title"
+                              className="mt-1"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                            <Textarea
+                              id="description"
+                              value={formData.description}
+                              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                              placeholder="Enter content description"
+                              rows={3}
+                              className="mt-1 resize-none"
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <h3 className="font-semibold text-lg text-foreground mb-1">
-                                {content.title}
-                              </h3>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Badge variant="secondary" className={getTypeColor(content.type)}>
-                                  {content.type}
-                                </Badge>
-                                <Badge variant="outline" className="text-xs font-normal">
-                                  Order: {content.position}
-                                </Badge>
-                              </div>
+                              <Label htmlFor="type" className="text-sm font-medium">Content Type</Label>
+                              <Select
+                                value={formData.type}
+                                onValueChange={(value: "video" | "document" | "lesson") =>
+                                  setFormData({ ...formData, type: value })
+                                }
+                              >
+                                <SelectTrigger className="mt-1">
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="lesson">Lesson</SelectItem>
+                                  <SelectItem value="video">Video</SelectItem>
+                                  <SelectItem value="document">Document</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor="position" className="text-sm font-medium">Display Order</Label>
+                              <Input
+                                id="position"
+                                type="number"
+                                min="0"
+                                value={formData.position}
+                                onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) || 0 })}
+                                required
+                                className="mt-1"
+                              />
                             </div>
                           </div>
                           
-                          {content.description && (
-                            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                              {content.description}
-                            </p>
-                          )}
+                          <div>
+                            <Label htmlFor="url" className="text-sm font-medium">
+                              <FontAwesomeIcon icon={faLink} className="mr-2 h-3 w-3" />
+                              Resource URL
+                            </Label>
+                            <Input
+                              id="url"
+                              type="url"
+                              value={formData.url}
+                              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                              placeholder="https://example.com/resource"
+                              className="mt-1"
+                            />
+                          </div>
                           
-                          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                            {content.duration && (
-                              <div className="flex items-center gap-1">
-                                <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
-                                <span>{content.duration}</span>
-                              </div>
-                            )}
-                            {content.url && (
-                              <a 
-                                href={content.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-primary hover:text-primary/80 hover:underline transition-colors"
-                              >
-                                <FontAwesomeIcon icon={faLink} className="h-3 w-3" />
-                                <span>View Resource</span>
-                              </a>
-                            )}
+                          <div>
+                            <Label htmlFor="duration" className="text-sm font-medium">
+                              <FontAwesomeIcon icon={faClock} className="mr-2 h-3 w-3" />
+                              Duration
+                            </Label>
+                            <Input
+                              id="duration"
+                              value={formData.duration}
+                              onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                              placeholder="e.g., 30 minutes, 1 hour"
+                              className="mt-1"
+                            />
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex gap-2 ml-4">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => openEditDialog(content)}
-                          className="h-9 w-9 p-0"
-                          title="Edit"
-                        >
-                          <FontAwesomeIcon icon={faEdit} className="h-4 w-4" />
+                        
+                        <div className="flex justify-end gap-3 pt-4 border-t">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setIsDialogOpen(false)}
+                            className="min-w-24"
+                          >
+                            Cancel
+                          </Button>
+                          <Button 
+                            type="submit" 
+                            className="min-w-24 bg-primary hover:bg-primary/90"
+                          >
+                            {editingContent ? "Update" : "Create"}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={isResourceDialogOpen} onOpenChange={setIsResourceDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={resetResourceForm} variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                        <FontAwesomeIcon icon={faUpload} className="mr-2 h-4 w-4" />
+                        Upload Resource
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl">Upload Course Resource</DialogTitle>
+                        <p className="text-sm text-muted-foreground">Upload PDFs, images, PowerPoint, Excel, or other documents</p>
+                      </DialogHeader>
+                      <form onSubmit={handleResourceSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <Label htmlFor="resource-title" className="text-sm font-medium">Title *</Label>
+                            <Input
+                              id="resource-title"
+                              value={resourceFormData.title}
+                              onChange={(e) => setResourceFormData({ ...resourceFormData, title: e.target.value })}
+                              required
+                              placeholder="Enter resource title"
+                              className="mt-1"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="resource-description" className="text-sm font-medium">Description</Label>
+                            <Textarea
+                              id="resource-description"
+                              value={resourceFormData.description}
+                              onChange={(e) => setResourceFormData({ ...resourceFormData, description: e.target.value })}
+                              placeholder="Enter resource description"
+                              rows={3}
+                              className="mt-1 resize-none"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="resource-position" className="text-sm font-medium">Display Order</Label>
+                            <Input
+                              id="resource-position"
+                              type="number"
+                              min="0"
+                              value={resourceFormData.position}
+                              onChange={(e) => setResourceFormData({ ...resourceFormData, position: parseInt(e.target.value) || 0 })}
+                              required
+                              className="mt-1"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="file-upload" className="text-sm font-medium">File *</Label>
+                            <div className="mt-1">
+                              <div className="flex items-center justify-center w-full">
+                                <label htmlFor="file-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
+                                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <FontAwesomeIcon icon={faUpload} className="h-8 w-8 mb-2 text-muted-foreground" />
+                                    <p className="mb-2 text-sm text-muted-foreground">
+                                      <span className="font-semibold">Click to upload</span> or drag and drop
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      PDF, Images, PPT, Excel, Word (MAX. 50MB)
+                                    </p>
+                                    {resourceFormData.file && (
+                                      <p className="mt-2 text-sm font-medium text-primary">
+                                        {resourceFormData.file.name}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <input
+                                    id="file-upload"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                    accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp"
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4 border-t">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setIsResourceDialogOpen(false)}
+                            className="min-w-24"
+                          >
+                            Cancel
+                          </Button>
+                          <Button 
+                            type="submit" 
+                            className="min-w-24 bg-primary hover:bg-primary/90"
+                            disabled={uploadingFile}
+                          >
+                            {uploadingFile ? "Uploading..." : "Upload"}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                <div className="space-y-4">
+                  {contents.length === 0 ? (
+                    <div className="text-center py-16 text-muted-foreground border-2 border-dashed rounded-lg">
+                      <FontAwesomeIcon icon={faBook} className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                      <h3 className="text-xl font-semibold mb-2">No content yet</h3>
+                      <p className="mb-6">Start building your course by adding the first piece of content</p>
+                      <div className="flex gap-3 justify-center">
+                        <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
+                          <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" />
+                          Add Content
                         </Button>
-                        <Button 
-                          size="sm" 
-                          variant="destructive" 
-                          onClick={() => handleDelete(content.id)}
-                          className="h-9 w-9 p-0"
-                          title="Delete"
-                        >
-                          <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
+                        <Button onClick={resetResourceForm} variant="outline">
+                          <FontAwesomeIcon icon={faUpload} className="mr-2 h-4 w-4" />
+                          Upload Resource
                         </Button>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+                  ) : (
+                    contents.map((content) => (
+                      <Card 
+                        key={content.id} 
+                        className={`border-l-4 border-l-primary bg-gradient-to-r ${getTypeGradient(content.type)} hover:shadow-md transition-all duration-200`}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1 flex items-start gap-4">
+                              <div className={`p-3 rounded-lg border ${getTypeColor(content.type)}`}>
+                                <FontAwesomeIcon 
+                                  icon={content.type === "resource" ? getFileIcon(content.file_name) : getContentIcon(content.type)} 
+                                  className="h-5 w-5" 
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between mb-3">
+                                  <div>
+                                    <h3 className="font-semibold text-lg text-foreground mb-1">
+                                      {content.title}
+                                    </h3>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <Badge variant="secondary" className={getTypeColor(content.type)}>
+                                        {content.type}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-xs font-normal">
+                                        Order: {content.position}
+                                      </Badge>
+                                      {content.file_name && (
+                                        <Badge variant="outline" className="text-xs font-normal">
+                                          {content.file_name}
+                                        </Badge>
+                                      )}
+                                      {content.file_size && (
+                                        <Badge variant="outline" className="text-xs font-normal">
+                                          {formatFileSize(content.file_size)}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {content.description && (
+                                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                                    {content.description}
+                                  </p>
+                                )}
+                                
+                                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                  {content.duration && (
+                                    <div className="flex items-center gap-1">
+                                      <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
+                                      <span>{content.duration}</span>
+                                    </div>
+                                  )}
+                                  {content.url && (
+                                    <a 
+                                      href={content.url} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-1 text-primary hover:text-primary/80 hover:underline transition-colors"
+                                    >
+                                      <FontAwesomeIcon icon={faLink} className="h-3 w-3" />
+                                      <span>View Resource</span>
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-2 ml-4">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => openEditDialog(content)}
+                                className="h-9 w-9 p-0"
+                                title="Edit"
+                              >
+                                <FontAwesomeIcon icon={faEdit} className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="destructive" 
+                                onClick={() => handleDelete(content.id)}
+                                className="h-9 w-9 p-0"
+                                title="Delete"
+                              >
+                                <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+        </main>
+      </div>
     </div>
   );
 };
