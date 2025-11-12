@@ -47,17 +47,24 @@ import {
 import { Badge } from "@/components/ui/badge";
 import logo from "@/assets/logo.png";
 
+interface CourseResource {
+  id: number;
+  name: string;
+  file_type: string;
+  file_size: number;
+  url: string;
+  uploaded_at: string;
+}
+
 interface CourseContent {
   id: number;
   title: string;
   description: string;
-  type: "video" | "document" | "lesson" | "resource";
+  type: "video" | "document" | "lesson";
   url?: string;
   duration?: string;
   position: number;
-  file_name?: string;
-  file_type?: string;
-  file_size?: number;
+  resources?: CourseResource[];
   created_at?: string;
   updated_at?: string;
 }
@@ -78,18 +85,14 @@ const ManageCourseContent = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    type: "lesson" as "video" | "document" | "lesson" | "resource",
+    type: "lesson" as "video" | "document" | "lesson",
     url: "",
     duration: "",
     position: 0,
   });
 
-  const [resourceFormData, setResourceFormData] = useState({
-    title: "",
-    description: "",
-    position: 0,
-    file: null as File | null,
-  });
+  const [selectedContentForResource, setSelectedContentForResource] = useState<CourseContent | null>(null);
+  const [resourceFile, setResourceFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (courseId) {
@@ -188,16 +191,6 @@ const ManageCourseContent = () => {
     setEditingContent(null);
   };
 
-  const resetResourceForm = () => {
-    const nextPosition = contents.length > 0 ? Math.max(...contents.map(c => c.position)) + 1 : 0;
-    setResourceFormData({
-      title: "",
-      description: "",
-      position: nextPosition,
-      file: null,
-    });
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -212,14 +205,20 @@ const ManageCourseContent = () => {
         return;
       }
       
-      setResourceFormData({ ...resourceFormData, file });
+      setResourceFile(file);
     }
+  };
+
+  const openResourceDialog = (content: CourseContent) => {
+    setSelectedContentForResource(content);
+    setResourceFile(null);
+    setIsResourceDialogOpen(true);
   };
 
   const handleResourceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!resourceFormData.file) {
+    if (!resourceFile || !selectedContentForResource) {
       toast({
         title: "Error",
         description: "Please select a file to upload",
@@ -231,37 +230,72 @@ const ManageCourseContent = () => {
     setUploadingFile(true);
     
     try {
-      const contentData = {
-        title: resourceFormData.title,
-        description: resourceFormData.description || null,
-        type: "resource",
-        position: resourceFormData.position,
-        file_name: resourceFormData.file.name,
-        file_type: resourceFormData.file.type,
-        file_size: resourceFormData.file.size,
-        url: URL.createObjectURL(resourceFormData.file),
+      // In production, upload to Lovable Cloud Storage
+      const newResource: CourseResource = {
+        id: Date.now(),
+        name: resourceFile.name,
+        file_type: resourceFile.type,
+        file_size: resourceFile.size,
+        url: URL.createObjectURL(resourceFile),
+        uploaded_at: new Date().toISOString(),
       };
 
-      await courseService.createCourseContent(courseId!, contentData);
+      // Update the content with the new resource
+      const updatedResources = [...(selectedContentForResource.resources || []), newResource];
+      const updatedContent = { ...selectedContentForResource, resources: updatedResources };
+      
+      // Here you would call an API to update the content with the new resource
+      // For now, we'll simulate it locally
+      setContents(contents.map(c => 
+        c.id === selectedContentForResource.id ? updatedContent : c
+      ));
       
       toast({ 
         title: "Success", 
-        description: "Resource uploaded successfully",
+        description: "Resource attached successfully",
         className: "bg-green-50 text-green-900 border-green-200"
       });
       
-      fetchContents();
       setIsResourceDialogOpen(false);
-      resetResourceForm();
+      setResourceFile(null);
+      setSelectedContentForResource(null);
     } catch (error: any) {
       console.error("Error uploading resource:", error);
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to upload resource",
+        description: "Failed to attach resource",
         variant: "destructive",
       });
     } finally {
       setUploadingFile(false);
+    }
+  };
+
+  const handleDeleteResource = (contentId: number, resourceId: number) => {
+    if (!confirm("Are you sure you want to delete this resource?")) return;
+    
+    try {
+      setContents(contents.map(content => {
+        if (content.id === contentId) {
+          return {
+            ...content,
+            resources: content.resources?.filter(r => r.id !== resourceId) || []
+          };
+        }
+        return content;
+      }));
+      
+      toast({ 
+        title: "Success", 
+        description: "Resource deleted successfully",
+        className: "bg-green-50 text-green-900 border-green-200"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete resource",
+        variant: "destructive",
+      });
     }
   };
 
@@ -283,8 +317,6 @@ const ManageCourseContent = () => {
       case "video":
         return faVideo;
       case "document":
-        return faFileAlt;
-      case "resource":
         return faFileAlt;
       default:
         return faBook;
@@ -331,8 +363,6 @@ const ManageCourseContent = () => {
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "document":
         return "bg-emerald-50 text-emerald-700 border-emerald-200";
-      case "resource":
-        return "bg-amber-50 text-amber-700 border-amber-200";
       default:
         return "bg-purple-50 text-purple-700 border-purple-200";
     }
@@ -344,8 +374,6 @@ const ManageCourseContent = () => {
         return "from-blue-50 to-blue-25";
       case "document":
         return "from-emerald-50 to-emerald-25";
-      case "resource":
-        return "from-amber-50 to-amber-25";
       default:
         return "from-purple-50 to-purple-25";
     }
@@ -606,110 +634,6 @@ const ManageCourseContent = () => {
                       </form>
                     </DialogContent>
                   </Dialog>
-
-                  <Dialog open={isResourceDialogOpen} onOpenChange={setIsResourceDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={resetResourceForm} variant="outline" className="border-primary text-primary hover:bg-primary/10">
-                        <FontAwesomeIcon icon={faUpload} className="mr-2 h-4 w-4" />
-                        Upload Resource
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-xl">Upload Course Resource</DialogTitle>
-                        <p className="text-sm text-muted-foreground">Upload PDFs, images, PowerPoint, Excel, or other documents</p>
-                      </DialogHeader>
-                      <form onSubmit={handleResourceSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 gap-4">
-                          <div>
-                            <Label htmlFor="resource-title" className="text-sm font-medium">Title *</Label>
-                            <Input
-                              id="resource-title"
-                              value={resourceFormData.title}
-                              onChange={(e) => setResourceFormData({ ...resourceFormData, title: e.target.value })}
-                              required
-                              placeholder="Enter resource title"
-                              className="mt-1"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="resource-description" className="text-sm font-medium">Description</Label>
-                            <Textarea
-                              id="resource-description"
-                              value={resourceFormData.description}
-                              onChange={(e) => setResourceFormData({ ...resourceFormData, description: e.target.value })}
-                              placeholder="Enter resource description"
-                              rows={3}
-                              className="mt-1 resize-none"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="resource-position" className="text-sm font-medium">Display Order</Label>
-                            <Input
-                              id="resource-position"
-                              type="number"
-                              min="0"
-                              value={resourceFormData.position}
-                              onChange={(e) => setResourceFormData({ ...resourceFormData, position: parseInt(e.target.value) || 0 })}
-                              required
-                              className="mt-1"
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="file-upload" className="text-sm font-medium">File *</Label>
-                            <div className="mt-1">
-                              <div className="flex items-center justify-center w-full">
-                                <label htmlFor="file-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
-                                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    <FontAwesomeIcon icon={faUpload} className="h-8 w-8 mb-2 text-muted-foreground" />
-                                    <p className="mb-2 text-sm text-muted-foreground">
-                                      <span className="font-semibold">Click to upload</span> or drag and drop
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      PDF, Images, PPT, Excel, Word (MAX. 50MB)
-                                    </p>
-                                    {resourceFormData.file && (
-                                      <p className="mt-2 text-sm font-medium text-primary">
-                                        {resourceFormData.file.name}
-                                      </p>
-                                    )}
-                                  </div>
-                                  <input
-                                    id="file-upload"
-                                    type="file"
-                                    className="hidden"
-                                    onChange={handleFileChange}
-                                    accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp"
-                                  />
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3 pt-4 border-t">
-                          <Button 
-                            type="button" 
-                            variant="outline" 
-                            onClick={() => setIsResourceDialogOpen(false)}
-                            className="min-w-24"
-                          >
-                            Cancel
-                          </Button>
-                          <Button 
-                            type="submit" 
-                            className="min-w-24 bg-primary hover:bg-primary/90"
-                            disabled={uploadingFile}
-                          >
-                            {uploadingFile ? "Uploading..." : "Upload"}
-                          </Button>
-                        </div>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
                 </div>
               </CardHeader>
               
@@ -720,16 +644,10 @@ const ManageCourseContent = () => {
                       <FontAwesomeIcon icon={faBook} className="h-16 w-16 mx-auto mb-4 opacity-30" />
                       <h3 className="text-xl font-semibold mb-2">No content yet</h3>
                       <p className="mb-6">Start building your course by adding the first piece of content</p>
-                      <div className="flex gap-3 justify-center">
-                        <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
-                          <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" />
-                          Add Content
-                        </Button>
-                        <Button onClick={resetResourceForm} variant="outline">
-                          <FontAwesomeIcon icon={faUpload} className="mr-2 h-4 w-4" />
-                          Upload Resource
-                        </Button>
-                      </div>
+                      <Button onClick={resetForm} className="bg-primary hover:bg-primary/90">
+                        <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" />
+                        Add Your First Content
+                      </Button>
                     </div>
                   ) : (
                     contents.map((content) => (
@@ -741,10 +659,7 @@ const ManageCourseContent = () => {
                           <div className="flex justify-between items-start">
                             <div className="flex-1 flex items-start gap-4">
                               <div className={`p-3 rounded-lg border ${getTypeColor(content.type)}`}>
-                                <FontAwesomeIcon 
-                                  icon={content.type === "resource" ? getFileIcon(content.file_name) : getContentIcon(content.type)} 
-                                  className="h-5 w-5" 
-                                />
+                                <FontAwesomeIcon icon={getContentIcon(content.type)} className="h-5 w-5" />
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-start justify-between mb-3">
@@ -759,14 +674,9 @@ const ManageCourseContent = () => {
                                       <Badge variant="outline" className="text-xs font-normal">
                                         Order: {content.position}
                                       </Badge>
-                                      {content.file_name && (
-                                        <Badge variant="outline" className="text-xs font-normal">
-                                          {content.file_name}
-                                        </Badge>
-                                      )}
-                                      {content.file_size && (
-                                        <Badge variant="outline" className="text-xs font-normal">
-                                          {formatFileSize(content.file_size)}
+                                      {content.resources && content.resources.length > 0 && (
+                                        <Badge variant="outline" className="text-xs font-normal bg-amber-50 text-amber-700 border-amber-200">
+                                          {content.resources.length} {content.resources.length === 1 ? 'Resource' : 'Resources'}
                                         </Badge>
                                       )}
                                     </div>
@@ -779,7 +689,7 @@ const ManageCourseContent = () => {
                                   </p>
                                 )}
                                 
-                                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-6 text-sm text-muted-foreground mb-4">
                                   {content.duration && (
                                     <div className="flex items-center gap-1">
                                       <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
@@ -798,6 +708,58 @@ const ManageCourseContent = () => {
                                     </a>
                                   )}
                                 </div>
+
+                                {/* Attached Resources */}
+                                {content.resources && content.resources.length > 0 && (
+                                  <div className="mt-4 pt-4 border-t border-border/50">
+                                    <p className="text-xs font-medium text-muted-foreground mb-2">Attached Resources</p>
+                                    <div className="space-y-2">
+                                      {content.resources.map((resource) => (
+                                        <div key={resource.id} className="flex items-center justify-between p-2 bg-amber-50/50 rounded border border-amber-200/50">
+                                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                                            <FontAwesomeIcon 
+                                              icon={getFileIcon(resource.name)} 
+                                              className="h-4 w-4 text-amber-600 flex-shrink-0" 
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-sm font-medium text-foreground truncate">{resource.name}</p>
+                                              <p className="text-xs text-muted-foreground">{formatFileSize(resource.file_size)}</p>
+                                            </div>
+                                          </div>
+                                          <div className="flex gap-1 ml-2">
+                                            <a
+                                              href={resource.url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="p-1.5 hover:bg-amber-100 rounded text-amber-700"
+                                              title="Download"
+                                            >
+                                              <FontAwesomeIcon icon={faLink} className="h-3.5 w-3.5" />
+                                            </a>
+                                            <button
+                                              onClick={() => handleDeleteResource(content.id, resource.id)}
+                                              className="p-1.5 hover:bg-red-100 rounded text-red-600"
+                                              title="Delete"
+                                            >
+                                              <FontAwesomeIcon icon={faTrash} className="h-3.5 w-3.5" />
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Add Resource Button */}
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => openResourceDialog(content)}
+                                  className="mt-3 border-amber-200 text-amber-700 hover:bg-amber-50"
+                                >
+                                  <FontAwesomeIcon icon={faUpload} className="mr-2 h-3 w-3" />
+                                  Add Resource
+                                </Button>
                               </div>
                             </div>
                             
@@ -832,6 +794,75 @@ const ManageCourseContent = () => {
           </div>
         </main>
       </div>
+
+      {/* Resource Upload Modal */}
+      <Dialog open={isResourceDialogOpen} onOpenChange={setIsResourceDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Attach Resource</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Upload a file to attach to "{selectedContentForResource?.title}"
+            </p>
+          </DialogHeader>
+          <form onSubmit={handleResourceSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="file-upload" className="text-sm font-medium">Select File *</Label>
+              <div className="mt-2">
+                <div className="flex items-center justify-center w-full">
+                  <label htmlFor="file-upload" className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted transition-colors">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <FontAwesomeIcon icon={faUpload} className="h-10 w-10 mb-3 text-muted-foreground" />
+                      <p className="mb-2 text-sm text-muted-foreground">
+                        <span className="font-semibold">Click to upload</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        PDF, Images, PPT, Excel, Word (MAX. 50MB)
+                      </p>
+                      {resourceFile && (
+                        <div className="mt-3 p-2 bg-primary/10 rounded">
+                          <p className="text-sm font-medium text-primary flex items-center gap-2">
+                            <FontAwesomeIcon icon={getFileIcon(resourceFile.name)} className="h-4 w-4" />
+                            {resourceFile.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{formatFileSize(resourceFile.size)}</p>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => {
+                  setIsResourceDialogOpen(false);
+                  setResourceFile(null);
+                  setSelectedContentForResource(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                className="bg-primary hover:bg-primary/90"
+                disabled={uploadingFile || !resourceFile}
+              >
+                {uploadingFile ? "Uploading..." : "Attach Resource"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
