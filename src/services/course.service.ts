@@ -50,6 +50,11 @@ export const courseService = {
     return response.data;
   },
 
+  getSimilarCourses: async (id: string | number): Promise<Course[]> => {
+    const response = await apiClient.get(API_ENDPOINTS.SIMILAR_COURSES(id));
+    return response.data.data || response.data;
+  },
+
   // Admin functions
   createCourse: async (courseData: Partial<Course>) => {
     const response = await apiClient.post(API_ENDPOINTS.ADMIN_CREATE_COURSE, courseData);

@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { courseService, Course as CourseType } from "@/services/course.service";
+import { SimilarCoursesSection } from "@/components/course/SimilarCoursesSection";
+import { CourseSidebarCard } from "@/components/course/CourseSidebarCard";
 import {
   faXmark,
   faChevronRight,
@@ -69,17 +72,10 @@ interface Category {
   updated_at: string;
 }
 
-interface Course {
-  id: number;
+interface CourseDetail extends CourseType {
   user_id: number;
-  title: string;
-  description: string;
   category: Category;
   category_id: number;
-  level: string;
-  price: string;
-  thumbnail_url: string;
-  is_published: number;
   created_at: string;
   updated_at: string;
   is_enrolled: boolean;
@@ -223,7 +219,8 @@ const CourseDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseDetail | null>(null);
+  const [similarCourses, setSimilarCourses] = useState<CourseType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentContent, setCurrentContent] = useState<{
@@ -249,7 +246,7 @@ const CourseDetail = () => {
 
   // Fetch course data from API
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchCourseData = async () => {
       // Check authentication before making API call
       if (!token) {
         navigate("/login");
@@ -258,28 +255,19 @@ const CourseDetail = () => {
 
       try {
         setLoading(true);
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/courses/${id}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            // Token is invalid, redirect to login
-            localStorage.removeItem("zse_training_token");
-            navigate("/login");
-            return;
-          }
-          throw new Error(`Failed to fetch course: ${response.status}`);
-        }
-
-        const courseData = await response.json();
+        
+        // Fetch course details
+        const courseData = await courseService.getCourseById(id!) as unknown as CourseDetail;
         setCourse(courseData);
+
+        // Fetch similar courses
+        try {
+          const similar = await courseService.getSimilarCourses(id!);
+          setSimilarCourses(similar);
+        } catch (err) {
+          console.error("Error fetching similar courses:", err);
+          // Don't fail the whole page if similar courses fail
+        }
       } catch (err) {
         if (err instanceof Error && err.message.includes("401")) {
           localStorage.removeItem("zse_training_token");
@@ -294,7 +282,7 @@ const CourseDetail = () => {
     };
 
     if (id && token) {
-      fetchCourse();
+      fetchCourseData();
     }
   }, [id, token, navigate]);
 
@@ -746,39 +734,6 @@ const CourseDetail = () => {
 
       {/* Content Modal */}
       {renderContentModal()}
-
-      {/* Add CSS animations */}
-      <style jsx>{`
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-        
-        .animate-slide-in-right {
-          animation: slideInRight 0.3s ease-out;
-        }
-        
-        .animate-slide-in-left {
-          animation: slideInLeft 0.3s ease-out;
-        }
-      `}</style>
 
       {/* Breadcrumb */}
       <div className="bg-muted/40 py-3">
@@ -1247,170 +1202,44 @@ const CourseDetail = () => {
                 </Tabs>
 
                 {/* Similar Courses Section */}
-                <section className="mt-12">
-                  <h2 className="text-2xl font-bold mb-6 text-left">
-                    Similar Courses
-                  </h2>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="p-4 flex">
-                      <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        <FontAwesomeIcon
-                          icon={faChartLine}
-                          className="h-8 w-8 text-muted-foreground"
-                        />
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold">Advanced Topics</h3>
-                        <div className="flex items-center mt-1">
-                          <span className="text-sm font-medium text-primary">
-                            $99.99
-                          </span>
-                          <span className="text-sm text-muted-foreground line-through ml-2">
-                            $129.99
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-
-                    <Card className="p-4 flex">
-                      <div className="h-16 w-16 rounded-md bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        <FontAwesomeIcon
-                          icon={faMoneyBill}
-                          className="h-8 w-8 text-muted-foreground"
-                        />
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold">Related Course</h3>
-                        <div className="flex items-center mt-1">
-                          <span className="text-sm font-medium text-primary">
-                            $89.99
-                          </span>
-                          <span className="text-sm text-muted-foreground line-through ml-2">
-                            $119.99
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                </section>
+                <SimilarCoursesSection courses={similarCourses} />
               </div>
             </div>
 
             {/* Right Sidebar - Course Card */}
             <div className="lg:col-span-1">
-              <Card className="sticky top-4 shadow-lg border-0">
-                <div className="relative aspect-video rounded-t-lg overflow-hidden">
-                  <img
-                    src={course.thumbnail_url}
-                    alt={course.title}
-                    className="w-full h-full object-cover"
-                  />
-                  {sampleVideos.length > 0 && (
-                    <>
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <Button
-                          size="lg"
-                          className="rounded-full h-16 w-16 bg-white/90 hover:bg-white"
-                          onClick={() => {
-                            const firstVideo = sampleVideos[0];
-                            // Find the actual slide to get proper indices
-                            let foundSlide: Slide | null = null;
-                            let contentIndex = -1;
-                            let slideIndex = -1;
+              <CourseSidebarCard
+                thumbnailUrl={course.thumbnail_url}
+                title={course.title}
+                price={course.price}
+                isEnrolled={course.is_enrolled}
+                totalLessons={totalLessons}
+                modulesCount={course.contents.length}
+                hasSampleVideos={sampleVideos.length > 0}
+                onPreviewClick={() => {
+                  if (sampleVideos.length > 0) {
+                    const firstVideo = sampleVideos[0];
+                    let foundSlide: Slide | null = null;
+                    let contentIndex = -1;
+                    let slideIndex = -1;
 
-                            course.contents.forEach((content, cIndex) => {
-                              content.slides.forEach((slide, sIndex) => {
-                                if (slide.type === "video" && getYouTubeId(slide.url) === firstVideo.youtubeId) {
-                                  foundSlide = slide;
-                                  contentIndex = cIndex;
-                                  slideIndex = sIndex;
-                                }
-                              });
-                            });
+                    course.contents.forEach((content, cIndex) => {
+                      content.slides.forEach((slide, sIndex) => {
+                        if (slide.type === "video" && getYouTubeId(slide.url) === firstVideo.youtubeId) {
+                          foundSlide = slide;
+                          contentIndex = cIndex;
+                          slideIndex = sIndex;
+                        }
+                      });
+                    });
 
-                            if (foundSlide) {
-                              handleContentClick(foundSlide, contentIndex, slideIndex);
-                            }
-                          }}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPlay}
-                            className="h-6 w-6 ml-1 text-black"
-                          />
-                        </Button>
-                      </div>
-                      <div className="absolute top-4 right-4 bg-white/90 px-2 py-1 rounded text-sm font-medium">
-                        Preview
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <CardContent className="p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-3xl font-bold text-primary">
-                      {formatPrice(course.price)}
-                    </div>
-                    {course.is_enrolled && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-green-100 text-green-800"
-                      >
-                        Enrolled
-                      </Badge>
-                    )}
-                  </div>
-
-                  <div className="space-y-3">
-                    {course.is_enrolled ? (
-                      <Button className="w-full bg-green-600 hover:bg-green-700">
-                        Continue Learning
-                      </Button>
-                    ) : (
-                      <Button className="w-full">Enroll Now</Button>
-                    )}
-                    <Button variant="outline" className="w-full">
-                      Add to Wishlist
-                    </Button>
-                  </div>
-
-                  <div className="pt-4">
-                    <h3 className="font-bold text-left mb-2">
-                      This course includes:
-                    </h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faClock}
-                          className="h-4 w-4 mr-2 text-muted-foreground"
-                        />
-                        <span>{totalLessons} lessons</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faArrowTrendUp}
-                          className="h-4 w-4 mr-2 text-muted-foreground"
-                        />
-                        <span>{course.contents.length} modules</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          className="h-4 w-4 mr-2 text-muted-foreground"
-                        />
-                        <span>Downloadable resources</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faAward}
-                          className="h-4 w-4 mr-2 text-muted-foreground"
-                        />
-                        <span>Certificate of completion</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    if (foundSlide) {
+                      handleContentClick(foundSlide, contentIndex, slideIndex);
+                    }
+                  }
+                }}
+                onWishlistClick={() => setIsWishlisted(!isWishlisted)}
+              />
             </div>
           </div>
         </div>
