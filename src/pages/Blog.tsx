@@ -72,16 +72,74 @@ const Blog = () => {
     return (
       <div className="min-h-screen bg-background font-poppins">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <FontAwesomeIcon 
-              icon={faSpinner} 
-              className="h-12 w-12 text-primary animate-spin mb-4" 
-            />
-            <h3 className="text-xl font-semibold mb-2">Loading Blog Posts</h3>
-            <p className="text-muted-foreground">Fetching the latest articles...</p>
+        
+        {/* Hero Skeleton */}
+        <section className="relative py-20 bg-gradient-to-br from-primary/5 to-primary/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="flex justify-center mb-6">
+              <div className="h-16 w-16 bg-primary/20 rounded-full animate-pulse" />
+            </div>
+            <div className="h-12 bg-primary/10 rounded-md w-1/2 mx-auto mb-6 animate-pulse" />
+            <div className="h-6 bg-primary/10 rounded-md w-2/3 mx-auto animate-pulse" />
           </div>
-        </div>
+        </section>
+
+        {/* Search Skeleton */}
+        <section className="py-8 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 max-w-md h-10 bg-muted rounded-md animate-pulse" />
+              <div className="w-full md:w-48 h-10 bg-muted rounded-md animate-pulse" />
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Article Skeleton */}
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-8 bg-muted rounded-md w-48 mb-8 animate-pulse" />
+            <Card className="overflow-hidden">
+              <div className="grid lg:grid-cols-2">
+                <div className="aspect-video bg-muted animate-pulse" />
+                <div className="p-8 space-y-4">
+                  <div className="h-6 bg-muted rounded w-1/3 animate-pulse" />
+                  <div className="h-8 bg-muted rounded w-full animate-pulse" />
+                  <div className="h-6 bg-muted rounded w-full animate-pulse" />
+                  <div className="h-6 bg-muted rounded w-2/3 animate-pulse" />
+                  <div className="h-10 bg-muted rounded w-48 animate-pulse" />
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        {/* Blog Posts Grid Skeleton */}
+        <section className="py-12 bg-muted/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-8 bg-muted rounded-md w-48 mb-8 animate-pulse" />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="aspect-video bg-muted animate-pulse" />
+                  <CardHeader className="space-y-3">
+                    <div className="h-4 bg-muted rounded w-24 animate-pulse" />
+                    <div className="h-6 bg-muted rounded w-full animate-pulse" />
+                    <div className="h-4 bg-muted rounded w-full animate-pulse" />
+                    <div className="h-4 bg-muted rounded w-2/3 animate-pulse" />
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex gap-2">
+                      <div className="h-4 bg-muted rounded w-20 animate-pulse" />
+                      <div className="h-4 bg-muted rounded w-20 animate-pulse" />
+                    </div>
+                    <div className="h-10 bg-muted rounded w-full animate-pulse" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <Footer />
       </div>
     );

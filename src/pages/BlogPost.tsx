@@ -64,16 +64,42 @@ const BlogPost = () => {
     return (
       <div className="min-h-screen bg-background font-poppins">
         <Navbar />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <FontAwesomeIcon 
-              icon={faSpinner} 
-              className="h-12 w-12 text-primary animate-spin mb-4" 
-            />
-            <h3 className="text-xl font-semibold mb-2">Loading Article</h3>
-            <p className="text-muted-foreground">Fetching the blog post...</p>
+        
+        <article className="py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="h-10 bg-muted rounded w-32 mb-6 animate-pulse" />
+            
+            <header className="mb-8 space-y-4">
+              <div className="flex gap-3">
+                <div className="h-6 bg-muted rounded w-24 animate-pulse" />
+                <div className="h-6 bg-muted rounded w-24 animate-pulse" />
+              </div>
+              <div className="h-12 bg-muted rounded w-full animate-pulse" />
+              <div className="h-6 bg-muted rounded w-full animate-pulse" />
+              <div className="h-6 bg-muted rounded w-2/3 animate-pulse" />
+              
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex gap-6">
+                  <div className="h-4 bg-muted rounded w-24 animate-pulse" />
+                  <div className="h-4 bg-muted rounded w-24 animate-pulse" />
+                  <div className="h-4 bg-muted rounded w-24 animate-pulse" />
+                </div>
+                <div className="h-8 bg-muted rounded w-20 animate-pulse" />
+              </div>
+            </header>
+            
+            {/* Featured Image Skeleton */}
+            <div className="aspect-video rounded-lg bg-muted mb-12 animate-pulse" />
+            
+            {/* Content Skeleton */}
+            <div className="space-y-4">
+              {[...Array(8)].map((_, index) => (
+                <div key={index} className="h-4 bg-muted rounded w-full animate-pulse" />
+              ))}
+            </div>
           </div>
-        </div>
+        </article>
+        
         <Footer />
       </div>
     );
