@@ -150,13 +150,55 @@ const Courses = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 font-poppins">
         <Navbar />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex justify-center items-center py-12">
-            <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-primary animate-spin" />
+        
+        {/* Hero Skeleton */}
+        <section className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl space-y-4">
+              <div className="h-12 bg-purple-500/30 rounded-md w-3/4 animate-pulse" />
+              <div className="h-6 bg-purple-500/30 rounded-md w-full animate-pulse" />
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Filter Bar Skeleton */}
+        <section className="border-b bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+              <div className="flex-1 max-w-xl w-full h-10 bg-muted rounded-md animate-pulse" />
+              <div className="flex gap-3 w-full md:w-auto">
+                <div className="w-full md:w-48 h-10 bg-muted rounded-md animate-pulse" />
+                <div className="w-full md:w-40 h-10 bg-muted rounded-md animate-pulse" />
+              </div>
+            </div>
+            <div className="h-4 bg-muted rounded-md w-32 animate-pulse" />
+          </div>
+        </section>
+
+        {/* Courses Grid Skeleton */}
+        <section className="py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {[...Array(8)].map((_, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="aspect-video bg-muted animate-pulse" />
+                  <CardContent className="p-4 space-y-3">
+                    <div className="h-5 bg-muted rounded animate-pulse" />
+                    <div className="h-4 bg-muted rounded w-3/4 animate-pulse" />
+                    <div className="h-4 bg-muted rounded w-1/2 animate-pulse" />
+                    <div className="flex items-center justify-between pt-3">
+                      <div className="h-6 bg-muted rounded w-20 animate-pulse" />
+                      <div className="h-8 bg-muted rounded w-16 animate-pulse" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <Footer />
       </div>
     );

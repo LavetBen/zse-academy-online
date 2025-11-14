@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -13,6 +14,7 @@ import { blogService, BlogPost } from "@/services/blog.service";
 
 const ManageBlog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -28,12 +30,15 @@ const ManageBlog = () => {
 
   const fetchPosts = async () => {
     try {
+      setLoading(true);
       const data = await blogService.getAllPosts();
       setPosts(data);
       console.log(data);
     } catch (error) {
       toast.error("Failed to fetch blog posts");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -200,7 +205,31 @@ const ManageBlog = () => {
 
       {/* Posts List */}
       <div className="grid gap-4">
-        {filteredPosts.map((post) => (
+        {loading ? (
+          // Skeleton loaders
+          [...Array(3)].map((_, index) => (
+            <Card key={index} className="overflow-hidden">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-10 w-10" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Skeleton className="h-40 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          filteredPosts.map((post) => (
           <Card key={post.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -235,9 +264,10 @@ const ManageBlog = () => {
               )}
             </CardContent>
           </Card>
-        ))}
+        ))
+        )}
 
-        {filteredPosts.length === 0 && (
+        {!loading && filteredPosts.length === 0 && (
           <Card>
             <CardContent className="py-8 text-center text-muted-foreground">
               No blog posts found

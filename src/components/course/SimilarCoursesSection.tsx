@@ -30,8 +30,8 @@ export const SimilarCoursesSection = ({ courses }: SimilarCoursesSectionProps) =
                 />
               </div>
               <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                  {course.title}
+                <h3 className="font-semibold text-lg mb-2 line-clamp-2" title={course.title}>
+                  {course.title.length > 45 ? `${course.title.substring(0, 45)}...` : course.title}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                   {course.description}
