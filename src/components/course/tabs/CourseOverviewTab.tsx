@@ -12,7 +12,7 @@ export const CourseOverviewTab = ({ totalLessons, modulesCount }: CourseOverview
     <div className="space-y-6">
       {/* Stats Cards - Responsive Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="text-center p-3 sm:p-4 border-l-4 border-l-primary">
+        <Card className="text-center p-3 sm:p-4 ">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
             <FontAwesomeIcon icon={faBook} className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             <div>
@@ -22,7 +22,7 @@ export const CourseOverviewTab = ({ totalLessons, modulesCount }: CourseOverview
           </div>
         </Card>
         
-        <Card className="text-center p-3 sm:p-4 border-l-4 border-l-primary">
+        <Card className="text-center p-3 sm:p-4 ">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
             <FontAwesomeIcon icon={faListAlt} className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             <div>
@@ -32,7 +32,7 @@ export const CourseOverviewTab = ({ totalLessons, modulesCount }: CourseOverview
           </div>
         </Card>
         
-        <Card className="text-center p-3 sm:p-4 border-l-4 border-l-primary">
+        <Card className="text-center p-3 sm:p-4 ">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
             <FontAwesomeIcon icon={faUsers} className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             <div>
@@ -42,7 +42,7 @@ export const CourseOverviewTab = ({ totalLessons, modulesCount }: CourseOverview
           </div>
         </Card>
         
-        <Card className="text-center p-3 sm:p-4 border-l-4 border-l-primary">
+        <Card className="text-center p-3 sm:p-4 ">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
             <FontAwesomeIcon icon={faChartLine} className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             <div>
@@ -105,7 +105,7 @@ export const CourseOverviewTab = ({ totalLessons, modulesCount }: CourseOverview
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
               <FontAwesomeIcon icon={faAward} className="h-4 w-4 text-primary" />
-              <span className="text-sm">Certificate</span>
+              <span className="text-sm">Detailed Powerpoint</span>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
               <FontAwesomeIcon icon={faUsers} className="h-4 w-4 text-primary" />

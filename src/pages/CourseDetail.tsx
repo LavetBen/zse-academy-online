@@ -379,7 +379,7 @@ const CourseDetail = () => {
                 </TabsContent>
 
                 <TabsContent value="reviews" className="mt-6">
-                  <CourseReviewsTab />
+                  {id && <CourseReviewsTab courseId={id} />}
                 </TabsContent>
 
                 <TabsContent value="quizzes" className="mt-6">
