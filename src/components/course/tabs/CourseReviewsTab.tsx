@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
 export const CourseReviewsTab = () => {
-  const { courseId } = useParams(); // 👈 get course id from URL
+  const { course } = useParams(); // from /courses/:courseId
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 
@@ -25,10 +24,15 @@ export const CourseReviewsTab = () => {
     try {
       const token = localStorage.getItem("zse_training_token");
 
+      if (!token) {
+        alert("You must be logged in to submit a review.");
+        return;
+      }
+
       const response = await axios.post(
         "http://127.0.0.1:8000/api/reviews",
         {
-          course_id: courseId,
+          course_id: Number(course), // convert to integer
           rating,
           comment,
         },
@@ -40,12 +44,50 @@ export const CourseReviewsTab = () => {
         }
       );
 
-      alert("Review submitted!");
+      alert("Review submitted successfully!");
+
+      // reset fields
       setComment("");
       setRating(5);
-    } catch (error) {
-      console.log(error);
-      alert("Error submitting review");
+    } catch (error: any) {
+      console.log("Review Submission ERROR:", error);
+
+      // No server response (offline, server down)
+      if (!error.response) {
+        alert("Network error. Please check your internet or server.");
+        return;
+      }
+
+      // Laravel validation errors (422)
+      if (error.response.status === 422) {
+        const errors = error.response.data.errors;
+
+        let message = "Validation Errors:\n";
+        for (const key in errors) {
+          message += `• ${errors[key][0]}\n`;
+        }
+
+        alert(message);
+        return;
+      }
+
+      // Unauthorized
+      if (error.response.status === 401) {
+        alert("Your session expired. Please log in again.");
+        return;
+      }
+
+      // Forbidden (user not enrolled or not permitted)
+      if (error.response.status === 403) {
+        alert(
+          error.response.data.message ||
+            "You are not allowed to review this course."
+        );
+        return;
+      }
+
+      // Any other server error
+      alert("Something went wrong while submitting the review.");
     }
   };
 
@@ -62,7 +104,7 @@ export const CourseReviewsTab = () => {
             Student Reviews
           </h2>
 
-          {/* Add Review Button */}
+          {/* Add Review Modal */}
           <Dialog>
             <DialogTrigger asChild>
               <Button>Add Review</Button>
@@ -79,8 +121,8 @@ export const CourseReviewsTab = () => {
                   <label className="text-sm font-medium">Rating</label>
                   <Input
                     type="number"
-                    min="1"
-                    max="5"
+                    min={1}
+                    max={5}
                     value={rating}
                     onChange={(e) => setRating(Number(e.target.value))}
                   />
@@ -104,7 +146,7 @@ export const CourseReviewsTab = () => {
           </Dialog>
         </div>
 
-        {/* Reviews – You can plug your list rendering here */}
+        {/* Reviews List Placeholder */}
       </CardContent>
     </Card>
   );
