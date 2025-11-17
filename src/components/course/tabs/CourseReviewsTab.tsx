@@ -101,7 +101,6 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [averageRating, setAverageRating] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const token = localStorage.getItem("zse_training_token");
@@ -120,11 +119,9 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
       );
 
       setReviews(response.data.reviews || []);
-      setAverageRating(response.data.average_rating || 0);
     } catch (error) {
       console.error("Error fetching reviews:", error);
       setReviews([]);
-      setAverageRating(0);
     } finally {
       setLoading(false);
     }
@@ -173,8 +170,6 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
       <CardContent className="p-4 sm:p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-         
-
           {/* Add Review Button */}
           <Dialog>
             <DialogTrigger asChild>
@@ -229,23 +224,6 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
             </DialogContent>
           </Dialog>
         </div>
-
-        {/* Average Rating */}
-        {reviews.length > 0 && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 sm:p-6 border">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-              <div className="text-center sm:text-left">
-                <div className="text-3xl sm:text-4xl font-bold text-gray-900">
-                  {averageRating.toFixed(1)}
-                </div>
-                <StarRating rating={Math.round(averageRating)} size="md" />
-                <div className="text-sm text-gray-600 mt-1">
-                  {reviews.length} review{reviews.length !== 1 ? "s" : ""}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Reviews List */}
         <div className="space-y-4">
