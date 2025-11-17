@@ -6,7 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faChevronRight, 
+  faBookOpen, 
+  faList, 
+  faChalkboardTeacher, 
+  faStar, 
+  faFileAlt 
+} from "@fortawesome/free-solid-svg-icons";
 import { Star } from "lucide-react";
 import { courseService, Course as CourseType } from "@/services/course.service";
 import { SimilarCoursesSection } from "@/components/course/SimilarCoursesSection";
@@ -308,15 +315,54 @@ const CourseDetail = () => {
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="w-full justify-start">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="content">Content</TabsTrigger>
-                  <TabsTrigger value="instructor">Instructor</TabsTrigger>
-                  <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                  <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+                <TabsList className="w-full grid grid-cols-5 h-auto p-1 bg-muted/50 rounded-lg">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <FontAwesomeIcon icon={faBookOpen} className="h-4 w-4 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Overview</span>
+                    <span className="sm:hidden text-[10px]">Overview</span>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="content" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <FontAwesomeIcon icon={faList} className="h-4 w-4 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Content</span>
+                    <span className="sm:hidden text-[10px]">Content</span>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="instructor" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <FontAwesomeIcon icon={faChalkboardTeacher} className="h-4 w-4 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Instructor</span>
+                    <span className="sm:hidden text-[10px]">Teacher</span>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="reviews" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <FontAwesomeIcon icon={faStar} className="h-4 w-4 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Reviews</span>
+                    <span className="sm:hidden text-[10px]">Reviews</span>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="quizzes" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Quizzes</span>
+                    <span className="sm:hidden text-[10px]">Quizzes</span>
+                  </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="space-y-6 mt-6">
+                <TabsContent value="overview" className="mt-6">
                   <CourseOverviewTab totalLessons={totalLessons} modulesCount={course.contents.length} />
                 </TabsContent>
 
