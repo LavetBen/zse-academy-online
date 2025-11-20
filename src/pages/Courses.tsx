@@ -26,6 +26,7 @@ interface Course {
   title: string;
   description: string;
   category: string;
+  category_id?: number;
   level: string;
   price: number;
   thumbnail_url: string;
@@ -34,8 +35,13 @@ interface Course {
   duration?: string;
   students?: number;
   rating?: number;
+  reviews_count?: number;
+  reviews_avg_rating?: number | string;
   is_enrolled?: boolean;
   progress?: number;
+  user_id?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 const Courses = () => {
@@ -52,20 +58,34 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         const coursesData = await courseService.getAllCourses();
-        const coursesWithMockData = coursesData.map((course) => ({
-          ...course,
-          instructor: course.instructor?.name || "ZSE Expert Instructor",
-          duration: course.duration || `${Math.floor(Math.random() * 12) + 4} weeks`,
-          students: Math.floor(Math.random() * 2000) + 500,
-          rating: 4.5 + Math.random() * 0.5,
-          category: course.category?.name || "General",
-          level: course.level || "Beginner",
-          thumbnail_url: course.thumbnail || "",
-          is_published: true,
-          is_enrolled: course.is_enrolled || false,
-          progress: course.progress || 0,
-        }));
-        setCourses(coursesWithMockData);
+        const coursesWithEnhancedData = coursesData.map((course: any) => {
+          // Calculate rating from backend data - only use if available
+          const backendRating = course.reviews_avg_rating !== null && course.reviews_avg_rating !== undefined
+            ? parseFloat(course.reviews_avg_rating.toString())
+            : null;
+          
+          // Calculate student count from backend data - only use if available
+          const backendStudents = course.enrollments_count || course.students_count || null;
+          
+          return {
+            ...course,
+            instructor: course.instructor?.name || course.instructor?.username || "ZSE Expert Instructor",
+            duration: course.duration || `${Math.floor(Math.random() * 12) + 4} weeks`,
+            // Only use mock students if no backend data available
+            students: backendStudents !== null ? backendStudents : Math.floor(Math.random() * 2000) + 500,
+            // Only use backend rating, don't add mock ratings
+            rating: backendRating,
+            reviews_count: course.reviews_count || 0,
+            category: course.category?.name || course.category || "General",
+            level: course.level || "Beginner",
+            thumbnail_url: course.thumbnail_url || course.thumbnail || "",
+            is_published: course.is_published !== undefined ? Boolean(course.is_published) : true,
+            is_enrolled: course.is_enrolled !== undefined ? Boolean(course.is_enrolled) : false,
+            progress: course.progress || 0,
+            price: typeof course.price === 'string' ? parseFloat(course.price) : course.price,
+          };
+        });
+        setCourses(coursesWithEnhancedData);
       } catch (error: any) {
         console.error("Failed to fetch courses:", error);
         toast({
@@ -133,7 +153,7 @@ const Courses = () => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 0,
+      minimumFractionDigits: price % 1 === 0 ? 0 : 2,
     }).format(price);
   };
 
@@ -143,9 +163,52 @@ const Courses = () => {
       'Fundamentals': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop',
       'Technical Analysis': 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=240&fit=crop',
       'Portfolio Management': 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=240&fit=crop',
+      'DevOps': 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&h=240&fit=crop',
+      'Security': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=240&fit=crop',
+      'intro': 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=400&h=240&fit=crop',
     };
     return defaultThumbnails[course.category] || 
            'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
+  };
+
+  // Function to render star rating
+  const renderRating = (course: Course) => {
+    const rating = course.rating;
+    const reviewsCount = course.reviews_count || course.students || 0;
+    
+    // If no rating data exists, don't show rating section
+    if (rating === undefined || rating === null) {
+      return (
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs text-gray-500">No ratings yet</span>
+        </div>
+      );
+    }
+
+    // If rating is 0, show it as 0
+    const displayRating = rating === 0 ? 0 : rating;
+    
+    return (
+      <div className="flex items-center gap-2 mb-3">
+        <span className="font-bold text-sm text-gray-900">{displayRating.toFixed(1)}</span>
+        <div className="flex items-center">
+          {[...Array(5)].map((_, i) => (
+            <FontAwesomeIcon 
+              key={i} 
+              icon={faStar} 
+              className={`h-3 w-3 ${
+                i < Math.floor(displayRating) 
+                  ? 'text-orange-400' 
+                  : displayRating % 1 > 0 && i === Math.floor(displayRating)
+                  ? 'text-orange-200'
+                  : 'text-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+        <span className="text-xs text-gray-500">({reviewsCount.toLocaleString()})</span>
+      </div>
+    );
   };
 
   if (loading) {
@@ -321,30 +384,24 @@ const Courses = () => {
                     
                     <p className="text-xs text-gray-600 mb-2">{course.instructor}</p>
                     
-                    {/* Rating */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="font-bold text-sm text-gray-900">{course.rating?.toFixed(1)}</span>
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <FontAwesomeIcon 
-                            key={i} 
-                            icon={faStar} 
-                            className={`h-3 w-3 ${i < Math.floor(course.rating || 0) ? 'text-orange-400' : 'text-gray-300'}`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">({course.students?.toLocaleString()})</span>
-                    </div>
+                    {/* Rating - Only shows if rating data exists */}
+                    {renderRating(course)}
 
                     {/* Price & CTA */}
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                       <div>
                         <span className="text-lg font-bold text-gray-900">{formatPrice(course.price)}</span>
+                        {course.price === 0 && (
+                          <Badge variant="secondary" className="ml-2 text-xs">
+                            Free
+                          </Badge>
+                        )}
                       </div>
                       
                       {course.is_enrolled ? (
                         <Link to={`/learn/${course.id}`}>
                           <Button size="sm" variant="outline" className="text-xs h-8">
+                            <FontAwesomeIcon icon={faPlayCircle} className="h-3 w-3 mr-1" />
                             Continue
                           </Button>
                         </Link>
@@ -357,8 +414,10 @@ const Courses = () => {
                         >
                           {enrolling === course.id ? (
                             <FontAwesomeIcon icon={faSpinner} className="h-3 w-3 animate-spin" />
+                          ) : course.price === 0 ? (
+                            "Get Started"
                           ) : (
-                            "Enroll"
+                            "Enroll Now"
                           )}
                         </Button>
                       )}

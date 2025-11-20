@@ -1,3 +1,5 @@
+// ✨ FULL FIXED CourseDetail.tsx
+
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -76,6 +78,7 @@ const CourseDetail = () => {
   const [similarCourses, setSimilarCourses] = useState<CourseType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [currentContent, setCurrentContent] = useState<{
     title: string;
     type: string;
@@ -85,6 +88,8 @@ const CourseDetail = () => {
     totalSlides: number;
     contentId: number;
     slides: Slide[];
+    moduleId: number;   // FIX
+    courseId: number;   // FIX
   } | null>(null);
 
   useEffect(() => {
@@ -132,6 +137,7 @@ const CourseDetail = () => {
     setIsWishlisted(!isWishlisted);
   };
 
+  // ✅ FIX: pass correct courseId & moduleId
   const handleContentClick = (content: Content, slide: Slide, slideIndex: number) => {
     const youtubeId = slide.type === "video" ? getYouTubeId(slide.url) : undefined;
 
@@ -144,6 +150,8 @@ const CourseDetail = () => {
       totalSlides: content.slides.length,
       contentId: content.id,
       slides: content.slides,
+      moduleId: content.id,      // FIX
+      courseId: content.course_id // FIX
     });
   };
 
@@ -171,9 +179,22 @@ const CourseDetail = () => {
     );
   };
 
-  const handleFinishContent = () => {
-    console.log(`Finished content ${currentContent?.contentId}`);
-    closeContentModal();
+  // ✅ FIX: correct finish API call
+  const handleFinishContent = async () => {
+    if (!currentContent) return;
+
+    try {
+      await courseService.finishModule(
+        currentContent.courseId,
+        currentContent.moduleId
+      );
+
+      console.log("Finished module:", currentContent.moduleId);
+
+      closeContentModal();
+    } catch (err) {
+      console.log("Finish error:", err);
+    }
   };
 
   const getYouTubeId = (url: string): string | null => {
@@ -244,6 +265,7 @@ const CourseDetail = () => {
     <div className="min-h-screen bg-background font-poppins">
       <Navbar />
 
+      {/* Content Modal */}
       {currentContent && (
         <CourseContentModal
           content={currentContent}
@@ -253,6 +275,7 @@ const CourseDetail = () => {
         />
       )}
 
+      {/* Breadcrumb */}
       <div className="bg-muted/40 py-3">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -265,6 +288,7 @@ const CourseDetail = () => {
         </div>
       </div>
 
+      {/* Main Section */}
       <section className="py-8 lg:py-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-8">
@@ -314,77 +338,78 @@ const CourseDetail = () => {
                 </div>
               </div>
 
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="w-full grid grid-cols-5 h-auto p-1 bg-muted/50 rounded-lg">
+              {/* Enhanced Tabs */}
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="w-full grid grid-cols-5 h-auto p-1 bg-muted/50 rounded-lg gap-1">
                   <TabsTrigger 
                     value="overview" 
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
-                    <FontAwesomeIcon icon={faBookOpen} className="h-4 w-4 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">Overview</span>
-                    <span className="sm:hidden text-[10px]">Overview</span>
+                    <FontAwesomeIcon icon={faBookOpen} className="h-4 w-4" />
+                    <span className="hidden sm:inline text-sm font-medium">Overview</span>
                   </TabsTrigger>
-                  
+
                   <TabsTrigger 
                     value="content" 
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
-                    <FontAwesomeIcon icon={faList} className="h-4 w-4 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">Content</span>
-                    <span className="sm:hidden text-[10px]">Content</span>
+                    <FontAwesomeIcon icon={faList} className="h-4 w-4" />
+                    <span className="hidden sm:inline text-sm font-medium">Content</span>
                   </TabsTrigger>
-                  
+
                   <TabsTrigger 
                     value="instructor" 
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
-                    <FontAwesomeIcon icon={faChalkboardTeacher} className="h-4 w-4 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">Instructor</span>
-                    <span className="sm:hidden text-[10px]">Teacher</span>
+                    <FontAwesomeIcon icon={faChalkboardTeacher} className="h-4 w-4" />
+                    <span className="hidden sm:inline text-sm font-medium">Instructor</span>
                   </TabsTrigger>
-                  
+
                   <TabsTrigger 
                     value="reviews" 
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
-                    <FontAwesomeIcon icon={faStar} className="h-4 w-4 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">Reviews</span>
-                    <span className="sm:hidden text-[10px]">Reviews</span>
+                    <FontAwesomeIcon icon={faStar} className="h-4 w-4" />
+                    <span className="hidden sm:inline text-sm font-medium">Reviews</span>
                   </TabsTrigger>
-                  
+
                   <TabsTrigger 
                     value="quizzes" 
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
-                    <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4 sm:h-4 sm:w-4" />
-                    <span className="hidden sm:inline">Quizzes</span>
-                    <span className="sm:hidden text-[10px]">Quizzes</span>
+                    <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4" />
+                    <span className="hidden sm:inline text-sm font-medium">Quizzes</span>
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="mt-6">
-                  <CourseOverviewTab totalLessons={totalLessons} modulesCount={course.contents.length} />
-                </TabsContent>
+                <div className="mt-6">
+                  <TabsContent value="overview" className="m-0">
+                    <CourseOverviewTab 
+                      totalLessons={totalLessons} 
+                      modulesCount={course.contents.length} 
+                    />
+                  </TabsContent>
 
-                <TabsContent value="content" className="mt-6">
-                  <CourseContentTab
-                    contents={course.contents}
-                    totalLessons={totalLessons}
-                    onContentClick={handleContentClick}
-                  />
-                </TabsContent>
+                  <TabsContent value="content" className="m-0">
+                    <CourseContentTab
+                      contents={course.contents}
+                      totalLessons={totalLessons}
+                      onContentClick={handleContentClick}
+                    />
+                  </TabsContent>
 
-                <TabsContent value="instructor" className="mt-6">
-                  <CourseInstructorTab instructor={course.instructor} />
-                </TabsContent>
+                  <TabsContent value="instructor" className="m-0">
+                    <CourseInstructorTab instructor={course.instructor} />
+                  </TabsContent>
 
-                <TabsContent value="reviews" className="mt-6">
-                  {id && <CourseReviewsTab courseId={id} />}
-                </TabsContent>
+                  <TabsContent value="reviews" className="m-0">
+                    {id && <CourseReviewsTab courseId={id} />}
+                  </TabsContent>
 
-                <TabsContent value="quizzes" className="mt-6">
-                  {id && <QuizzesSection courseId={id} />}
-                </TabsContent>
+                  <TabsContent value="quizzes" className="m-0">
+                    {id && <QuizzesSection courseId={id} />}
+                  </TabsContent>
+                </div>
               </Tabs>
             </div>
 

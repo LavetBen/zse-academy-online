@@ -19,6 +19,7 @@ interface QuizState {
   userAnswers: { [questionId: number]: string };
   showResults: boolean;
   score: number;
+  totalQuestions: number;
   timeRemaining: number;
   isSubmitting: boolean;
 }
@@ -37,6 +38,7 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     userAnswers: {},
     showResults: false,
     score: 0,
+    totalQuestions: quiz.questions.length,
     timeRemaining: quiz.questions.length * 90,
     isSubmitting: false,
   });
@@ -103,14 +105,19 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     try {
       const result = await quizService.submitQuiz(quiz.id, quizState.userAnswers);
 
+      // Use the correct response structure from your API
+      const score = result.score || 0;
+      const totalQuestions = result.total_questions || quiz.questions.length;
+
       setQuizState((prev) => ({
         ...prev,
         showResults: true,
-        score: result.correct_answers || 0,
+        score: score,
+        totalQuestions: totalQuestions,
         isSubmitting: false,
       }));
 
-      onQuizComplete(result.correct_answers || 0, result.total_questions || quiz.questions.length);
+      onQuizComplete(score, totalQuestions);
     } catch (error) {
       console.error("Error submitting quiz:", error);
       setQuizState((prev) => ({ ...prev, isSubmitting: false }));
@@ -124,8 +131,8 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
   };
 
   if (quizState.showResults) {
-    const totalQuestions = quiz.questions.length;
-    const correctAnswers = quizState.score || 0;
+    const totalQuestions = quizState.totalQuestions;
+    const correctAnswers = quizState.score;
     const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
     const passed = percentage >= 70;
 

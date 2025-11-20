@@ -20,9 +20,18 @@ import {
   faChevronRight,
   faGraduationCap,
   faCog,
-  faBookAtlas
+  faBookAtlas,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
-import logo from "@/assets/logo.png"; // Import the logo
+import logo from "@/assets/logo.png";
+
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+
+interface AdminStats {
+  total_courses: number;
+  total_users: number;
+  total_enrollments: number;
+}
 
 const sidebarItems = [
   { icon: faHome, label: "Dashboard", key: "dashboard" },
@@ -38,12 +47,57 @@ const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
       navigate("/dashboard");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (activeSection === "dashboard") {
+      fetchAdminStats();
+    }
+  }, [activeSection]);
+
+  const fetchAdminStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem("zse_training_token");
+      
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
+        throw new Error(`Failed to fetch stats: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setStats(data);
+    } catch (err: any) {
+      console.error("Error fetching admin stats:", err);
+      setError(err.message || "Failed to load dashboard statistics");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -57,6 +111,10 @@ const AdminDashboard = () => {
 
   const toggleMobileSidebar = () => {
     setMobileSidebarOpen(!mobileSidebarOpen);
+  };
+
+  const retryFetchStats = () => {
+    fetchAdminStats();
   };
 
   return (
@@ -116,7 +174,6 @@ const AdminDashboard = () => {
             />
             {!sidebarCollapsed && (
               <div className="flex flex-col">
-               
                 <span className="text-xs text-muted-foreground leading-tight">Admin Panel</span>
               </div>
             )}
@@ -131,7 +188,6 @@ const AdminDashboard = () => {
                 className="h-12 w-12 object-contain"
               />
               <div className="flex flex-col">
-               
                 <span className="text-xs text-muted-foreground leading-tight">Admin Panel</span>
               </div>
             </div>
@@ -254,46 +310,100 @@ const AdminDashboard = () => {
                   <p className="text-primary-foreground/80 text-sm lg:text-lg mb-4">
                     Manage courses, users, and platform analytics
                   </p>
+                  {loading && (
+                    <div className="flex items-center space-x-2 text-primary-foreground/80">
+                      <FontAwesomeIcon icon={faSpinner} className="h-4 w-4 animate-spin" />
+                      <span className="text-sm">Loading statistics...</span>
+                    </div>
+                  )}
+                  {error && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-red-200">{error}</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={retryFetchStats}
+                        className="text-white border-white hover:bg-white/20"
+                      >
+                        Retry
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full"></div>
                 <div className="absolute -left-5 -bottom-5 w-32 h-32 bg-white/5 rounded-full"></div>
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
-                <div className="group relative bg-gradient-to-br from-card via-card to-accent/30 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="p-2 lg:p-3 bg-primary/10 rounded-lg lg:rounded-xl">
-                      <FontAwesomeIcon icon={faBook} className="h-4 w-4 lg:h-6 lg:w-6 text-primary" />
+              {loading ? (
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
+                  {[...Array(3)].map((_, index) => (
+                    <div key={index} className="bg-card rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 animate-pulse">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="p-2 lg:p-3 bg-muted rounded-lg lg:rounded-xl">
+                          <div className="h-4 w-4 lg:h-6 lg:w-6 bg-muted-foreground/20 rounded"></div>
+                        </div>
+                        <div className="h-6 lg:h-8 w-12 bg-muted-foreground/20 rounded"></div>
+                      </div>
+                      <div className="h-4 w-24 bg-muted-foreground/20 rounded mb-2"></div>
+                      <div className="h-3 w-20 bg-muted-foreground/20 rounded"></div>
                     </div>
-                    <p className="text-xl lg:text-3xl font-bold text-primary">45</p>
-                  </div>
-                  <h3 className="font-semibold text-sm lg:text-base">Total Courses</h3>
-                  <p className="text-xs text-muted-foreground">Active courses</p>
+                  ))}
                 </div>
+              ) : error ? (
+                <Card className="bg-destructive/10 border-destructive/20">
+                  <CardContent className="p-6 text-center">
+                    <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-destructive mb-2" />
+                    <h3 className="font-semibold text-destructive mb-2">Failed to load statistics</h3>
+                    <p className="text-destructive/80 text-sm mb-4">{error}</p>
+                    <Button onClick={retryFetchStats} variant="outline" className="border-destructive text-destructive">
+                      <FontAwesomeIcon icon={faSpinner} className="h-4 w-4 mr-2" />
+                      Retry
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
+                  <div className="group relative bg-gradient-to-br from-card via-card to-accent/30 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="p-2 lg:p-3 bg-primary/10 rounded-lg lg:rounded-xl">
+                        <FontAwesomeIcon icon={faBook} className="h-4 w-4 lg:h-6 lg:w-6 text-primary" />
+                      </div>
+                      <p className="text-xl lg:text-3xl font-bold text-primary">
+                        {stats?.total_courses || 0}
+                      </p>
+                    </div>
+                    <h3 className="font-semibold text-sm lg:text-base">Total Courses</h3>
+                    <p className="text-xs text-muted-foreground">Active courses</p>
+                  </div>
 
-                <div className="group relative bg-gradient-to-br from-card via-card to-success/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="p-2 lg:p-3 bg-success/10 rounded-lg lg:rounded-xl">
-                      <FontAwesomeIcon icon={faUsers} className="h-4 w-4 lg:h-6 lg:w-6 text-success" />
+                  <div className="group relative bg-gradient-to-br from-card via-card to-success/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="p-2 lg:p-3 bg-success/10 rounded-lg lg:rounded-xl">
+                        <FontAwesomeIcon icon={faUsers} className="h-4 w-4 lg:h-6 lg:w-6 text-success" />
+                      </div>
+                      <p className="text-xl lg:text-3xl font-bold text-success">
+                        {stats?.total_users || 0}
+                      </p>
                     </div>
-                    <p className="text-xl lg:text-3xl font-bold text-success">1,234</p>
+                    <h3 className="font-semibold text-sm lg:text-base">Total Users</h3>
+                    <p className="text-xs text-muted-foreground">Registered users</p>
                   </div>
-                  <h3 className="font-semibold text-sm lg:text-base">Total Users</h3>
-                  <p className="text-xs text-muted-foreground">Registered users</p>
-                </div>
 
-                <div className="group relative bg-gradient-to-br from-card via-card to-orange-500/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="p-2 lg:p-3 bg-orange-500/10 rounded-lg lg:rounded-xl">
-                      <FontAwesomeIcon icon={faGraduationCap} className="h-4 w-4 lg:h-6 lg:w-6 text-orange-500" />
+                  <div className="group relative bg-gradient-to-br from-card via-card to-orange-500/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="p-2 lg:p-3 bg-orange-500/10 rounded-lg lg:rounded-xl">
+                        <FontAwesomeIcon icon={faGraduationCap} className="h-4 w-4 lg:h-6 lg:w-6 text-orange-500" />
+                      </div>
+                      <p className="text-xl lg:text-3xl font-bold text-orange-500">
+                        {stats?.total_enrollments || 0}
+                      </p>
                     </div>
-                    <p className="text-xl lg:text-3xl font-bold text-orange-500">892</p>
+                    <h3 className="font-semibold text-sm lg:text-base">Enrollments</h3>
+                    <p className="text-xs text-muted-foreground">Total enrollments</p>
                   </div>
-                  <h3 className="font-semibold text-sm lg:text-base">Enrollments</h3>
-                  <p className="text-xs text-muted-foreground">This month</p>
                 </div>
-              </div>
+              )}
 
               {/* Quick Actions */}
               <Card className="bg-gradient-to-br from-card via-card to-muted/30 border-border/50 shadow-soft">
