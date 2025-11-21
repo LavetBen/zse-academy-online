@@ -17,6 +17,8 @@ import ManageCourseContent from "./pages/admin/ManageCourseContent";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./ResetPassword";
+import ForgotPassword from "./ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +40,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/courses/:courseId/content" element={<ManageCourseContent />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

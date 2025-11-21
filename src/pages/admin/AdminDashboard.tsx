@@ -19,6 +19,7 @@ import {
   faXmark,
   faChevronRight,
   faGraduationCap,
+  faBlog,
   faCog,
   faBookAtlas,
   faSpinner
@@ -31,6 +32,7 @@ interface AdminStats {
   total_courses: number;
   total_users: number;
   total_enrollments: number;
+  total_blogs:number
 }
 
 const sidebarItems = [
@@ -363,7 +365,7 @@ const AdminDashboard = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
                   <div className="group relative bg-gradient-to-br from-card via-card to-accent/30 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-start justify-between mb-3">
                       <div className="p-2 lg:p-3 bg-primary/10 rounded-lg lg:rounded-xl">
@@ -401,6 +403,19 @@ const AdminDashboard = () => {
                     </div>
                     <h3 className="font-semibold text-sm lg:text-base">Enrollments</h3>
                     <p className="text-xs text-muted-foreground">Total enrollments</p>
+                  </div>
+
+                  <div className="group relative bg-gradient-to-br from-card via-card to-purple-500/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="p-2 lg:p-3 bg-purple-500/10 rounded-lg lg:rounded-xl">
+                        <FontAwesomeIcon icon={faBlog} className="h-4 w-4 lg:h-6 lg:w-6 text-purple-500" />
+                      </div>
+                      <p className="text-xl lg:text-3xl font-bold text-purple-500">
+                        {stats?.total_blogs || 0}
+                      </p>
+                    </div>
+                    <h3 className="font-semibold text-sm lg:text-base">Blogs</h3>
+                    <p className="text-xs text-muted-foreground">Total Blogs</p>
                   </div>
                 </div>
               )}
