@@ -4,9 +4,16 @@ import { useNavigate } from "react-router-dom";
 import ManageCourses from "./ManageCourses";
 import ManageUsers from "./ManageUsers";
 import ManageBlog from "./ManageBlog";
+import AdminConfigurations from "./AdminConfigurations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsers,
@@ -22,7 +29,14 @@ import {
   faBlog,
   faCog,
   faBookAtlas,
-  faSpinner
+  faSpinner,
+  faChevronDown,
+  faTags,
+  faCertificate,
+  faUserTie,
+  faSliders,
+  faCalendarAlt,
+  faDollarSign,
 } from "@fortawesome/free-solid-svg-icons";
 import logo from "@/assets/logo.png";
 
@@ -32,7 +46,7 @@ interface AdminStats {
   total_courses: number;
   total_users: number;
   total_enrollments: number;
-  total_blogs:number
+  total_blogs: number;
 }
 
 const sidebarItems = [
@@ -40,7 +54,16 @@ const sidebarItems = [
   { icon: faBook, label: "Courses", key: "courses" },
   { icon: faUsers, label: "Students", key: "users" },
   { icon: faBookAtlas, label: "Blog", key: "Blog" },
-  { icon: faChartLine, label: "Analytics", key: "analytics" }
+  { icon: faChartLine, label: "Analytics", key: "analytics" },
+];
+
+const configSubItems = [
+  { icon: faTags, label: "Categories", key: "categories" },
+  { icon: faCertificate, label: "Certifications", key: "certifications" },
+  { icon: faUserTie, label: "Instructors", key: "instructors" },
+  { icon: faCalendarAlt, label: "Schedules", key: "schedules" },
+  { icon: faDollarSign, label: "Payment Methods", key: "payment-methods" },
+  { icon: faSliders, label: "System Settings", key: "system-settings" },
 ];
 
 const AdminDashboard = () => {
@@ -49,6 +72,7 @@ const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeConfigSubSection, setActiveConfigSubSection] = useState("categories");
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,18 +93,18 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = localStorage.getItem("zse_training_token");
-      
+
       if (!token) {
         throw new Error("No authentication token found");
       }
 
       const response = await fetch(`${API_BASE_URL}/admin/stats`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
       });
 
@@ -111,12 +135,97 @@ const AdminDashboard = () => {
     setMobileSidebarOpen(false);
   };
 
+  const handleConfigSubSectionChange = (subSection: string) => {
+    setActiveSection("config");
+    setActiveConfigSubSection(subSection);
+    setMobileSidebarOpen(false);
+  };
+
   const toggleMobileSidebar = () => {
     setMobileSidebarOpen(!mobileSidebarOpen);
   };
 
   const retryFetchStats = () => {
     fetchAdminStats();
+  };
+
+  const renderConfigContent = () => {
+    switch (activeConfigSubSection) {
+      case "categories":
+        return <AdminConfigurations />;
+      case "certifications":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Certification Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Manage course certifications, requirements, and issuance.
+              </p>
+              {/* Add certification management components here */}
+            </CardContent>
+          </Card>
+        );
+      case "instructors":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Instructor Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Manage instructors, their profiles, and course assignments.
+              </p>
+              {/* Add instructor management components here */}
+            </CardContent>
+          </Card>
+        );
+      case "schedules":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Manage course schedules, batches, and timing.
+              </p>
+              {/* Add schedule management components here */}
+            </CardContent>
+          </Card>
+        );
+      case "payment-methods":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Methods</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Configure payment gateways and methods.
+              </p>
+              {/* Add payment methods components here */}
+            </CardContent>
+          </Card>
+        );
+      case "system-settings":
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>System Settings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Configure system-wide settings and preferences.
+              </p>
+              {/* Add system settings components here */}
+            </CardContent>
+          </Card>
+        );
+      default:
+        return <AdminConfigurations />;
+    }
   };
 
   return (
@@ -131,20 +240,23 @@ const AdminDashboard = () => {
               onClick={toggleMobileSidebar}
               className="p-2"
             >
-              <FontAwesomeIcon 
-                icon={mobileSidebarOpen ? faXmark : faBars} 
-                className="h-5 w-5 text-foreground" 
+              <FontAwesomeIcon
+                icon={mobileSidebarOpen ? faXmark : faBars}
+                className="h-5 w-5 text-foreground"
               />
             </Button>
-            <img 
-              src={logo} 
-              alt="ZSE Logo" 
+            <img
+              src={logo}
+              alt="ZSE Logo"
               className="h-10 w-10 object-contain"
             />
             <span className="font-bold text-lg text-secondary">Admin</span>
           </div>
-          
-          <Badge variant="secondary" className="bg-destructive/10 text-destructive text-xs">
+
+          <Badge
+            variant="secondary"
+            className="bg-destructive/10 text-destructive text-xs"
+          >
             Admin
           </Badge>
         </div>
@@ -152,31 +264,39 @@ const AdminDashboard = () => {
 
       {/* Mobile Sidebar Overlay */}
       {mobileSidebarOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`
+      <div
+        className={`
         fixed left-0 top-0 h-full bg-white border-r border-border z-40 transition-all duration-300
         ${sidebarCollapsed ? "w-16" : "w-64"}
-        ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}>
+        ${
+          mobileSidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        }
+      `}
+      >
         <div className="p-4 h-full flex flex-col">
           {/* Desktop Logo & Toggle */}
           <div className="hidden lg:flex items-center space-x-3 mb-8">
-            <img 
-              src={logo} 
-              alt="ZSE Logo" 
+            <img
+              src={logo}
+              alt="ZSE Logo"
               className={`object-contain transition-all duration-300 ${
                 sidebarCollapsed ? "h-12 w-12" : "h-14 w-14"
               }`}
             />
             {!sidebarCollapsed && (
               <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground leading-tight">Admin Panel</span>
+                <span className="text-xs text-muted-foreground leading-tight">
+                  Admin Panel
+                </span>
               </div>
             )}
           </div>
@@ -184,13 +304,15 @@ const AdminDashboard = () => {
           {/* Mobile Header in Sidebar */}
           <div className="lg:hidden flex items-center justify-between mb-6 pb-4 border-b border-border">
             <div className="flex items-center space-x-3">
-              <img 
-                src={logo} 
-                alt="ZSE Logo" 
+              <img
+                src={logo}
+                alt="ZSE Logo"
                 className="h-12 w-12 object-contain"
               />
               <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground leading-tight">Admin Panel</span>
+                <span className="text-xs text-muted-foreground leading-tight">
+                  Admin Panel
+                </span>
               </div>
             </div>
             <Button
@@ -199,7 +321,10 @@ const AdminDashboard = () => {
               onClick={toggleMobileSidebar}
               className="p-2"
             >
-              <FontAwesomeIcon icon={faXmark} className="h-5 w-5 text-foreground" />
+              <FontAwesomeIcon
+                icon={faXmark}
+                className="h-5 w-5 text-foreground"
+              />
             </Button>
           </div>
 
@@ -210,16 +335,65 @@ const AdminDashboard = () => {
                 onClick={() => handleSectionChange(item.key)}
                 className={`w-full flex items-center space-x-3 px-2 py-3 rounded-lg transition-colors ${
                   activeSection === item.key
-                    ? "bg-primary text-primary-foreground" 
+                    ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <FontAwesomeIcon icon={item.icon} className="h-5 w-5 flex-shrink-0" />
+                <FontAwesomeIcon
+                  icon={item.icon}
+                  className="h-5 w-5 flex-shrink-0"
+                />
                 {(!sidebarCollapsed || mobileSidebarOpen) && (
                   <span className="text-sm font-medium">{item.label}</span>
                 )}
               </button>
             ))}
+
+            {/* Configuration Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`w-full flex items-center justify-between space-x-3 px-2 py-3 rounded-lg transition-colors ${
+                    activeSection === "config"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <FontAwesomeIcon
+                      icon={faCog}
+                      className="h-5 w-5 flex-shrink-0"
+                    />
+                    {(!sidebarCollapsed || mobileSidebarOpen) && (
+                      <span className="text-sm font-medium">Configurations</span>
+                    )}
+                  </div>
+                  {(!sidebarCollapsed || mobileSidebarOpen) && (
+                    <FontAwesomeIcon
+                      icon={faChevronDown}
+                      className="h-3 w-3 flex-shrink-0"
+                    />
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 ml-2">
+                {configSubItems.map((item) => (
+                  <DropdownMenuItem
+                    key={item.key}
+                    onClick={() => handleConfigSubSectionChange(item.key)}
+                    className={`flex items-center space-x-3 ${
+                      activeConfigSubSection === item.key ? "bg-muted" : ""
+                    }`}
+                  >
+                    <FontAwesomeIcon
+                      icon={item.icon}
+                      className="h-4 w-4 text-muted-foreground"
+                    />
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
 
           <div className="mt-auto pt-4 border-t border-border">
@@ -227,7 +401,10 @@ const AdminDashboard = () => {
               onClick={handleLogout}
               className="w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
             >
-              <FontAwesomeIcon icon={faRightFromBracket} className="h-5 w-5 flex-shrink-0" />
+              <FontAwesomeIcon
+                icon={faRightFromBracket}
+                className="h-5 w-5 flex-shrink-0"
+              />
               {(!sidebarCollapsed || mobileSidebarOpen) && (
                 <span className="text-sm font-medium">Logout</span>
               )}
@@ -237,10 +414,12 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className={`
+      <div
+        className={`
         transition-all duration-300 
         ${sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"}
-      `}>
+      `}
+      >
         {/* Desktop Header */}
         <header className="hidden lg:block bg-white border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
@@ -251,33 +430,40 @@ const AdminDashboard = () => {
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                 className="hidden lg:flex"
               >
-                <FontAwesomeIcon 
-                  icon={faChevronRight} 
-                  className={`h-4 w-4 transition-transform ${sidebarCollapsed ? "" : "rotate-180"}`} 
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  className={`h-4 w-4 transition-transform ${
+                    sidebarCollapsed ? "" : "rotate-180"
+                  }`}
                 />
               </Button>
               <div>
                 <h1 className="text-2xl font-bold text-secondary">
-                  {activeSection === "dashboard" 
-                    ? `Welcome, ${user?.name}!` 
-                    : sidebarItems.find(item => item.key === activeSection)?.label
-                  }
+                  {activeSection === "dashboard"
+                    ? `Welcome, ${user?.name}!`
+                    : activeSection === "config"
+                    ? configSubItems.find((item) => item.key === activeConfigSubSection)?.label
+                    : sidebarItems.find((item) => item.key === activeSection)?.label}
                 </h1>
                 <p className="text-muted-foreground">
-                  {activeSection === "dashboard" 
+                  {activeSection === "dashboard"
                     ? "Admin Dashboard Overview"
-                    : `Manage ${sidebarItems.find(item => item.key === activeSection)?.label.toLowerCase()}`
-                  }
+                    : activeSection === "config"
+                    ? `Manage ${configSubItems.find((item) => item.key === activeConfigSubSection)?.label.toLowerCase()}`
+                    : `Manage ${sidebarItems.find((item) => item.key === activeSection)?.label.toLowerCase()}`}
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="bg-destructive/10 text-destructive">
+              <Badge
+                variant="secondary"
+                className="bg-destructive/10 text-destructive"
+              >
                 Admin Access
               </Badge>
-              <img 
-                src={logo} 
-                alt="ZSE Logo" 
+              <img
+                src={logo}
+                alt="ZSE Logo"
                 className="h-10 w-10 object-contain"
               />
             </div>
@@ -287,16 +473,18 @@ const AdminDashboard = () => {
         {/* Mobile Page Title */}
         <div className="lg:hidden bg-white border-b border-border px-4 py-3">
           <h1 className="text-xl font-bold text-secondary">
-            {activeSection === "dashboard" 
-              ? `Welcome, ${user?.name}!` 
-              : sidebarItems.find(item => item.key === activeSection)?.label
-            }
+            {activeSection === "dashboard"
+              ? `Welcome, ${user?.name}!`
+              : activeSection === "config"
+              ? configSubItems.find((item) => item.key === activeConfigSubSection)?.label
+              : sidebarItems.find((item) => item.key === activeSection)?.label}
           </h1>
           <p className="text-muted-foreground text-sm">
-            {activeSection === "dashboard" 
+            {activeSection === "dashboard"
               ? "Admin Dashboard Overview"
-              : `Manage ${sidebarItems.find(item => item.key === activeSection)?.label.toLowerCase()}`
-            }
+              : activeSection === "config"
+              ? `Manage ${configSubItems.find((item) => item.key === activeConfigSubSection)?.label.toLowerCase()}`
+              : `Manage ${sidebarItems.find((item) => item.key === activeSection)?.label.toLowerCase()}`}
           </p>
         </div>
 
@@ -308,22 +496,27 @@ const AdminDashboard = () => {
               <div className="relative overflow-hidden bg-gradient-to-r from-primary via-primary/90 to-secondary rounded-2xl lg:rounded-3xl p-6 lg:p-8 text-white">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm"></div>
                 <div className="relative z-10">
-                  <h2 className="text-xl lg:text-3xl font-bold mb-2">Admin Dashboard 🎯</h2>
+                  <h2 className="text-xl lg:text-3xl font-bold mb-2">
+                    Admin Dashboard 🎯
+                  </h2>
                   <p className="text-primary-foreground/80 text-sm lg:text-lg mb-4">
                     Manage courses, users, and platform analytics
                   </p>
                   {loading && (
                     <div className="flex items-center space-x-2 text-primary-foreground/80">
-                      <FontAwesomeIcon icon={faSpinner} className="h-4 w-4 animate-spin" />
+                      <FontAwesomeIcon
+                        icon={faSpinner}
+                        className="h-4 w-4 animate-spin"
+                      />
                       <span className="text-sm">Loading statistics...</span>
                     </div>
                   )}
                   {error && (
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-red-200">{error}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={retryFetchStats}
                         className="text-white border-white hover:bg-white/20"
                       >
@@ -340,7 +533,10 @@ const AdminDashboard = () => {
               {loading ? (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
                   {[...Array(3)].map((_, index) => (
-                    <div key={index} className="bg-card rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 animate-pulse">
+                    <div
+                      key={index}
+                      className="bg-card rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 animate-pulse"
+                    >
                       <div className="flex items-start justify-between mb-3">
                         <div className="p-2 lg:p-3 bg-muted rounded-lg lg:rounded-xl">
                           <div className="h-4 w-4 lg:h-6 lg:w-6 bg-muted-foreground/20 rounded"></div>
@@ -355,11 +551,23 @@ const AdminDashboard = () => {
               ) : error ? (
                 <Card className="bg-destructive/10 border-destructive/20">
                   <CardContent className="p-6 text-center">
-                    <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-destructive mb-2" />
-                    <h3 className="font-semibold text-destructive mb-2">Failed to load statistics</h3>
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="h-8 w-8 text-destructive mb-2"
+                    />
+                    <h3 className="font-semibold text-destructive mb-2">
+                      Failed to load statistics
+                    </h3>
                     <p className="text-destructive/80 text-sm mb-4">{error}</p>
-                    <Button onClick={retryFetchStats} variant="outline" className="border-destructive text-destructive">
-                      <FontAwesomeIcon icon={faSpinner} className="h-4 w-4 mr-2" />
+                    <Button
+                      onClick={retryFetchStats}
+                      variant="outline"
+                      className="border-destructive text-destructive"
+                    >
+                      <FontAwesomeIcon
+                        icon={faSpinner}
+                        className="h-4 w-4 mr-2"
+                      />
                       Retry
                     </Button>
                   </CardContent>
@@ -369,52 +577,78 @@ const AdminDashboard = () => {
                   <div className="group relative bg-gradient-to-br from-card via-card to-accent/30 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-start justify-between mb-3">
                       <div className="p-2 lg:p-3 bg-primary/10 rounded-lg lg:rounded-xl">
-                        <FontAwesomeIcon icon={faBook} className="h-4 w-4 lg:h-6 lg:w-6 text-primary" />
+                        <FontAwesomeIcon
+                          icon={faBook}
+                          className="h-4 w-4 lg:h-6 lg:w-6 text-primary"
+                        />
                       </div>
                       <p className="text-xl lg:text-3xl font-bold text-primary">
                         {stats?.total_courses || 0}
                       </p>
                     </div>
-                    <h3 className="font-semibold text-sm lg:text-base">Total Courses</h3>
-                    <p className="text-xs text-muted-foreground">Active courses</p>
+                    <h3 className="font-semibold text-sm lg:text-base">
+                      Total Courses
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Active courses
+                    </p>
                   </div>
 
                   <div className="group relative bg-gradient-to-br from-card via-card to-success/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-start justify-between mb-3">
                       <div className="p-2 lg:p-3 bg-success/10 rounded-lg lg:rounded-xl">
-                        <FontAwesomeIcon icon={faUsers} className="h-4 w-4 lg:h-6 lg:w-6 text-success" />
+                        <FontAwesomeIcon
+                          icon={faUsers}
+                          className="h-4 w-4 lg:h-6 lg:w-6 text-success"
+                        />
                       </div>
                       <p className="text-xl lg:text-3xl font-bold text-success">
                         {stats?.total_users || 0}
                       </p>
                     </div>
-                    <h3 className="font-semibold text-sm lg:text-base">Total Users</h3>
-                    <p className="text-xs text-muted-foreground">Registered users</p>
+                    <h3 className="font-semibold text-sm lg:text-base">
+                      Total Users
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Registered users
+                    </p>
                   </div>
 
                   <div className="group relative bg-gradient-to-br from-card via-card to-orange-500/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-start justify-between mb-3">
                       <div className="p-2 lg:p-3 bg-orange-500/10 rounded-lg lg:rounded-xl">
-                        <FontAwesomeIcon icon={faGraduationCap} className="h-4 w-4 lg:h-6 lg:w-6 text-orange-500" />
+                        <FontAwesomeIcon
+                          icon={faGraduationCap}
+                          className="h-4 w-4 lg:h-6 lg:w-6 text-orange-500"
+                        />
                       </div>
                       <p className="text-xl lg:text-3xl font-bold text-orange-500">
                         {stats?.total_enrollments || 0}
                       </p>
                     </div>
-                    <h3 className="font-semibold text-sm lg:text-base">Enrollments</h3>
-                    <p className="text-xs text-muted-foreground">Total enrollments</p>
+                    <h3 className="font-semibold text-sm lg:text-base">
+                      Enrollments
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Total enrollments
+                    </p>
                   </div>
 
                   <div className="group relative bg-gradient-to-br from-card via-card to-purple-500/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 border border-border/50 shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-start justify-between mb-3">
                       <div className="p-2 lg:p-3 bg-purple-500/10 rounded-lg lg:rounded-xl">
-                        <FontAwesomeIcon icon={faBlog} className="h-4 w-4 lg:h-6 lg:w-6 text-purple-500" />
+                        <FontAwesomeIcon
+                          icon={faBlog}
+                          className="h-4 w-4 lg:h-6 lg:w-6 text-purple-500"
+                        />
                       </div>
                       <p className="text-xl lg:text-3xl font-bold text-purple-500">
                         {stats?.total_blogs || 0}
                       </p>
                     </div>
-                    <h3 className="font-semibold text-sm lg:text-base">Blogs</h3>
+                    <h3 className="font-semibold text-sm lg:text-base">
+                      Blogs
+                    </h3>
                     <p className="text-xs text-muted-foreground">Total Blogs</p>
                   </div>
                 </div>
@@ -427,14 +661,14 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Button 
+                    <Button
                       onClick={() => setActiveSection("courses")}
                       className="h-auto py-4 flex-col space-y-2"
                     >
                       <FontAwesomeIcon icon={faBook} className="h-6 w-6" />
                       <span>Manage Courses</span>
                     </Button>
-                    <Button 
+                    <Button
                       onClick={() => setActiveSection("users")}
                       variant="outline"
                       className="h-auto py-4 flex-col space-y-2"
@@ -442,13 +676,13 @@ const AdminDashboard = () => {
                       <FontAwesomeIcon icon={faUsers} className="h-6 w-6" />
                       <span>Manage Users</span>
                     </Button>
-                    <Button 
-                      onClick={() => setActiveSection("analytics")}
+                    <Button
+                      onClick={() => handleConfigSubSectionChange("categories")}
                       variant="outline"
                       className="h-auto py-4 flex-col space-y-2"
                     >
-                      <FontAwesomeIcon icon={faChartLine} className="h-6 w-6" />
-                      <span>View Analytics</span>
+                      <FontAwesomeIcon icon={faCog} className="h-6 w-6" />
+                      <span>Configurations</span>
                     </Button>
                   </div>
                 </CardContent>
@@ -465,10 +699,13 @@ const AdminDashboard = () => {
                 <CardTitle>Analytics</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Analytics dashboard coming soon...</p>
+                <p className="text-muted-foreground">
+                  Analytics dashboard coming soon...
+                </p>
               </CardContent>
             </Card>
           )}
+          {activeSection === "config" && renderConfigContent()}
         </main>
       </div>
     </div>
