@@ -13,7 +13,7 @@ import {
 interface CourseSidebarCardProps {
   thumbnailUrl: string;
   title: string;
-
+  price?: string | number;
   isEnrolled: boolean;
   totalLessons: number;
   modulesCount: number;
@@ -26,7 +26,7 @@ interface CourseSidebarCardProps {
 export const CourseSidebarCard = ({
   thumbnailUrl,
   title,
-
+  price,
   isEnrolled,
   totalLessons,
   modulesCount,

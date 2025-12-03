@@ -22,6 +22,7 @@ import MyCourses from "./dashboard/MyCourses";
 import Certificates from "./dashboard/Certificates";
 import Profile from "./dashboard/Profile";
 import SettingsPage from "./dashboard/Settings";
+import Analytics from "./dashboard/Analytics";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -35,12 +36,13 @@ const sidebarItems = [
   { icon: faHome, label: "Dashboard", key: "dashboard" },
   { icon: faBook, label: "My Courses", key: "courses" },
   { icon: faGraduationCap, label: "Certificates", key: "certificates" },
+  { icon: faChartColumn, label: "Analytics", key: "analytics" },
   { icon: faUser, label: "Profile", key: "profile" },
   { icon: faCog, label: "Settings", key: "settings" }
 ];
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -48,6 +50,13 @@ const Dashboard = () => {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Redirect admin users to admin dashboard
+  useEffect(() => {
+    if (!authLoading && user?.role === "admin") {
+      navigate("/admin", { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   useEffect(() => {
     if (activeSection === "dashboard") {
@@ -549,6 +558,7 @@ const Dashboard = () => {
           
           {activeSection === "courses" && <MyCourses />}
           {activeSection === "certificates" && <Certificates />}
+          {activeSection === "analytics" && <Analytics />}
           {activeSection === "profile" && <Profile />}
           {activeSection === "settings" && <SettingsPage />}
         </main>
