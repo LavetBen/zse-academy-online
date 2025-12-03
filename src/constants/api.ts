@@ -15,6 +15,10 @@ export const API_ENDPOINTS = {
   ENROLL_COURSE: (id: string | number) => `/courses/${id}/enroll`,
   SIMILAR_COURSES: (id: string | number) => `/courses/${id}/similar`,
 
+
+  // Category endpoints
+  CATEGORIES: "/categories",
+
   // Admin endpoints
   ADMIN_COURSES: "/courses",
   ADMIN_USERS: "/users",

@@ -22,6 +22,7 @@ interface QuizState {
   totalQuestions: number;
   timeRemaining: number;
   isSubmitting: boolean;
+  isDisqualified: boolean; // NEW
 }
 
 interface QuizModalProps {
@@ -41,23 +42,28 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     totalQuestions: quiz.questions.length,
     timeRemaining: quiz.questions.length * 90,
     isSubmitting: false,
+    isDisqualified: false, // NEW
   });
 
+  // TIMER — Auto Disqualify When Time Hits 0
   useEffect(() => {
-    if (quizState.showResults || quizState.timeRemaining <= 0) return;
+    if (quizState.showResults || quizState.isDisqualified) return;
 
     const timer = setInterval(() => {
       setQuizState((prev) => {
         if (prev.timeRemaining <= 1) {
-          handleSubmitQuiz();
-          return { ...prev, timeRemaining: 0 };
+          return {
+            ...prev,
+            timeRemaining: 0,
+            isDisqualified: true, // AUTO DISQUALIFY
+          };
         }
         return { ...prev, timeRemaining: prev.timeRemaining - 1 };
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [quizState.showResults, quizState.timeRemaining]);
+  }, [quizState.showResults, quizState.isDisqualified]);
 
   const currentQuestion = quiz.questions[quizState.currentQuestionIndex];
   const currentOptions = Array.isArray(currentQuestion.options)
@@ -79,6 +85,7 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     if (quizState.currentQuestionIndex < quiz.questions.length - 1) {
       const nextIndex = quizState.currentQuestionIndex + 1;
       const nextQuestion = quiz.questions[nextIndex];
+
       setQuizState((prev) => ({
         ...prev,
         currentQuestionIndex: nextIndex,
@@ -91,6 +98,7 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     if (quizState.currentQuestionIndex > 0) {
       const prevIndex = quizState.currentQuestionIndex - 1;
       const prevQuestion = quiz.questions[prevIndex];
+
       setQuizState((prev) => ({
         ...prev,
         currentQuestionIndex: prevIndex,
@@ -105,7 +113,6 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     try {
       const result = await quizService.submitQuiz(quiz.id, quizState.userAnswers);
 
-      // Use the correct response structure from your API
       const score = result.score || 0;
       const totalQuestions = result.total_questions || quiz.questions.length;
 
@@ -130,10 +137,39 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  // -----------------------
+  //  DISQUALIFIED SCREEN
+  // -----------------------
+  if (quizState.isDisqualified) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-background rounded-lg max-w-md w-full p-6 text-center">
+          <div className="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+            <FontAwesomeIcon icon={faTimesCircle} className="text-red-600 h-8 w-8" />
+          </div>
+
+          <h2 className="text-2xl font-bold mt-4 text-red-600">Time is Up!</h2>
+
+          <p className="text-muted-foreground mt-3 mb-6">
+            You have been <strong>disqualified</strong> because the quiz time expired.
+          </p>
+
+          <Button className="w-full" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // -----------------------
+  //  RESULTS SCREEN
+  // -----------------------
   if (quizState.showResults) {
     const totalQuestions = quizState.totalQuestions;
     const correctAnswers = quizState.score;
-    const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+    const percentage =
+      totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
     const passed = percentage >= 70;
 
     return (
@@ -168,30 +204,15 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
             <p className="text-muted-foreground mb-6">
               {passed
                 ? "Congratulations! You have successfully completed the quiz."
-                : `You need at least 70% to pass. You got ${percentage.toFixed(1)}%. Try again!`}
+                : `You need at least 70% to pass. You got ${percentage.toFixed(
+                    1
+                  )}%. Try again!`}
             </p>
 
             <div className="space-y-3">
               <Button onClick={onClose} className="w-full">
                 {passed ? "Continue Learning" : "Retry Quiz"}
               </Button>
-              {!passed && (
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    setQuizState((prev) => ({
-                      ...prev,
-                      showResults: false,
-                      currentQuestionIndex: 0,
-                      selectedOption: null,
-                      userAnswers: {},
-                      timeRemaining: quiz.questions.length * 90,
-                    }))
-                  }
-                >
-                  Review Questions
-                </Button>
-              )}
             </div>
           </div>
         </div>
@@ -199,6 +220,9 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
     );
   }
 
+  // -----------------------
+  //  QUIZ QUESTIONS SCREEN
+  // -----------------------
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-background rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
@@ -206,7 +230,8 @@ export const QuizModal = ({ quiz, onClose, onQuizComplete }: QuizModalProps) => 
           <div>
             <h2 className="text-xl font-bold">{quiz.title}</h2>
             <p className="text-sm text-muted-foreground">
-              Question {quizState.currentQuestionIndex + 1} of {quiz.questions.length}
+              Question {quizState.currentQuestionIndex + 1} of{" "}
+              {quiz.questions.length}
             </p>
           </div>
           <div className="flex items-center space-x-4">

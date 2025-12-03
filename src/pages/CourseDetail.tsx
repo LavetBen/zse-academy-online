@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faChevronRight, 
-  faBookOpen, 
-  faList, 
-  faChalkboardTeacher, 
-  faStar, 
-  faFileAlt 
+import {
+  faChevronRight,
+  faBookOpen,
+  faList,
+  faChalkboardTeacher,
+  faStar,
+  faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Star } from "lucide-react";
 import { courseService, Course as CourseType } from "@/services/course.service";
@@ -88,8 +88,8 @@ const CourseDetail = () => {
     totalSlides: number;
     contentId: number;
     slides: Slide[];
-    moduleId: number;   // FIX
-    courseId: number;   // FIX
+    moduleId: number; // FIX
+    courseId: number; // FIX
   } | null>(null);
 
   useEffect(() => {
@@ -138,8 +138,13 @@ const CourseDetail = () => {
   };
 
   // ✅ FIX: pass correct courseId & moduleId
-  const handleContentClick = (content: Content, slide: Slide, slideIndex: number) => {
-    const youtubeId = slide.type === "video" ? getYouTubeId(slide.url) : undefined;
+  const handleContentClick = (
+    content: Content,
+    slide: Slide,
+    slideIndex: number
+  ) => {
+    const youtubeId =
+      slide.type === "video" ? getYouTubeId(slide.url) : undefined;
 
     setCurrentContent({
       title: slide.title,
@@ -150,8 +155,8 @@ const CourseDetail = () => {
       totalSlides: content.slides.length,
       contentId: content.id,
       slides: content.slides,
-      moduleId: content.id,      // FIX
-      courseId: content.course_id // FIX
+      moduleId: content.id, // FIX
+      courseId: content.course_id, // FIX
     });
   };
 
@@ -163,7 +168,8 @@ const CourseDetail = () => {
     if (!currentContent) return;
 
     const newSlide = currentContent.slides[newIndex];
-    const youtubeId = newSlide.type === "video" ? getYouTubeId(newSlide.url) : undefined;
+    const youtubeId =
+      newSlide.type === "video" ? getYouTubeId(newSlide.url) : undefined;
 
     setCurrentContent((prev) =>
       prev
@@ -193,7 +199,7 @@ const CourseDetail = () => {
 
       closeContentModal();
     } catch (err) {
-      console.log("Finish error:", err);
+      console.log("Finish erro--r:", err);
     }
   };
 
@@ -223,7 +229,10 @@ const CourseDetail = () => {
 
   const getTotalLessons = (): number => {
     if (!course) return 0;
-    return course.contents.reduce((total, content) => total + content.slides.length, 0);
+    return course.contents.reduce(
+      (total, content) => total + content.slides.length,
+      0
+    );
   };
 
   if (loading) {
@@ -248,7 +257,9 @@ const CourseDetail = () => {
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-destructive">Error</h2>
-            <p className="mt-2 text-muted-foreground">{error || "Course not found"}</p>
+            <p className="mt-2 text-muted-foreground">
+              {error || "Course not found"}
+            </p>
             <Button asChild className="mt-4">
               <Link to="/courses">Back to Courses</Link>
             </Button>
@@ -279,11 +290,16 @@ const CourseDetail = () => {
       <div className="bg-muted/40 py-3">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link to="/courses" className="hover:text-primary transition-colors">
+            <Link
+              to="/courses"
+              className="hover:text-primary transition-colors"
+            >
               All courses
             </Link>
             <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
-            <span className="text-foreground font-medium">{course.category.name}</span>
+            <span className="text-foreground font-medium">
+              {course.category?.name || "Uncategorized"}
+            </span>
           </nav>
         </div>
       </div>
@@ -301,7 +317,10 @@ const CourseDetail = () => {
                   >
                     {course.is_enrolled ? "Enrolled" : "Available"}
                   </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  <Badge
+                    variant="secondary"
+                    className="bg-primary/10 text-primary"
+                  >
                     {course.level}
                   </Badge>
                   <Badge variant="outline" className="text-accent-foreground">
@@ -332,61 +351,80 @@ const CourseDetail = () => {
                         />
                       ))}
                     </div>
-                    <span className="text-muted-foreground">(2850 ratings)</span>
+                    <span className="text-muted-foreground">
+                      (2850 ratings)
+                    </span>
                   </div>
                   <div className="text-muted-foreground">12,453 students</div>
                 </div>
               </div>
 
               {/* Enhanced Tabs */}
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
                 <TabsList className="w-full grid grid-cols-5 h-auto p-1 bg-muted/50 rounded-lg gap-1">
-                  <TabsTrigger 
-                    value="overview" 
+                  <TabsTrigger
+                    value="overview"
                     className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
                     <FontAwesomeIcon icon={faBookOpen} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">Overview</span>
+                    <span className="hidden sm:inline text-sm font-medium">
+                      Overview
+                    </span>
                   </TabsTrigger>
 
-                  <TabsTrigger 
-                    value="content" 
+                  <TabsTrigger
+                    value="content"
                     className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
                     <FontAwesomeIcon icon={faList} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">Content</span>
+                    <span className="hidden sm:inline text-sm font-medium">
+                      Content
+                    </span>
                   </TabsTrigger>
 
-                  <TabsTrigger 
-                    value="instructor" 
+                  <TabsTrigger
+                    value="instructor"
                     className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
-                    <FontAwesomeIcon icon={faChalkboardTeacher} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">Instructor</span>
+                    <FontAwesomeIcon
+                      icon={faChalkboardTeacher}
+                      className="h-4 w-4"
+                    />
+                    <span className="hidden sm:inline text-sm font-medium">
+                      Instructor
+                    </span>
                   </TabsTrigger>
 
-                  <TabsTrigger 
-                    value="reviews" 
+                  <TabsTrigger
+                    value="reviews"
                     className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
                     <FontAwesomeIcon icon={faStar} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">Reviews</span>
+                    <span className="hidden sm:inline text-sm font-medium">
+                      Reviews
+                    </span>
                   </TabsTrigger>
 
-                  <TabsTrigger 
-                    value="quizzes" 
+                  <TabsTrigger
+                    value="quizzes"
                     className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
                   >
                     <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">Quizzes</span>
+                    <span className="hidden sm:inline text-sm font-medium">
+                      Quizzes
+                    </span>
                   </TabsTrigger>
                 </TabsList>
 
                 <div className="mt-6">
                   <TabsContent value="overview" className="m-0">
-                    <CourseOverviewTab 
-                      totalLessons={totalLessons} 
-                      modulesCount={course.contents.length} 
+                    <CourseOverviewTab
+                      totalLessons={totalLessons}
+                      modulesCount={course.contents.length}
                     />
                   </TabsContent>
 
@@ -415,7 +453,9 @@ const CourseDetail = () => {
 
             <div className="lg:col-span-1">
               <CourseSidebarCard
-                thumbnailUrl={course.thumbnail_url || course.thumbnail || "/placeholder.svg"}
+                thumbnailUrl={
+                  course.thumbnail_url || course.thumbnail || "/placeholder.svg"
+                }
                 title={course.title}
                 price={course.price}
                 isEnrolled={course.is_enrolled}

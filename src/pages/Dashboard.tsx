@@ -20,7 +20,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import MyCourses from "./dashboard/MyCourses";
 import Certificates from "./dashboard/Certificates";
-import Analytics from "./dashboard/Analytics";
 import Profile from "./dashboard/Profile";
 import SettingsPage from "./dashboard/Settings";
 
@@ -36,7 +35,6 @@ const sidebarItems = [
   { icon: faHome, label: "Dashboard", key: "dashboard" },
   { icon: faBook, label: "My Courses", key: "courses" },
   { icon: faGraduationCap, label: "Certificates", key: "certificates" },
-  { icon: faChartColumn, label: "Analytics", key: "analytics" },
   { icon: faUser, label: "Profile", key: "profile" },
   { icon: faCog, label: "Settings", key: "settings" }
 ];
@@ -324,17 +322,15 @@ const Dashboard = () => {
                   ))}
                 </div>
               ) : error ? (
-                <Card className="bg-destructive/10 border-destructive/20">
-                  <CardContent className="p-6 text-center">
-                    <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-destructive mb-2" />
-                    <h3 className="font-semibold text-destructive mb-2">Failed to load statistics</h3>
-                    <p className="text-destructive/80 text-sm mb-4">{error}</p>
-                    <Button onClick={retryFetchStats} variant="outline" className="border-destructive text-destructive">
-                      <FontAwesomeIcon icon={faSpinner} className="h-4 w-4 mr-2" />
-                      Retry
-                    </Button>
-                  </CardContent>
-                </Card>
+                <div className="bg-destructive/10 border-destructive/20 rounded-xl p-6 text-center">
+                  <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 text-destructive mb-2" />
+                  <h3 className="font-semibold text-destructive mb-2">Failed to load statistics</h3>
+                  <p className="text-destructive/80 text-sm mb-4">{error}</p>
+                  <Button onClick={retryFetchStats} variant="outline" className="border-destructive text-destructive">
+                    <FontAwesomeIcon icon={faSpinner} className="h-4 w-4 mr-2" />
+                    Retry
+                  </Button>
+                </div>
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
                   {/* Total Courses Card */}
@@ -391,7 +387,7 @@ const Dashboard = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-xl lg:text-3xl font-bold text-orange-500 mb-1">
-                            {stats.total_quiz_attempts}
+                            {stats?.total_quiz_attempts || 0}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {stats?.total_quiz_attempts || 0} quizzes
@@ -427,7 +423,6 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {/* Rest of the component remains the same */}
               {/* Quick Actions Section */}
               <div className="bg-gradient-to-br from-card via-card to-muted/30 rounded-2xl lg:rounded-3xl p-6 lg:p-8 border border-border/50 shadow-soft">
                 <div className="flex items-center justify-between mb-6">
@@ -440,7 +435,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                   <button 
                     className="group relative bg-gradient-to-br from-primary via-primary to-primary/80 text-white p-6 lg:p-8 rounded-xl lg:rounded-2xl shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 lg:hover:-translate-y-2 overflow-hidden"
                     onClick={() => handleSectionChange("courses")}
@@ -467,21 +462,6 @@ const Dashboard = () => {
                       </div>
                       <h3 className="text-base lg:text-xl font-bold mb-2">View Certificates</h3>
                       <p className="text-white/80 text-sm lg:text-base">See your achievements</p>
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 lg:-bottom-4 lg:-right-4 w-16 h-16 lg:w-24 lg:h-24 bg-white/5 rounded-full"></div>
-                  </button>
-
-                  <button 
-                    className="group relative bg-gradient-to-br from-secondary via-secondary to-secondary/80 text-white p-6 lg:p-8 rounded-xl lg:rounded-2xl shadow-medium hover:shadow-strong transition-all duration-300 hover:-translate-y-1 lg:hover:-translate-y-2 overflow-hidden"
-                    onClick={() => handleSectionChange("analytics")}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10 text-center">
-                      <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/20 rounded-xl lg:rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <FontAwesomeIcon icon={faChartColumn} className="h-6 w-6 lg:h-8 lg:w-8" />
-                      </div>
-                      <h3 className="text-base lg:text-xl font-bold mb-2">View Analytics</h3>
-                      <p className="text-white/80 text-sm lg:text-base">Track your progress</p>
                     </div>
                     <div className="absolute -bottom-2 -right-2 lg:-bottom-4 lg:-right-4 w-16 h-16 lg:w-24 lg:h-24 bg-white/5 rounded-full"></div>
                   </button>
@@ -569,7 +549,6 @@ const Dashboard = () => {
           
           {activeSection === "courses" && <MyCourses />}
           {activeSection === "certificates" && <Certificates />}
-          {activeSection === "analytics" && <Analytics />}
           {activeSection === "profile" && <Profile />}
           {activeSection === "settings" && <SettingsPage />}
         </main>

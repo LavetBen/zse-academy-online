@@ -62,14 +62,7 @@ export const QuizCard = ({ quiz, onStartQuiz }: QuizCardProps) => {
               </p>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-              {quiz.questions.length} questions
-            </Badge>
-            <Badge variant="secondary" className={status.badgeClass}>
-              {status.label}
-            </Badge>
-          </div>
+          
         </div>
 
         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">

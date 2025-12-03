@@ -13,7 +13,7 @@ import {
 interface CourseSidebarCardProps {
   thumbnailUrl: string;
   title: string;
-  price: string | number;
+
   isEnrolled: boolean;
   totalLessons: number;
   modulesCount: number;
@@ -26,7 +26,7 @@ interface CourseSidebarCardProps {
 export const CourseSidebarCard = ({
   thumbnailUrl,
   title,
-  price,
+
   isEnrolled,
   totalLessons,
   modulesCount,
@@ -69,17 +69,6 @@ export const CourseSidebarCard = ({
       </div>
 
       <CardContent className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="text-3xl font-bold text-primary">
-            {formatPrice(price)}
-          </div>
-          {isEnrolled && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              Enrolled
-            </Badge>
-          )}
-        </div>
-
         <div className="space-y-3">
           {isEnrolled ? (
             <Button className="w-full bg-green-600 hover:bg-green-700">
@@ -90,7 +79,11 @@ export const CourseSidebarCard = ({
               Enroll Now
             </Button>
           )}
-          <Button variant="outline" className="w-full" onClick={onWishlistClick}>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={onWishlistClick}
+          >
             Add to Wishlist
           </Button>
         </div>

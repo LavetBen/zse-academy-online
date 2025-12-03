@@ -14,6 +14,10 @@ import {
   faSearch,
   faList,
   faImage,
+  faUser,
+  faMoneyBill,
+  faClock,
+  faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Dialog,
@@ -32,46 +36,91 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import axios from "axios";
 
 interface Category {
   id: number;
   name: string;
 }
 
-// Skeleton Loader Component
-const CourseSkeleton = () => {
-  return (
-    <Card className="bg-gradient-to-br from-card to-accent/20">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start">
-          <div className="flex-1 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-              <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
-            </div>
-            <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
-            <div className="flex flex-wrap gap-4">
-              <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-            </div>
+interface Instructor {
+  id: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+}
+
+const CourseSkeleton = () => (
+  <Card className="bg-gradient-to-br from-card to-accent/20">
+    <CardContent className="p-4">
+      <div className="flex justify-between items-start">
+        <div className="flex-1 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse" />
+            <div className="h-6 bg-gray-200 rounded w-16 animate-pulse" />
           </div>
-          <div className="flex gap-2">
-            <div className="h-9 w-9 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-9 w-9 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-9 w-9 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
+          <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
+          <div className="flex flex-wrap gap-4">
+            <div className="h-4 bg-gray-200 rounded w-16 animate-pulse" />
+            <div className="h-4 bg-gray-200 rounded w-20 animate-pulse" />
+            <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
           </div>
         </div>
-      </CardContent>
-    </Card>
-  );
-};
+        <div className="flex gap-2">
+          <div className="h-9 w-9 bg-gray-200 rounded animate-pulse" />
+          <div className="h-9 w-9 bg-gray-200 rounded animate-pulse" />
+          <div className="h-9 w-9 bg-gray-200 rounded animate-pulse" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+const InputWrapper: React.FC<{
+  children: React.ReactNode;
+  icon?: any;
+  label?: string;
+}> = ({ children, icon, label }) => (
+  <div className="space-y-1">
+    {label && <Label className="text-sm font-medium">{label}</Label>}
+    <div className="flex items-center gap-2 bg-muted/60 dark:bg-muted/30 rounded-lg p-2 shadow-sm focus-within:ring-2 focus-within:ring-primary transition">
+      {icon && (
+        <FontAwesomeIcon
+          icon={icon}
+          className="text-muted-foreground w-4 h-4 ml-1"
+        />
+      )}
+      <div className="flex-1">{children}</div>
+    </div>
+  </div>
+);
+
+// Create axios instance with auth headers
+const api = axios.create({
+  baseURL: "http://127.0.0.1:8000/api",
+});
+
+// Add request interceptor to include token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("zse_training_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 const ManageCourses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
@@ -82,17 +131,27 @@ const ManageCourses = () => {
     title: "",
     description: "",
     price: "",
-    category: "",
-    level: "",
+    category_id: "uncategorized",
+    level: "Beginner",
     thumbnail_url: "",
     duration: "",
     is_published: false,
+    instructor_id: "unassigned",
   });
 
   useEffect(() => {
-    fetchCourses();
-    fetchCategories();
+    fetchAll();
   }, []);
+
+  const fetchAll = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([fetchCourses(), fetchCategories(), fetchInstructors()]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    setLoading(false);
+  };
 
   const fetchCourses = async () => {
     try {
@@ -104,22 +163,106 @@ const ManageCourses = () => {
         description: "Failed to fetch courses",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
   const fetchCategories = async () => {
     try {
-      const mockCategories: Category[] = [
-        { id: 1, name: "Portfolio Management" },
-        { id: 2, name: "Risk Management" },
-        { id: 3, name: "Market Analysis" },
-        { id: 4, name: "Compliance" },
-      ];
-      setCategories(mockCategories);
+      // Get token from localStorage
+      const token = localStorage.getItem("zse_training_token");
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "Authentication required. Please log in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const res = await api.get("/categories", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // Handle different response structures
+      let categoriesData = [];
+      if (res.data?.data?.data) {
+        categoriesData = res.data.data.data; // Laravel pagination
+      } else if (res.data?.data) {
+        categoriesData = res.data.data;
+      } else if (Array.isArray(res.data)) {
+        categoriesData = res.data;
+      }
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
+      console.error("Error fetching categories:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch categories",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchInstructors = async () => {
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem("zse_training_token");
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "Authentication required. Please log in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Fetching instructors with token:", token.substring(0, 20) + "..."); // Debug log
+      
+      const res = await api.get("/instructors", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      console.log("Instructors API Response:", res.data); // Debug log
+      
+      // Handle different response structures
+      let instructorsData = [];
+      if (res.data?.instructors) {
+        instructorsData = res.data.instructors;
+      } else if (res.data?.data?.data) {
+        instructorsData = res.data.data.data; // Laravel pagination
+      } else if (res.data?.data) {
+        instructorsData = res.data.data;
+      } else if (Array.isArray(res.data)) {
+        instructorsData = res.data;
+      } else if (res.data?.success && Array.isArray(res.data?.data)) {
+        instructorsData = res.data.data;
+      }
+      
+      setInstructors(Array.isArray(instructorsData) ? instructorsData : []);
+      console.log("Parsed instructors:", instructorsData); // Debug log
+    } catch (error: any) {
+      console.error("Error fetching instructors:", error);
+      
+      // Handle 401 unauthorized
+      if (error.response?.status === 401) {
+        toast({
+          title: "Session Expired",
+          description: "Your session has expired. Please log in again.",
+          variant: "destructive",
+        });
+        // Optionally redirect to login page
+        // navigate("/login");
+      } else {
+        toast({
+          title: "Error",
+          description: error.response?.data?.message || "Failed to fetch instructors.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -136,10 +279,17 @@ const ManageCourses = () => {
         is_published: formData.is_published,
       };
 
-      // Only include category if it's not empty
-      if (formData.category) {
-        courseData.category = formData.category;
+      // Include numeric instructor_id if set and not "unassigned"
+      if (formData.instructor_id && formData.instructor_id !== "unassigned") {
+        courseData.instructor_id = parseInt(formData.instructor_id, 10);
       }
+
+      // Include numeric category id if set and not "uncategorized"
+      if (formData.category_id && formData.category_id !== "uncategorized") {
+        courseData.category_id = parseInt(formData.category_id, 10);
+      }
+
+      console.log("Saving course data:", courseData); // Debug log
 
       if (editingCourse) {
         await courseService.updateCourse(editingCourse.id, courseData);
@@ -148,15 +298,15 @@ const ManageCourses = () => {
         await courseService.createCourse(courseData);
         toast({ title: "Success", description: "Course created successfully" });
       }
-      fetchCourses();
+
+      await fetchCourses();
       setIsDialogOpen(false);
       resetForm();
     } catch (error: any) {
       console.error("Error saving course:", error);
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to save course",
+        description: error.response?.data?.message || "Failed to save course",
         variant: "destructive",
       });
     }
@@ -166,13 +316,12 @@ const ManageCourses = () => {
     if (!confirm("Are you sure you want to delete this course?")) return;
     try {
       await courseService.deleteCourse(id);
-      toast({ title: "Success", description: "Course deleted successfully" });
+      toast({ title: "Deleted", description: "Course deleted successfully" });
       fetchCourses();
     } catch (error: any) {
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to delete course",
+        description: error.response?.data?.message || "Failed to delete course",
         variant: "destructive",
       });
     }
@@ -183,62 +332,69 @@ const ManageCourses = () => {
       title: "",
       description: "",
       price: "",
-      category: "",
-      level: "",
+      category_id: "uncategorized",
+      level: "Beginner",
       thumbnail_url: "",
       duration: "",
       is_published: false,
+      instructor_id: "unassigned",
     });
     setEditingCourse(null);
   };
 
   const openEditDialog = (course: Course) => {
     setEditingCourse(course);
+
+    // Extract instructor_id and category_id safely
+    const instructorId = course.instructor?.id || course.instructor_id || "";
+    const categoryId = course.category?.id || course.category_id || "";
+
     setFormData({
       title: course.title || "",
       description: course.description || "",
       price: course.price?.toString() || "",
-      category: typeof course.category === 'object' ? course.category.name : (course.category || ""),
-      level: course.level || "",
+      // If no category ID, use "uncategorized"
+      category_id: categoryId ? String(categoryId) : "uncategorized",
+      level: course.level || "Beginner",
       thumbnail_url: course.thumbnail_url || "",
       duration: course.duration || "",
       is_published: course.is_published || false,
+      // If no instructor ID, use "unassigned"
+      instructor_id: instructorId ? String(instructorId) : "unassigned",
     });
+
     setIsDialogOpen(true);
   };
 
   const handleCategoryChange = (value: string) => {
-    const selectedCategory = categories.find(
-      (cat) => cat.id.toString() === value
-    );
-    setFormData({
-      ...formData,
-      category: selectedCategory ? selectedCategory.name : "",
-    });
+    setFormData({ ...formData, category_id: value });
+  };
+
+  const handleInstructorChange = (value: string) => {
+    setFormData({ ...formData, instructor_id: value });
   };
 
   const filteredCourses = courses.filter((course) =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Show skeleton loader while loading
   if (loading) {
     return (
       <div className="space-y-6">
         <Card className="bg-gradient-to-br from-card via-card to-muted/30 border-border/50 shadow-soft">
           <CardHeader className="flex flex-row items-center justify-between">
-            <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
-            <div className="h-10 bg-gray-200 rounded w-32 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 rounded w-48 animate-pulse" />
+            <div className="h-10 bg-gray-200 rounded w-32 animate-pulse" />
           </CardHeader>
           <CardContent>
             <div className="mb-4">
               <div className="relative">
-                <div className="h-10 bg-gray-200 rounded w-full animate-pulse"></div>
+                <div className="h-10 bg-gray-200 rounded w-full animate-pulse" />
               </div>
             </div>
             <div className="space-y-4">
-              {[...Array(3)].map((_, index) => (
-                <CourseSkeleton key={index} />
+              {[...Array(3)].map((_, i) => (
+                <CourseSkeleton key={i} />
               ))}
             </div>
           </CardContent>
@@ -252,6 +408,7 @@ const ManageCourses = () => {
       <Card className="bg-gradient-to-br from-card via-card to-muted/30 border-border/50 shadow-soft">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Manage Courses</CardTitle>
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={resetForm}>
@@ -259,6 +416,7 @@ const ManageCourses = () => {
                 Add Course
               </Button>
             </DialogTrigger>
+
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
@@ -266,25 +424,22 @@ const ManageCourses = () => {
                 </DialogTitle>
               </DialogHeader>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 p-2">
                 <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label htmlFor="title">Title *</Label>
+                  <InputWrapper label="Title *">
                     <Input
-                      id="title"
                       value={formData.title}
                       onChange={(e) =>
                         setFormData({ ...formData, title: e.target.value })
                       }
                       required
+                      className="bg-transparent border-0 outline-none"
                       placeholder="Enter course title"
                     />
-                  </div>
+                  </InputWrapper>
 
-                  <div>
-                    <Label htmlFor="description">Description</Label>
+                  <InputWrapper label="Description">
                     <Textarea
-                      id="description"
                       value={formData.description}
                       onChange={(e) =>
                         setFormData({
@@ -292,46 +447,49 @@ const ManageCourses = () => {
                           description: e.target.value,
                         })
                       }
-                      placeholder="Enter course description"
                       rows={4}
+                      className="bg-transparent border-0 outline-none"
+                      placeholder="Enter course description"
                     />
-                  </div>
+                  </InputWrapper>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="category">Category</Label>
+                    <InputWrapper label="Category" icon={faLayerGroup}>
                       <Select
-                        value={formData.category}
+                        value={formData.category_id}
                         onValueChange={handleCategoryChange}
                       >
-                        <SelectTrigger className="bg-gray-50 dark:bg-gray-800">
+                        <SelectTrigger className="bg-transparent border-0">
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-gray-800">
-                          {categories.map((category) => (
-                            <SelectItem
-                              key={category.id}
-                              value={category.id.toString()}
-                            >
-                              {category.name}
+                        <SelectContent>
+                          <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                          {Array.isArray(categories) && categories.length ? (
+                            categories.map((c) => (
+                              <SelectItem key={c.id} value={String(c.id)}>
+                                {c.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="loading-categories">
+                              Loading categories...
                             </SelectItem>
-                          ))}
+                          )}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </InputWrapper>
 
-                    <div>
-                      <Label htmlFor="level">Level</Label>
+                    <InputWrapper label="Level">
                       <Select
                         value={formData.level}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, level: value })
+                        onValueChange={(v) =>
+                          setFormData({ ...formData, level: v })
                         }
                       >
-                        <SelectTrigger className="bg-gray-50 dark:bg-gray-800">
+                        <SelectTrigger className="bg-transparent border-0">
                           <SelectValue placeholder="Select level" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-gray-800">
+                        <SelectContent>
                           <SelectItem value="Beginner">Beginner</SelectItem>
                           <SelectItem value="Intermediate">
                             Intermediate
@@ -342,48 +500,38 @@ const ManageCourses = () => {
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>
+                    </InputWrapper>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="price">Price ($)</Label>
+                    <InputWrapper label="Price ($)" icon={faMoneyBill}>
                       <Input
-                        id="price"
                         type="number"
-                        step="0.01"
                         min="0"
+                        step="0.01"
                         value={formData.price}
                         onChange={(e) =>
                           setFormData({ ...formData, price: e.target.value })
                         }
+                        className="bg-transparent border-0 outline-none"
                         placeholder="0.00"
                       />
-                    </div>
+                    </InputWrapper>
 
-                    <div>
-                      <Label htmlFor="duration">Duration</Label>
+                    <InputWrapper label="Duration" icon={faClock}>
                       <Input
-                        id="duration"
                         value={formData.duration}
                         onChange={(e) =>
                           setFormData({ ...formData, duration: e.target.value })
                         }
+                        className="bg-transparent border-0 outline-none"
                         placeholder="e.g., 8 weeks"
                       />
-                    </div>
+                    </InputWrapper>
                   </div>
 
-                  <div>
-                    <Label htmlFor="thumbnail_url">
-                      <FontAwesomeIcon
-                        icon={faImage}
-                        className="mr-2 h-4 w-4"
-                      />
-                      Thumbnail URL
-                    </Label>
+                  <InputWrapper label="Thumbnail URL" icon={faImage}>
                     <Input
-                      id="thumbnail_url"
                       type="url"
                       value={formData.thumbnail_url}
                       onChange={(e) =>
@@ -392,19 +540,44 @@ const ManageCourses = () => {
                           thumbnail_url: e.target.value,
                         })
                       }
+                      className="bg-transparent border-0 outline-none"
                       placeholder="https://example.com/image.jpg"
                     />
-                  </div>
+                  </InputWrapper>
+
+                  <InputWrapper label="Instructor" icon={faUser}>
+                    <Select
+                      value={formData.instructor_id}
+                      onValueChange={handleInstructorChange}
+                    >
+                      <SelectTrigger className="bg-transparent border-0">
+                        <SelectValue placeholder="Select Instructor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {Array.isArray(instructors) && instructors.length ? (
+                          instructors.map((inst) => (
+                            <SelectItem key={inst.id} value={String(inst.id)}>
+                              {inst.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="loading-instructors">
+                            Loading instructors...
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </InputWrapper>
 
                   <div className="flex items-center space-x-2">
                     <Switch
-                      id="is_published"
                       checked={formData.is_published}
                       onCheckedChange={(checked) =>
                         setFormData({ ...formData, is_published: checked })
                       }
                     />
-                    <Label htmlFor="is_published">Publish course</Label>
+                    <Label>Publish course</Label>
                   </div>
                 </div>
 
@@ -436,7 +609,7 @@ const ManageCourses = () => {
                 placeholder="Search courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-muted/40 rounded-lg"
               />
             </div>
           </div>
@@ -455,35 +628,42 @@ const ManageCourses = () => {
                           {course.title}
                         </h3>
                         {course.is_published ? (
-                          <Badge
-                            variant="default"
-                            className="bg-green-100 text-green-800"
-                          >
+                          <Badge className="bg-green-100 text-green-800">
                             Published
                           </Badge>
                         ) : (
-                          <Badge
-                            variant="outline"
-                            className="text-gray-500 border-gray-300"
-                          >
+                          <Badge className="border-gray-300 text-gray-500">
                             Draft
                           </Badge>
                         )}
                       </div>
+
                       <p className="text-sm text-muted-foreground mb-2">
                         {course.description}
                       </p>
+
                       <div className="flex flex-wrap gap-4 text-sm">
                         <span className="text-primary font-medium">
                           ${course.price || 0}
                         </span>
                         <span>Level: {course.level || "Not set"}</span>
                         <span>
-                          Category: {typeof course.category === 'object' ? course.category.name : (course.category || "Uncategorized")}
+                          Category:{" "}
+                          {typeof course.category === "object"
+                            ? course.category.name
+                            : course.category || "Uncategorized"}
                         </span>
                         {course.duration && (
                           <span>Duration: {course.duration}</span>
                         )}
+                        <span>
+                          Instructor:{" "}
+                          {course.instructor?.name ||
+                            instructors.find(
+                              (i) => i.id === course.id
+                            )?.name ||
+                            "Unassigned"}
+                        </span>
                       </div>
                     </div>
 
@@ -494,23 +674,25 @@ const ManageCourses = () => {
                         onClick={() =>
                           navigate(`/admin/courses/${course.id}/content`)
                         }
-                        title="Manage Content"
                       >
-                        Manage Content<FontAwesomeIcon icon={faList} className="h-4 w-4" />
+                        Manage Content
+                        <FontAwesomeIcon icon={faList} className="ml-2 h-4" />
                       </Button>
+
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => openEditDialog(course)}
                       >
-                        <FontAwesomeIcon icon={faEdit} className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faEdit} className="h-4" />
                       </Button>
+
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDelete(course.id)}
                       >
-                        <FontAwesomeIcon icon={faTrash} className="h-4 w-4" />
+                        <FontAwesomeIcon icon={faTrash} className="h-4" />
                       </Button>
                     </div>
                   </div>
