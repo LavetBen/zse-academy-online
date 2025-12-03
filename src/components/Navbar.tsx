@@ -41,6 +41,7 @@ export const Navbar = () => {
         { name: "Case Studies", href: "/blog/cases" },
       ],
     },
+    { name: "Tutorials", href: "/tutorials" },
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
