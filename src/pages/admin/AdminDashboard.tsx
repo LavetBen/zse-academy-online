@@ -297,7 +297,7 @@ const MaterialBarChart = ({
   showGrid = true,
   color = '#3b82f6'
 }: { 
-  data: Array<{ label: string; value: number; [key: string]: any }>;
+  data: Array<{ label: string; value: number; growth?: number; [key: string]: any }>;
   title: string;
   subtitle?: string;
   height?: number;

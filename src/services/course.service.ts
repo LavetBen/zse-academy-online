@@ -12,10 +12,12 @@ export interface Course {
     id: number;
     name: string;
   };
+  category_id?: number;
   instructor?: {
     id: number;
     name: string;
   };
+  instructor_id?: number;
   contents?: any[];
   thumbnail?: string;
   is_enrolled?: boolean;
@@ -94,6 +96,12 @@ export const courseService = {
 
   deleteCourseContent: async (courseId: string | number, contentId: string | number) => {
     const response = await apiClient.delete(API_ENDPOINTS.ADMIN_DELETE_CONTENT(courseId, contentId));
+    return response.data;
+  },
+
+  // Finish module/content
+  finishModule: async (courseId: string | number, moduleId: string | number) => {
+    const response = await apiClient.post(`/courses/${courseId}/contents/${moduleId}/finish`);
     return response.data;
   },
 };
