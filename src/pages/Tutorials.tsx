@@ -1,301 +1,326 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowLeft,
+  faPlay,
+  faMobileScreen,
+  faDesktop,
   faWallet,
   faMoneyBillTransfer,
   faChartLine,
   faUserPlus,
-  faMobileScreen,
-  faDesktop,
-  faPlay,
-  faCircleQuestion,
+  faCheckCircle,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
+// -------------------------
+// Tutorial Type
+// -------------------------
 interface Tutorial {
   id: string;
   title: string;
   description: string;
   icon: any;
   category: "web" | "mobile";
-  supademoId?: string; // Supademo embed ID
   duration: string;
+  completed: boolean;
+  order: number;
+  color: string;
 }
 
+// -------------------------
+// Tutorial Data
+// -------------------------
 const tutorials: Tutorial[] = [
   {
     id: "create-account",
-    title: "Create an Account",
-    description: "Learn how to register and set up your trading account step by step.",
+    title: "Account Setup",
+    description: "Create and verify your trading account",
     icon: faUserPlus,
     category: "web",
-    supademoId: "", // Add Supademo ID here
     duration: "3 min",
+    completed: true,
+    color: "text-blue-600",
+    order: 1,
   },
   {
     id: "deposit-funds",
-    title: "How to Deposit",
-    description: "Step-by-step guide on depositing funds into your trading account.",
+    title: "Deposit Funds",
+    description: "Add money to start trading",
     icon: faWallet,
     category: "web",
-    supademoId: "", // Add Supademo ID here
     duration: "2 min",
+    completed: true,
+    color: "text-green-600",
+    order: 2,
   },
   {
     id: "withdraw-funds",
-    title: "How to Withdraw",
-    description: "Learn how to withdraw your funds safely and quickly.",
+    title: "Withdraw Profits",
+    description: "Secure withdrawal process",
     icon: faMoneyBillTransfer,
     category: "web",
-    supademoId: "", // Add Supademo ID here
     duration: "2 min",
+    completed: false,
+    color: "text-purple-600",
+    order: 3,
   },
   {
     id: "place-order",
-    title: "Place an Order",
-    description: "Master the art of placing buy and sell orders on our platform.",
+    title: "Place Trade",
+    description: "Execute buy/sell orders",
     icon: faChartLine,
     category: "web",
-    supademoId: "", // Add Supademo ID here
     duration: "4 min",
+    completed: false,
+    color: "text-red-600",
+    order: 4,
   },
   {
-    id: "mobile-create-account",
-    title: "Create Account (Mobile)",
-    description: "Set up your account using our mobile application.",
+    id: "mobile-create",
+    title: "Mobile Setup",
+    description: "App installation and setup",
     icon: faUserPlus,
     category: "mobile",
-    supademoId: "", // Add Supademo ID here
     duration: "3 min",
+    completed: false,
+    color: "text-blue-500",
+    order: 1,
   },
   {
     id: "mobile-deposit",
-    title: "Deposit via Mobile",
-    description: "Quick guide to depositing funds through the mobile app.",
+    title: "Mobile Deposit",
+    description: "Quick deposit on mobile",
     icon: faWallet,
     category: "mobile",
-    supademoId: "", // Add Supademo ID here
     duration: "2 min",
+    completed: false,
+    color: "text-green-500",
+    order: 2,
   },
   {
     id: "mobile-withdraw",
-    title: "Withdraw via Mobile",
-    description: "How to withdraw funds using our mobile application.",
+    title: "Mobile Withdraw",
+    description: "Withdraw on the go",
     icon: faMoneyBillTransfer,
     category: "mobile",
-    supademoId: "", // Add Supademo ID here
     duration: "2 min",
+    completed: false,
+    color: "text-purple-500",
+    order: 3,
   },
   {
-    id: "mobile-place-order",
-    title: "Trade on Mobile",
-    description: "Learn to execute trades on the go with our mobile app.",
+    id: "mobile-trade",
+    title: "Mobile Trading",
+    description: "Trade from anywhere",
     icon: faChartLine,
     category: "mobile",
-    supademoId: "", // Add Supademo ID here
     duration: "4 min",
+    completed: false,
+    color: "text-red-500",
+    order: 4,
   },
 ];
 
-const TutorialCard = ({ tutorial, onSelect }: { tutorial: Tutorial; onSelect: (tutorial: Tutorial) => void }) => {
+// -------------------------
+// Tutorial Card Component
+// -------------------------
+const TutorialCard = ({
+  tutorial,
+  onSelect,
+}: {
+  tutorial: Tutorial;
+  onSelect: () => void;
+}) => {
   return (
-    <Card 
-      className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 hover:border-primary/30"
-      onClick={() => onSelect(tutorial)}
+    <div
+      className="cursor-pointer"
+      onClick={onSelect}
     >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <FontAwesomeIcon icon={tutorial.icon} className="h-6 w-6 text-primary" />
+      <div className="rounded-md border bg-white shadow hover:shadow-md transition-all">
+        <div className="relative h-40 w-full overflow-hidden rounded-t-md">
+          <img
+            src={'../assets/6436e1c49548c7859151b833_6388b5c565306ff068b6890f_Demo-CAMRT.jpeg'}
+            alt={tutorial.title}
+            className="h-full w-full object-cover"
+          />
+
+          {/* Play Button Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 hover:opacity-100 transition">
+            <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow">
+              <FontAwesomeIcon icon={faPlay} className="h-4 w-4 text-black" />
+            </div>
           </div>
-          <Badge variant="secondary" className="text-xs">
-            {tutorial.duration}
-          </Badge>
+
+          {/* Category Badge */}
+          <div className="absolute top-2 left-2">
+            <span className="bg-white text-gray-800 px-2 py-0.5 rounded text-xs shadow-sm">
+              {tutorial.category === "web" ? "Web" : "Mobile"}
+            </span>
+          </div>
         </div>
-        <CardTitle className="text-lg mt-3 group-hover:text-primary transition-colors">
-          {tutorial.title}
-        </CardTitle>
-        <CardDescription className="text-sm">
-          {tutorial.description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="flex items-center text-sm text-primary font-medium">
-          <FontAwesomeIcon icon={faPlay} className="h-3 w-3 mr-2" />
-          Start Tutorial
+
+        {/* Content */}
+        <div className="p-3">
+          <h3 className="font-semibold text-gray-800 text-sm mb-1">
+            {tutorial.title}
+          </h3>
+          <p className="text-xs text-gray-600 mb-3">{tutorial.description}</p>
+
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center gap-2">
+              <FontAwesomeIcon icon={tutorial.icon} className={`h-3 w-3 ${tutorial.color}`} />
+              <span className="font-medium">Step {tutorial.order}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
+              {tutorial.duration}
+            </div>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
-const SupademoEmbed = ({ supademoId, title }: { supademoId: string; title: string }) => {
-  if (!supademoId) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[500px] bg-muted/30 rounded-xl border-2 border-dashed border-border">
-        <FontAwesomeIcon icon={faCircleQuestion} className="h-16 w-16 text-muted-foreground/50 mb-4" />
-        <p className="text-muted-foreground text-lg font-medium">Tutorial Coming Soon</p>
-        <p className="text-muted-foreground/70 text-sm mt-1">
-          The interactive demo for "{title}" is being prepared.
-        </p>
-      </div>
-    );
-  }
-
+// -------------------------
+// Supademo Viewer
+// -------------------------
+const SupademoViewer = ({ tutorialId }: { tutorialId: string }) => {
   return (
-    <div className="w-full rounded-xl overflow-hidden shadow-lg">
+    <div className="rounded-md border bg-white shadow p-6">
+      <h3 className="text-xl font-bold mb-2">Interactive Tutorial</h3>
+      <p className="text-gray-600 mb-4">Follow the guided demo to learn</p>
+
       <iframe
-        src={`https://app.supademo.com/embed/${supademoId}`}
-        title={title}
+        src={`https://app.supademo.com/embed/${tutorialId}`}
+        className="w-full h-[480px] rounded-md border"
+        title="Tutorial Demo"
         allow="clipboard-write"
-        frameBorder="0"
-        loading="lazy"
-        className="w-full h-[600px]"
       />
     </div>
   );
 };
 
-const Tutorials = () => {
-  const [selectedTutorial, setSelectedTutorial] = useState<Tutorial | null>(null);
-  const [activeCategory, setActiveCategory] = useState<"web" | "mobile">("web");
+// -------------------------
+// Main Dashboard
+// -------------------------
+export default function TutorialsDashboard() {
+  const [selectedTutorial, setSelectedTutorial] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<"all" | "web" | "mobile">("web");
 
-  const filteredTutorials = tutorials.filter((t) => t.category === activeCategory);
+  const filteredTutorials = tutorials
+    .filter((t) => (activeCategory === "all" ? true : t.category === activeCategory))
+    .sort((a, b) => a.order - b.order);
 
-  const handleSelectTutorial = (tutorial: Tutorial) => {
-    setSelectedTutorial(tutorial);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  // -------------------------
+  // Tutorial Details Page
+  // -------------------------
+  if (selectedTutorial) {
+    const tutorial = tutorials.find((t) => t.id === selectedTutorial);
 
-  const handleBack = () => {
-    setSelectedTutorial(null);
-  };
+    if (!tutorial) return null;
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background pt-24 pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Platform Tutorials
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Learn how to use our trading platform with interactive step-by-step guides. 
-              Master deposits, withdrawals, order placement, and more.
-            </p>
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <Button
+            variant="ghost"
+            onClick={() => setSelectedTutorial(null)}
+            className="mb-6"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+            Back to Tutorials
+          </Button>
+
+          <div className="rounded-md border bg-white p-6 shadow-sm mb-6">
+            <h1 className="text-2xl font-bold mb-1">{tutorial.title}</h1>
+            <p className="text-gray-600 mb-3">{tutorial.description}</p>
+
+            <div className="flex gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
+                {tutorial.duration}
+              </div>
+              <div className="flex items-center gap-1">
+                <FontAwesomeIcon icon={tutorial.icon} className={`h-3 w-3 ${tutorial.color}`} />
+                Step {tutorial.order}
+              </div>
+              {tutorial.completed && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <FontAwesomeIcon icon={faCheckCircle} className="h-3 w-3" />
+                  Completed
+                </div>
+              )}
+            </div>
           </div>
+
+          <SupademoViewer tutorialId="cmidcq8rb9r6mb7b45svbkd9l" />
         </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {selectedTutorial ? (
-            <div className="space-y-6">
-              {/* Back Button & Title */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleBack}
-                  className="text-primary hover:text-primary/80 font-medium flex items-center gap-2 transition-colors"
-                >
-                  ← Back to Tutorials
-                </button>
-              </div>
-              
-              <div className="mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <FontAwesomeIcon icon={selectedTutorial.icon} className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-foreground">
-                      {selectedTutorial.title}
-                    </h2>
-                    <p className="text-muted-foreground text-sm">
-                      {selectedTutorial.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
+        <Footer />
+      </div>
+    );
+  }
 
-              {/* Supademo Embed */}
-              <SupademoEmbed 
-                supademoId={selectedTutorial.supademoId || ""} 
-                title={selectedTutorial.title} 
-              />
-            </div>
-          ) : (
-            <div className="space-y-8">
-              {/* Platform Tabs */}
-              <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as "web" | "mobile")} className="w-full">
-                <div className="flex justify-center mb-8">
-                  <TabsList className="grid w-full max-w-md grid-cols-2 h-12">
-                    <TabsTrigger value="web" className="flex items-center gap-2 text-base">
-                      <FontAwesomeIcon icon={faDesktop} className="h-4 w-4" />
-                      Web Platform
-                    </TabsTrigger>
-                    <TabsTrigger value="mobile" className="flex items-center gap-2 text-base">
-                      <FontAwesomeIcon icon={faMobileScreen} className="h-4 w-4" />
-                      Mobile App
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
+  // -------------------------
+  // Tutorial List Page
+  // -------------------------
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
 
-                <TabsContent value="web" className="mt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredTutorials.map((tutorial) => (
-                      <TutorialCard 
-                        key={tutorial.id} 
-                        tutorial={tutorial} 
-                        onSelect={handleSelectTutorial}
-                      />
-                    ))}
-                  </div>
-                </TabsContent>
+      <div className="max-w-6xl mx-auto px-4 pt-12 pb-8">
+        <h1 className="text-3xl font-bold mb-2">Interactive Tutorials</h1>
+        <p className="text-gray-600">Learn our platform step-by-step using guided demos.</p>
 
-                <TabsContent value="mobile" className="mt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredTutorials.map((tutorial) => (
-                      <TutorialCard 
-                        key={tutorial.id} 
-                        tutorial={tutorial} 
-                        onSelect={handleSelectTutorial}
-                      />
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
+        {/* Categories */}
+        <div className="flex gap-2 mt-6 mb-8">
+          <Button
+            variant={activeCategory === "all" ? "default" : "outline"}
+            onClick={() => setActiveCategory("all")}
+            size="sm"
+          >
+            All
+          </Button>
 
-              {/* Help Section */}
-              <div className="mt-16 text-center bg-muted/30 rounded-2xl p-8">
-                <h3 className="text-xl font-semibold text-foreground mb-2">
-                  Need More Help?
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Can't find what you're looking for? Our support team is here to help.
-                </p>
-                <a 
-                  href="/contact" 
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                >
-                  Contact Support
-                </a>
-              </div>
-            </div>
-          )}
+          <Button
+            variant={activeCategory === "web" ? "default" : "outline"}
+            onClick={() => setActiveCategory("web")}
+            size="sm"
+          >
+            <FontAwesomeIcon icon={faDesktop} className="mr-2" />
+            Web
+          </Button>
+
+          <Button
+            variant={activeCategory === "mobile" ? "default" : "outline"}
+            onClick={() => setActiveCategory("mobile")}
+            size="sm"
+          >
+            <FontAwesomeIcon icon={faMobileScreen} className="mr-2" />
+            Mobile
+          </Button>
         </div>
-      </section>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredTutorials.map((tutorial) => (
+            <TutorialCard
+              key={tutorial.id}
+              tutorial={tutorial}
+              onSelect={() => setSelectedTutorial(tutorial.id)}
+            />
+          ))}
+        </div>
+      </div>
 
       <Footer />
     </div>
   );
-};
-
-export default Tutorials;
+}
