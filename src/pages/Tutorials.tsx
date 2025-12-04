@@ -7,11 +7,19 @@ import {
   faDesktop,
   faCheckCircle,
   faClock,
+  faUserPlus,
+  faWallet,
+  faMoneyBillTransfer,
+  faChartLine,
+  faMobileAlt,
+  faDownload,
+  faUpload,
+  faCoins,
 } from "@fortawesome/free-solid-svg-icons";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import tutorialThumbnail from "@/assets/6436e1c49548c7859151b833_6388b5c565306ff068b6890f_Demo-CAMRT.jpeg";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 // -------------------------
 // Tutorial Type
@@ -24,6 +32,8 @@ interface Tutorial {
   duration: string;
   completed: boolean;
   order: number;
+  icon: IconDefinition;
+  gradient: string;
 }
 
 // -------------------------
@@ -39,6 +49,8 @@ const tutorials: Tutorial[] = [
     duration: "3 min",
     completed: true,
     order: 1,
+    icon: faUserPlus,
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
     id: "deposit-funds",
@@ -48,6 +60,8 @@ const tutorials: Tutorial[] = [
     duration: "2 min",
     completed: true,
     order: 2,
+    icon: faWallet,
+    gradient: "from-green-500 to-emerald-500",
   },
   {
     id: "withdraw-funds",
@@ -57,6 +71,8 @@ const tutorials: Tutorial[] = [
     duration: "2 min",
     completed: false,
     order: 3,
+    icon: faMoneyBillTransfer,
+    gradient: "from-purple-500 to-pink-500",
   },
   {
     id: "place-order",
@@ -66,6 +82,8 @@ const tutorials: Tutorial[] = [
     duration: "4 min",
     completed: false,
     order: 4,
+    icon: faChartLine,
+    gradient: "from-orange-500 to-red-500",
   },
   {
     id: "mobile-create",
@@ -75,6 +93,8 @@ const tutorials: Tutorial[] = [
     duration: "3 min",
     completed: false,
     order: 1,
+    icon: faMobileAlt,
+    gradient: "from-indigo-500 to-purple-500",
   },
   {
     id: "mobile-deposit",
@@ -84,6 +104,8 @@ const tutorials: Tutorial[] = [
     duration: "2 min",
     completed: false,
     order: 2,
+    icon: faDownload,
+    gradient: "from-teal-500 to-green-500",
   },
   {
     id: "mobile-withdraw",
@@ -93,6 +115,8 @@ const tutorials: Tutorial[] = [
     duration: "2 min",
     completed: false,
     order: 3,
+    icon: faUpload,
+    gradient: "from-rose-500 to-orange-500",
   },
   {
     id: "mobile-trade",
@@ -102,6 +126,8 @@ const tutorials: Tutorial[] = [
     duration: "4 min",
     completed: false,
     order: 4,
+    icon: faCoins,
+    gradient: "from-amber-500 to-yellow-500",
   },
 ];
 
@@ -118,13 +144,37 @@ const TutorialCard = ({
   return (
     <div className="group cursor-pointer" onClick={onSelect}>
       <div className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-lg transition-all duration-300">
-        {/* Thumbnail */}
+        {/* Custom Designed Thumbnail */}
         <div className="relative aspect-video w-full overflow-hidden">
-          <img
-            src={tutorialThumbnail}
-            alt={tutorial.title}
-            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <div className={`absolute inset-0 bg-gradient-to-br ${tutorial.gradient}`}>
+            {/* Grid Pattern */}
+            <div 
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px",
+              }}
+            />
+            
+            {/* Main Icon */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="h-16 w-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
+                <FontAwesomeIcon
+                  icon={tutorial.icon}
+                  className="h-8 w-8 text-white"
+                />
+              </div>
+              <span className="text-white font-semibold text-sm px-3 py-1 bg-black/20 rounded-full backdrop-blur-sm">
+                {tutorial.title}
+              </span>
+            </div>
+
+            {/* Decorative Elements */}
+            <div className="absolute top-3 left-3 w-8 h-8 border-2 border-white/20 rounded-full" />
+            <div className="absolute bottom-3 right-3 w-6 h-6 border-2 border-white/20 rounded" />
+            <div className="absolute top-1/2 right-4 w-1 h-8 bg-white/10 rounded-full" />
+          </div>
 
           {/* Play Button Overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
