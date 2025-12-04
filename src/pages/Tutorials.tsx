@@ -33,7 +33,8 @@ const tutorials: Tutorial[] = [
   {
     id: "create-account",
     title: "Account Setup",
-    description: "Learn how to create and verify your trading account step by step",
+    description:
+      "Learn how to create and verify your trading account step by step",
     category: "web",
     duration: "3 min",
     completed: true,
@@ -115,10 +116,7 @@ const TutorialCard = ({
   onSelect: () => void;
 }) => {
   return (
-    <div
-      className="group cursor-pointer"
-      onClick={onSelect}
-    >
+    <div className="group cursor-pointer" onClick={onSelect}>
       <div className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-lg transition-all duration-300">
         {/* Thumbnail */}
         <div className="relative aspect-video w-full overflow-hidden">
@@ -127,11 +125,14 @@ const TutorialCard = ({
             alt={tutorial.title}
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          
+
           {/* Play Button Overlay */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="h-14 w-14 rounded-full bg-white flex items-center justify-center shadow-lg">
-              <FontAwesomeIcon icon={faPlay} className="h-5 w-5 text-foreground ml-1" />
+              <FontAwesomeIcon
+                icon={faPlay}
+                className="h-5 w-5 text-foreground ml-1"
+              />
             </div>
           </div>
 
@@ -197,10 +198,14 @@ const SupademoViewer = ({ tutorialId }: { tutorialId: string }) => {
 // -------------------------
 export default function TutorialsDashboard() {
   const [selectedTutorial, setSelectedTutorial] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<"all" | "web" | "mobile">("web");
+  const [activeCategory, setActiveCategory] = useState<
+    "all" | "web" | "mobile"
+  >("web");
 
   const filteredTutorials = tutorials
-    .filter((t) => (activeCategory === "all" ? true : t.category === activeCategory))
+    .filter((t) =>
+      activeCategory === "all" ? true : t.category === activeCategory
+    )
     .sort((a, b) => a.order - b.order);
 
   // -------------------------
@@ -228,17 +233,24 @@ export default function TutorialsDashboard() {
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm mb-6">
             <div className="flex items-start justify-between flex-wrap gap-4">
               <div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">{tutorial.title}</h1>
+                <h1 className="text-2xl font-bold text-foreground mb-2">
+                  {tutorial.title}
+                </h1>
                 <p className="text-muted-foreground">{tutorial.description}</p>
               </div>
-              
+
               <div className="flex gap-3 text-sm">
                 <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-lg">
-                  <FontAwesomeIcon icon={faClock} className="h-4 w-4 text-muted-foreground" />
+                  <FontAwesomeIcon
+                    icon={faClock}
+                    className="h-4 w-4 text-muted-foreground"
+                  />
                   <span className="font-medium">{tutorial.duration}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-lg">
-                  <span className="font-medium">Step {tutorial.order} of 4</span>
+                  <span className="font-medium">
+                    Step {tutorial.order} of 4
+                  </span>
                 </div>
                 {tutorial.completed && (
                   <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-2 rounded-lg">
@@ -269,16 +281,24 @@ export default function TutorialsDashboard() {
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-b border-border overflow-hidden">
         {/* Animated Grid Background */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
                               linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }} />
+              backgroundSize: "40px 40px",
+            }}
+          />
         </div>
 
         {/* Floating Chart Elements */}
         <div className="absolute top-8 right-8 opacity-20 hidden lg:block">
-          <svg width="200" height="100" viewBox="0 0 200 100" className="text-green-400">
+          <svg
+            width="200"
+            height="100"
+            viewBox="0 0 200 100"
+            className="text-green-400"
+          >
             <polyline
               fill="none"
               stroke="currentColor"
@@ -291,7 +311,12 @@ export default function TutorialsDashboard() {
         </div>
 
         <div className="absolute bottom-8 left-8 opacity-20 hidden lg:block">
-          <svg width="150" height="80" viewBox="0 0 150 80" className="text-blue-400">
+          <svg
+            width="150"
+            height="80"
+            viewBox="0 0 150 80"
+            className="text-blue-400"
+          >
             <polyline
               fill="none"
               stroke="currentColor"
@@ -305,9 +330,20 @@ export default function TutorialsDashboard() {
         <div className="absolute top-1/2 right-20 -translate-y-1/2 opacity-10 hidden xl:flex gap-2">
           {[60, 40, 70, 30, 55, 45, 65].map((height, i) => (
             <div key={i} className="flex flex-col items-center gap-1">
-              <div className={`w-1 ${i % 2 === 0 ? 'bg-green-400' : 'bg-red-400'}`} style={{ height: `${height}px` }} />
-              <div className={`w-3 ${i % 2 === 0 ? 'bg-green-400' : 'bg-red-400'} rounded-sm`} style={{ height: `${height * 0.6}px` }} />
-              <div className={`w-1 ${i % 2 === 0 ? 'bg-green-400' : 'bg-red-400'}`} style={{ height: `${height * 0.4}px` }} />
+              <div
+                className={`w-1 ${i % 2 === 0 ? "bg-green-400" : "bg-red-400"}`}
+                style={{ height: `${height}px` }}
+              />
+              <div
+                className={`w-3 ${
+                  i % 2 === 0 ? "bg-green-400" : "bg-red-400"
+                } rounded-sm`}
+                style={{ height: `${height * 0.6}px` }}
+              />
+              <div
+                className={`w-1 ${i % 2 === 0 ? "bg-green-400" : "bg-red-400"}`}
+                style={{ height: `${height * 0.4}px` }}
+              />
             </div>
           ))}
         </div>
@@ -318,58 +354,17 @@ export default function TutorialsDashboard() {
 
         {/* Content */}
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center gap-1 px-3 py-1 bg-green-500/20 rounded-full border border-green-500/30">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-green-400 text-xs font-medium">Live Learning</span>
-            </div>
-            <div className="px-3 py-1 bg-blue-500/20 rounded-full border border-blue-500/30">
-              <span className="text-blue-400 text-xs font-medium">Interactive</span>
-            </div>
-          </div>
-
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
             Master Trading with
             <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 bg-clip-text text-transparent">
               Interactive Tutorials
             </span>
           </h1>
-          
-          <p className="text-lg text-slate-300 max-w-2xl mb-8">
-            Step-by-step guided demos to help you navigate deposits, withdrawals, 
-            and trading like a pro. Learn at your own pace.
-          </p>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-6 md:gap-10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                <FontAwesomeIcon icon={faPlay} className="h-4 w-4 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-xl font-bold text-white">8+</p>
-                <p className="text-xs text-slate-400">Tutorials</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-500/20 border border-green-500/30 flex items-center justify-center">
-                <FontAwesomeIcon icon={faClock} className="h-4 w-4 text-green-400" />
-              </div>
-              <div>
-                <p className="text-xl font-bold text-white">22 min</p>
-                <p className="text-xs text-slate-400">Total Duration</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
-                <FontAwesomeIcon icon={faCheckCircle} className="h-4 w-4 text-cyan-400" />
-              </div>
-              <div>
-                <p className="text-xl font-bold text-white">100%</p>
-                <p className="text-xs text-slate-400">Free Access</p>
-              </div>
-            </div>
-          </div>
+          <p className="text-lg text-slate-300 max-w-2xl mb-8">
+            Step-by-step guided demos to help you navigate deposits,
+            withdrawals, and trading like a pro. Learn at your own pace.
+          </p>
         </div>
       </div>
 
@@ -405,7 +400,8 @@ export default function TutorialsDashboard() {
 
         {/* Results count */}
         <p className="text-sm text-muted-foreground mb-6">
-          {filteredTutorials.length} tutorial{filteredTutorials.length !== 1 ? 's' : ''} available
+          {filteredTutorials.length} tutorial
+          {filteredTutorials.length !== 1 ? "s" : ""} available
         </p>
 
         {/* Grid */}
