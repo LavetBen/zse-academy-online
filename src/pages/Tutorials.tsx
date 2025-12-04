@@ -234,7 +234,7 @@ const SupademoViewer = ({ tutorialId }: { tutorialId: string }) => {
   return (
     <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
       <iframe
-        src={`https://app.supademo.com/embed/${tutorialId}`}
+        src={'https://app.supademo.com/embed/cmir6flhu0pj6l821l4stwbjg'}
         className="w-full h-[600px]"
         title="Tutorial Demo"
         allow="clipboard-write"
