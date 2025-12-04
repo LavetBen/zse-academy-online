@@ -5,16 +5,13 @@ import {
   faPlay,
   faMobileScreen,
   faDesktop,
-  faWallet,
-  faMoneyBillTransfer,
-  faChartLine,
-  faUserPlus,
   faCheckCircle,
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import tutorialThumbnail from "@/assets/6436e1c49548c7859151b833_6388b5c565306ff068b6890f_Demo-CAMRT.jpeg";
 
 // -------------------------
 // Tutorial Type
@@ -23,12 +20,10 @@ interface Tutorial {
   id: string;
   title: string;
   description: string;
-  icon: any;
   category: "web" | "mobile";
   duration: string;
   completed: boolean;
   order: number;
-  color: string;
 }
 
 // -------------------------
@@ -38,95 +33,79 @@ const tutorials: Tutorial[] = [
   {
     id: "create-account",
     title: "Account Setup",
-    description: "Create and verify your trading account",
-    icon: faUserPlus,
+    description: "Learn how to create and verify your trading account step by step",
     category: "web",
     duration: "3 min",
     completed: true,
-    color: "text-blue-600",
     order: 1,
   },
   {
     id: "deposit-funds",
     title: "Deposit Funds",
-    description: "Add money to start trading",
-    icon: faWallet,
+    description: "Add money to your account and start trading immediately",
     category: "web",
     duration: "2 min",
     completed: true,
-    color: "text-green-600",
     order: 2,
   },
   {
     id: "withdraw-funds",
     title: "Withdraw Profits",
-    description: "Secure withdrawal process",
-    icon: faMoneyBillTransfer,
+    description: "Learn the secure withdrawal process for your earnings",
     category: "web",
     duration: "2 min",
     completed: false,
-    color: "text-purple-600",
     order: 3,
   },
   {
     id: "place-order",
     title: "Place Trade",
-    description: "Execute buy/sell orders",
-    icon: faChartLine,
+    description: "Execute buy and sell orders like a professional trader",
     category: "web",
     duration: "4 min",
     completed: false,
-    color: "text-red-600",
     order: 4,
   },
   {
     id: "mobile-create",
     title: "Mobile Setup",
-    description: "App installation and setup",
-    icon: faUserPlus,
+    description: "Install our mobile app and set up your account on the go",
     category: "mobile",
     duration: "3 min",
     completed: false,
-    color: "text-blue-500",
     order: 1,
   },
   {
     id: "mobile-deposit",
     title: "Mobile Deposit",
-    description: "Quick deposit on mobile",
-    icon: faWallet,
+    description: "Quick and easy deposit process from your mobile device",
     category: "mobile",
     duration: "2 min",
     completed: false,
-    color: "text-green-500",
     order: 2,
   },
   {
     id: "mobile-withdraw",
     title: "Mobile Withdraw",
-    description: "Withdraw on the go",
-    icon: faMoneyBillTransfer,
+    description: "Withdraw your funds anytime, anywhere from mobile",
     category: "mobile",
     duration: "2 min",
     completed: false,
-    color: "text-purple-500",
     order: 3,
   },
   {
     id: "mobile-trade",
     title: "Mobile Trading",
-    description: "Trade from anywhere",
-    icon: faChartLine,
+    description: "Master trading on the go with our mobile platform",
     category: "mobile",
     duration: "4 min",
     completed: false,
-    color: "text-red-500",
     order: 4,
   },
 ];
 
 // -------------------------
-// Tutorial Card Component
+// Tutorial Card Component (Udemy-inspired)
 // -------------------------
 const TutorialCard = ({
   tutorial,
@@ -137,48 +116,59 @@ const TutorialCard = ({
 }) => {
   return (
     <div
-      className="cursor-pointer"
+      className="group cursor-pointer"
       onClick={onSelect}
     >
-      <div className="rounded-md border bg-white shadow hover:shadow-md transition-all">
-        <div className="relative h-40 w-full overflow-hidden rounded-t-md">
+      <div className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-lg transition-all duration-300">
+        {/* Thumbnail */}
+        <div className="relative aspect-video w-full overflow-hidden">
           <img
-            src={'../assets/6436e1c49548c7859151b833_6388b5c565306ff068b6890f_Demo-CAMRT.jpeg'}
+            src={tutorialThumbnail}
             alt={tutorial.title}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
-
+          
           {/* Play Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 hover:opacity-100 transition">
-            <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center shadow">
-              <FontAwesomeIcon icon={faPlay} className="h-4 w-4 text-black" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="h-14 w-14 rounded-full bg-white flex items-center justify-center shadow-lg">
+              <FontAwesomeIcon icon={faPlay} className="h-5 w-5 text-foreground ml-1" />
             </div>
           </div>
 
-          {/* Category Badge */}
-          <div className="absolute top-2 left-2">
-            <span className="bg-white text-gray-800 px-2 py-0.5 rounded text-xs shadow-sm">
-              {tutorial.category === "web" ? "Web" : "Mobile"}
+          {/* Duration Badge */}
+          <div className="absolute bottom-2 right-2">
+            <span className="bg-black/80 text-white px-2 py-1 rounded text-xs font-medium">
+              {tutorial.duration}
             </span>
           </div>
+
+          {/* Completed Badge */}
+          {tutorial.completed && (
+            <div className="absolute top-2 left-2">
+              <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
+                <FontAwesomeIcon icon={faCheckCircle} className="h-3 w-3" />
+                Completed
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Content */}
-        <div className="p-3">
-          <h3 className="font-semibold text-gray-800 text-sm mb-1">
+        <div className="p-4">
+          <h3 className="font-bold text-foreground text-base mb-1 group-hover:text-primary transition-colors line-clamp-2">
             {tutorial.title}
           </h3>
-          <p className="text-xs text-gray-600 mb-3">{tutorial.description}</p>
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+            {tutorial.description}
+          </p>
 
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={tutorial.icon} className={`h-3 w-3 ${tutorial.color}`} />
-              <span className="font-medium">Step {tutorial.order}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
-              {tutorial.duration}
-            </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground font-medium">
+              Step {tutorial.order} of 4
+            </span>
+            <span className="text-xs bg-muted px-2 py-1 rounded font-medium text-muted-foreground">
+              {tutorial.category === "web" ? "Web Platform" : "Mobile App"}
+            </span>
           </div>
         </div>
       </div>
@@ -191,13 +181,10 @@ const TutorialCard = ({
 // -------------------------
 const SupademoViewer = ({ tutorialId }: { tutorialId: string }) => {
   return (
-    <div className="rounded-md border bg-white shadow p-6">
-      <h3 className="text-xl font-bold mb-2">Interactive Tutorial</h3>
-      <p className="text-gray-600 mb-4">Follow the guided demo to learn</p>
-
+    <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
       <iframe
         src={`https://app.supademo.com/embed/${tutorialId}`}
-        className="w-full h-[480px] rounded-md border"
+        className="w-full h-[600px]"
         title="Tutorial Demo"
         allow="clipboard-write"
       />
@@ -225,38 +212,41 @@ export default function TutorialsDashboard() {
     if (!tutorial) return null;
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <Navbar />
 
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Button
             variant="ghost"
             onClick={() => setSelectedTutorial(null)}
-            className="mb-6"
+            className="mb-6 hover:bg-muted"
           >
-            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-2 h-4 w-4" />
             Back to Tutorials
           </Button>
 
-          <div className="rounded-md border bg-white p-6 shadow-sm mb-6">
-            <h1 className="text-2xl font-bold mb-1">{tutorial.title}</h1>
-            <p className="text-gray-600 mb-3">{tutorial.description}</p>
-
-            <div className="flex gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
-                <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
-                {tutorial.duration}
+          <div className="rounded-lg border border-border bg-card p-6 shadow-sm mb-6">
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-foreground mb-2">{tutorial.title}</h1>
+                <p className="text-muted-foreground">{tutorial.description}</p>
               </div>
-              <div className="flex items-center gap-1">
-                <FontAwesomeIcon icon={tutorial.icon} className={`h-3 w-3 ${tutorial.color}`} />
-                Step {tutorial.order}
-              </div>
-              {tutorial.completed && (
-                <div className="flex items-center gap-1 text-green-600">
-                  <FontAwesomeIcon icon={faCheckCircle} className="h-3 w-3" />
-                  Completed
+              
+              <div className="flex gap-3 text-sm">
+                <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-lg">
+                  <FontAwesomeIcon icon={faClock} className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">{tutorial.duration}</span>
                 </div>
-              )}
+                <div className="flex items-center gap-2 bg-muted px-3 py-2 rounded-lg">
+                  <span className="font-medium">Step {tutorial.order} of 4</span>
+                </div>
+                {tutorial.completed && (
+                  <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-2 rounded-lg">
+                    <FontAwesomeIcon icon={faCheckCircle} className="h-4 w-4" />
+                    <span className="font-medium">Completed</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -272,21 +262,30 @@ export default function TutorialsDashboard() {
   // Tutorial List Page
   // -------------------------
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="max-w-6xl mx-auto px-4 pt-12 pb-8">
-        <h1 className="text-3xl font-bold mb-2">Interactive Tutorials</h1>
-        <p className="text-gray-600">Learn our platform step-by-step using guided demos.</p>
+      {/* Hero Section */}
+      <div className="bg-primary/5 border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+            Interactive Tutorials
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Master our trading platform with step-by-step guided demos. Learn at your own pace.
+          </p>
+        </div>
+      </div>
 
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Categories */}
-        <div className="flex gap-2 mt-6 mb-8">
+        <div className="flex gap-2 mb-8 border-b border-border pb-4">
           <Button
             variant={activeCategory === "all" ? "default" : "outline"}
             onClick={() => setActiveCategory("all")}
             size="sm"
           >
-            All
+            All Tutorials
           </Button>
 
           <Button
@@ -294,8 +293,8 @@ export default function TutorialsDashboard() {
             onClick={() => setActiveCategory("web")}
             size="sm"
           >
-            <FontAwesomeIcon icon={faDesktop} className="mr-2" />
-            Web
+            <FontAwesomeIcon icon={faDesktop} className="mr-2 h-4 w-4" />
+            Web Platform
           </Button>
 
           <Button
@@ -303,10 +302,15 @@ export default function TutorialsDashboard() {
             onClick={() => setActiveCategory("mobile")}
             size="sm"
           >
-            <FontAwesomeIcon icon={faMobileScreen} className="mr-2" />
-            Mobile
+            <FontAwesomeIcon icon={faMobileScreen} className="mr-2 h-4 w-4" />
+            Mobile App
           </Button>
         </div>
+
+        {/* Results count */}
+        <p className="text-sm text-muted-foreground mb-6">
+          {filteredTutorials.length} tutorial{filteredTutorials.length !== 1 ? 's' : ''} available
+        </p>
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
