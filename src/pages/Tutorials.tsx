@@ -265,15 +265,111 @@ export default function TutorialsDashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero Section */}
-      <div className="bg-primary/5 border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            Interactive Tutorials
+      {/* Hero Section - Trading Themed */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-b border-border overflow-hidden">
+        {/* Animated Grid Background */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px'
+          }} />
+        </div>
+
+        {/* Floating Chart Elements */}
+        <div className="absolute top-8 right-8 opacity-20 hidden lg:block">
+          <svg width="200" height="100" viewBox="0 0 200 100" className="text-green-400">
+            <polyline
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              points="0,80 30,70 60,75 90,40 120,50 150,20 180,30 200,10"
+            />
+            <circle cx="90" cy="40" r="4" fill="currentColor" />
+            <circle cx="150" cy="20" r="4" fill="currentColor" />
+          </svg>
+        </div>
+
+        <div className="absolute bottom-8 left-8 opacity-20 hidden lg:block">
+          <svg width="150" height="80" viewBox="0 0 150 80" className="text-blue-400">
+            <polyline
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              points="0,60 25,50 50,55 75,30 100,40 125,15 150,25"
+            />
+          </svg>
+        </div>
+
+        {/* Candlestick Pattern */}
+        <div className="absolute top-1/2 right-20 -translate-y-1/2 opacity-10 hidden xl:flex gap-2">
+          {[60, 40, 70, 30, 55, 45, 65].map((height, i) => (
+            <div key={i} className="flex flex-col items-center gap-1">
+              <div className={`w-1 ${i % 2 === 0 ? 'bg-green-400' : 'bg-red-400'}`} style={{ height: `${height}px` }} />
+              <div className={`w-3 ${i % 2 === 0 ? 'bg-green-400' : 'bg-red-400'} rounded-sm`} style={{ height: `${height * 0.6}px` }} />
+              <div className={`w-1 ${i % 2 === 0 ? 'bg-green-400' : 'bg-red-400'}`} style={{ height: `${height * 0.4}px` }} />
+            </div>
+          ))}
+        </div>
+
+        {/* Glowing Orbs */}
+        <div className="absolute top-20 left-1/4 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-1/3 w-40 h-40 bg-green-500/10 rounded-full blur-3xl" />
+
+        {/* Content */}
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-1 px-3 py-1 bg-green-500/20 rounded-full border border-green-500/30">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="text-green-400 text-xs font-medium">Live Learning</span>
+            </div>
+            <div className="px-3 py-1 bg-blue-500/20 rounded-full border border-blue-500/30">
+              <span className="text-blue-400 text-xs font-medium">Interactive</span>
+            </div>
+          </div>
+
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            Master Trading with
+            <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 bg-clip-text text-transparent">
+              Interactive Tutorials
+            </span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Master our trading platform with step-by-step guided demos. Learn at your own pace.
+          
+          <p className="text-lg text-slate-300 max-w-2xl mb-8">
+            Step-by-step guided demos to help you navigate deposits, withdrawals, 
+            and trading like a pro. Learn at your own pace.
           </p>
+
+          {/* Stats */}
+          <div className="flex flex-wrap gap-6 md:gap-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+                <FontAwesomeIcon icon={faPlay} className="h-4 w-4 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-white">8+</p>
+                <p className="text-xs text-slate-400">Tutorials</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500/20 border border-green-500/30 flex items-center justify-center">
+                <FontAwesomeIcon icon={faClock} className="h-4 w-4 text-green-400" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-white">22 min</p>
+                <p className="text-xs text-slate-400">Total Duration</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+                <FontAwesomeIcon icon={faCheckCircle} className="h-4 w-4 text-cyan-400" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-white">100%</p>
+                <p className="text-xs text-slate-400">Free Access</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
