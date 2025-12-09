@@ -1,232 +1,314 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBullseye, faUsers, faAward, faArrowTrendUp, faCheckCircle, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faChartLine,
+  faGlobe,
+  faDatabase,
+  faMobileAlt,
+  faDesktop,
+  faShieldAlt,
+  faRocket,
+  faUsers,
+  faArrowCircleUp,
+  faBolt,
+  faCheckCircle,
+  faCogs,
+} from "@fortawesome/free-solid-svg-icons";
 
-const team = [
-  {
-    name: "Dr. Sarah Mukamuri",
-    role: "Chief Executive Officer",
-    bio: "Former ZSE executive with 15+ years in financial markets. PhD in Finance from University of Zimbabwe.",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b1b0?w=300&h=300&fit=crop&crop=face"
-  },
-  {
-    name: "James Chigumba",
-    role: "Head of Technical Analysis",
-    bio: "Certified Market Technician with expertise in Zimbabwe and African markets. 12 years trading experience.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face"
-  },
-  {
-    name: "Prof. Michael Tendai",
-    role: "Portfolio Management Director",
-    bio: "Professor of Finance, published researcher, and portfolio manager with institutional investment experience.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-  },
-  {
-    name: "Alice Nyamadzawo",
-    role: "Risk Management Specialist",
-    bio: "Former bank risk officer with specialized knowledge in emerging market risk assessment and mitigation.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face"
-  }
-];
+// Solid Color Palette (No Gradients)
+const BLUE_COLORS = {
+  primary: "#1E88E5",     // Light blue primary
+  secondary: "#0D47A1",   // Dark blue for accents
+  accent: "#2196F3",      // Bright light blue
+  light: "#E3F2FD",       // Very light blue background
+  darkBlue: "#0D3A6E",    // Dark blue for Core Principles section
+  dark: "#000000",        // Black for text (as requested)
+  gray: "#666666",        // Medium gray for secondary text
+  border: "#CCE5FF",      // Light blue border
+  success: "#00C853",     // Success green
+  platformBlue: "#2196F3",
+  platformCyan: "#00ACC1",
+  platformIndigo: "#3949AB",
+};
 
-const values = [
+const coreValues = [
   {
-    icon: faBullseye,
-    title: "Excellence in Education",
-    description: "We deliver world-class financial education tailored to Zimbabwe's unique market environment."
+    number: "01",
+    title: "Innovation Driven",
+    description: "We continuously innovate to provide cutting-edge solutions that meet the evolving needs of Zimbabwe's financial markets. Our technology-first approach ensures you stay ahead in today's digital economy.",
+    icon: faRocket,
+    features: ["AI-powered analytics", "Real-time market data", "Cloud-native architecture"]
   },
   {
+    number: "02",
+    title: "User-Centric Design",
+    description: "Every platform we build is designed with the user experience in mind. Intuitive interfaces, seamless workflows, and responsive design ensure maximum productivity and satisfaction.",
     icon: faUsers,
-    title: "Student Success",
-    description: "Our students' career advancement and financial success is our primary measure of achievement."
+    features: ["Intuitive interfaces", "Mobile-first design", "Personalized dashboards"]
   },
   {
-    icon: faAward,
-    title: "Industry Recognition",
-    description: "Our certifications are recognized by leading financial institutions across Zimbabwe and beyond."
+    number: "03",
+    title: "Reliability & Security",
+    description: "Built with enterprise-grade security and 99.9% uptime guarantee. Your data is protected with bank-level encryption and comprehensive backup systems.",
+    icon: faShieldAlt,
+    features: ["Bank-level security", "99.9% uptime", "24/7 monitoring"]
+  },
+];
+
+const platforms = [
+  {
+    name: "ZSE Direct",
+    description: "Professional trading platform for Zimbabwe Stock Exchange with real-time quotes, advanced charting tools, and instant order execution. Access ZSE's full market depth and trading history.",
+    icon: faChartLine,
+    color: BLUE_COLORS.platformBlue,
+    features: [
+      "Real-time market data",
+      "Advanced charting tools",
+      "Instant order execution",
+      "Portfolio tracking",
+      "Market depth analysis"
+    ],
+    cta: "Start Trading"
   },
   {
-    icon: faArrowTrendUp,
-    title: "Continuous Innovation",
-    description: "We constantly update our curriculum to reflect latest market trends and best practices."
-  }
+    name: "VFEX Direct",
+    description: "Comprehensive platform for Victoria Falls Stock Exchange trading. Trade in multiple currencies with advanced forex integration and international settlement capabilities.",
+    icon: faGlobe,
+    color: BLUE_COLORS.platformCyan,
+    features: [
+      "Multi-currency trading",
+      "Forex integration",
+      "International settlement",
+      "Cross-border analytics",
+      "Global market access"
+    ],
+    cta: "Explore VFEX"
+  },
+  {
+    name: "Data Direct",
+    description: "Advanced market data analytics platform with historical data, predictive analytics, and custom reporting. Perfect for research analysts and institutional investors.",
+    icon: faDatabase,
+    color: BLUE_COLORS.platformIndigo,
+    features: [
+      "Historical data archive",
+      "Predictive analytics",
+      "Custom reporting",
+      "API integration",
+      "Research tools"
+    ],
+    cta: "Access Data"
+  },
 ];
 
-const achievements = [
-  "5,000+ professionals trained since 2018",
-  "98% course completion rate",
-  "Average 35% salary increase post-certification",
-  "Partnerships with 15+ financial institutions",
-  "Recognized by ZSE as preferred training partner",
-  "International accreditation from CFA Institute"
-];
-
-const About = () => {
+export default function About() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white" style={{ fontFamily: "'Poppins', sans-serif", color: BLUE_COLORS.dark }}>
       <Navbar />
-      
-      {/* Hero Section */}
-      <section className="bg-hero text-white py-16">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-              About ZSE Training
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Zimbabwe's premier financial education platform, empowering professionals 
-              to excel in stock exchange operations and financial markets
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Mission Section */}
-      <section className="section-padding">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-6">
-                Our Mission
-              </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                To democratize access to high-quality financial education in Zimbabwe, 
-                empowering individuals and institutions with the knowledge and skills 
-                needed to thrive in modern financial markets.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                We bridge the gap between theoretical knowledge and practical application, 
-                ensuring our students are job-ready and capable of making informed 
-                investment decisions in Zimbabwe's evolving economic landscape.
-              </p>
-              <Button size="lg" variant="hero">
-                Join Our Community
-                <FontAwesomeIcon icon={faArrowRight} className="ml-2 h-5 w-5" />
+      {/* HERO SECTION - Left Aligned */}
+      <section className="pt-24 pb-20 md:pt-32 md:pb-28 relative overflow-hidden">
+        <div className="absolute inset-0" style={{ 
+          backgroundColor: BLUE_COLORS.light,
+          opacity: 0.7 
+        }}></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-left max-w-4xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
+              Empowering <span style={{ color: BLUE_COLORS.primary }}>Digital Trading</span><br />
+              Across Zimbabwe's<br />
+              Financial Ecosystem
+            </h1>
+            
+            <p className="text-xl md:text-2xl mb-12 leading-relaxed max-w-3xl" style={{ color: BLUE_COLORS.gray }}>
+              We provide cutting-edge trading platforms and data solutions for Zimbabwe Stock Exchange (ZSE), 
+              Victoria Falls Exchange (VFEX), and comprehensive market data analytics. Our platforms are designed 
+              for reliability, security, and exceptional user experience.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button className="px-8 py-4 text-lg font-semibold rounded-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                      style={{ 
+                        backgroundColor: BLUE_COLORS.primary,
+                        borderColor: BLUE_COLORS.primary,
+                        color: "white"
+                      }}>
+                Get Started Free
+                <FontAwesomeIcon icon={faArrowRight} className="ml-3 h-4 w-4" />
+              </Button>
+              
+              <Button variant="outline" className="px-8 py-4 text-lg font-semibold rounded-lg border-2"
+                      style={{ 
+                        borderColor: BLUE_COLORS.border,
+                        color: BLUE_COLORS.dark 
+                      }}>
+                <FontAwesomeIcon icon={faCogs} className="mr-3 h-4 w-4" />
+                Platform Demo
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-primary/10 rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-primary mb-2">5K+</div>
-                <div className="text-muted-foreground">Students Trained</div>
-              </div>
-              <div className="bg-primary/10 rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-primary mb-2">98%</div>
-                <div className="text-muted-foreground">Success Rate</div>
-              </div>
-              <div className="bg-primary/10 rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-primary mb-2">15+</div>
-                <div className="text-muted-foreground">Expert Instructors</div>
-              </div>
-              <div className="bg-primary/10 rounded-2xl p-6 text-center">
-                <div className="text-3xl font-bold text-primary mb-2">6</div>
-                <div className="text-muted-foreground">Years Experience</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="section-padding bg-accent/30">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4">
-              Our Core Values
+      {/* CORE PRINCIPLES SECTION - Dark Blue Background */}
+      <section className="py-20" style={{ backgroundColor: BLUE_COLORS.darkBlue }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              Our <span style={{ color: BLUE_COLORS.accent }}>Core Principles</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The principles that guide everything we do
+            <p className="text-xl max-w-3xl text-gray-300">
+              Building the future of Zimbabwe's financial technology with these foundational principles
             </p>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="card-gradient text-center">
-                <CardHeader>
-                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <FontAwesomeIcon icon={value.icon} className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl">{value.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {value.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section className="section-padding">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-4">
-              Meet Our Expert Team
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Industry veterans with decades of combined experience in Zimbabwe's financial markets
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="card-hover text-center">
-                <CardHeader>
-                  <div className="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover"
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {coreValues.map((value, index) => (
+              <div key={index} className="text-left p-8 rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                   style={{ backgroundColor: "#1A4A8F", border: `1px solid ${BLUE_COLORS.accent}30` }}>
+                <div className="flex items-start mb-8">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center mr-6"
+                       style={{ backgroundColor: `${BLUE_COLORS.accent}30` }}>
+                    <FontAwesomeIcon 
+                      icon={value.icon} 
+                      style={{ color: BLUE_COLORS.accent }} 
+                      className="h-7 w-7" 
                     />
                   </div>
-                  <CardTitle className="text-xl">{member.name}</CardTitle>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary">
-                    {member.role}
-                  </Badge>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {member.bio}
-                  </p>
-                </CardContent>
-              </Card>
+                  <div>
+                    <span className="text-4xl font-bold text-white">
+                      {value.number}
+                    </span>
+                  </div>
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-4 text-white">
+                  {value.title}
+                </h3>
+                <p className="text-lg mb-6 leading-relaxed text-gray-300">
+                  {value.description}
+                </p>
+                
+                <div className="space-y-3">
+                  {value.features.map((feature, i) => (
+                    <div key={i} className="flex items-center">
+                      <FontAwesomeIcon icon={faCheckCircle} className="mr-3 h-4 w-4" style={{ color: BLUE_COLORS.success }} />
+                      <span className="text-gray-200">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Achievements Section */}
-      <section className="section-padding bg-secondary text-white">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Our Achievements
+      {/* PLATFORMS SECTION - Showcase with Left Alignment */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: BLUE_COLORS.dark }}>
+              Our <span style={{ color: BLUE_COLORS.primary }}>Trading Platforms</span>
             </h2>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Milestones that demonstrate our commitment to excellence
+            <p className="text-xl max-w-3xl" style={{ color: BLUE_COLORS.gray }}>
+              Comprehensive suite of professional trading and data platforms for Zimbabwe's financial markets
             </p>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {achievements.map((achievement, index) => (
-              <div key={index} className="flex items-center space-x-3">
-                <FontAwesomeIcon icon={faCheckCircle} className="h-6 w-6 text-primary flex-shrink-0" />
-                <span className="text-blue-100">{achievement}</span>
-              </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {platforms.map((platform, index) => (
+              <Card key={index} 
+                    className="border rounded-2xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 bg-white overflow-hidden group"
+                    style={{ borderColor: BLUE_COLORS.border, borderTop: `6px solid ${platform.color}` }}>
+                <CardContent className="p-8">
+                  <div className="flex items-start mb-6">
+                    <div className="w-16 h-16 rounded-xl flex items-center justify-center mr-6"
+                         style={{ backgroundColor: `${platform.color}20` }}>
+                      <FontAwesomeIcon 
+                        icon={platform.icon} 
+                        style={{ color: platform.color }} 
+                        className="h-8 w-8" 
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: BLUE_COLORS.dark }}>
+                        {platform.name}
+                      </h3>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: BLUE_COLORS.success }}></div>
+                        <span className="text-sm font-medium" style={{ color: BLUE_COLORS.success }}>Live & Operational</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-lg mb-8 leading-relaxed" style={{ color: BLUE_COLORS.gray }}>
+                    {platform.description}
+                  </p>
+                  
+                  <div className="space-y-4 mb-8">
+                    <h4 className="font-bold text-lg" style={{ color: BLUE_COLORS.dark }}>Key Features:</h4>
+                    {platform.features.map((feature, i) => (
+                      <div key={i} className="flex items-center group-hover:translate-x-2 transition-transform duration-300">
+                        <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: platform.color }}></div>
+                        <span style={{ color: BLUE_COLORS.dark }}>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button className="w-full py-4 text-lg font-semibold rounded-lg hover:shadow-lg transition-all duration-300 group-hover:scale-105"
+                          style={{ 
+                            backgroundColor: platform.color,
+                            borderColor: platform.color,
+                            color: "white"
+                          }}>
+                    {platform.cta}
+                    <FontAwesomeIcon icon={faArrowRight} className="ml-3 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
           </div>
+
+          
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-20" style={{ backgroundColor: BLUE_COLORS.primary }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            Start Trading with Confidence
+          </h2>
+          <p className="text-xl mb-10 max-w-2xl mx-auto text-blue-100">
+            Join thousands of traders using our professional platforms. Experience the future of Zimbabwe's financial markets today.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button className="px-10 py-5 text-lg font-bold rounded-lg hover:shadow-2xl transition-all bg-white hover:bg-blue-50"
+                    style={{ color: BLUE_COLORS.primary }}>
+              Create Free Account
+              <FontAwesomeIcon icon={faArrowRight} className="ml-3 h-5 w-5" />
+            </Button>
+            
+            <Button variant="outline" className="px-10 py-5 text-lg font-semibold rounded-lg border-2 bg-transparent hover:bg-white/10"
+                    style={{ 
+                      borderColor: 'white',
+                      color: 'white' 
+                    }}>
+              <FontAwesomeIcon icon={faDesktop} className="mr-3 h-5 w-5" />
+              Live Platform Demo
+            </Button>
+          </div>
+          
+          {/* Removed the footer text section as requested */}
         </div>
       </section>
 
       <Footer />
     </div>
   );
-};
-
-export default About;
+}

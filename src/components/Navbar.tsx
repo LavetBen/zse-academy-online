@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faChevronDown, faUser, faGauge, faRightFromBracket, faUserShield, faSignInAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faTimes, faChevronDown, faUser, faGauge, faRightFromBracket, faUserShield, faSignInAlt, faUserPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "../assets/logo.png";
 
@@ -23,24 +23,8 @@ export const Navbar = () => {
 
   const navigation = [
     { name: "Home", href: "/" },
-    {
-      name: "Courses",
-      href: "/courses",
-      dropdown: [
-        { name: "Stock Market Basics", href: "/courses/basics" },
-        { name: "Advanced Trading", href: "/courses/advanced" },
-        { name: "Market Analysis", href: "/courses/analysis" },
-      ],
-    },
-    {
-      name: "Blog",
-      href: "/blog",
-      dropdown: [
-        { name: "Market News", href: "/blog/news" },
-        { name: "Trading Tips", href: "/blog/tips" },
-        { name: "Case Studies", href: "/blog/cases" },
-      ],
-    },
+    { name: "Courses", href: "/courses" },
+    { name: "Blog", href: "/blog" },
     { name: "Tutorials", href: "/tutorials" },
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
@@ -57,6 +41,10 @@ export const Navbar = () => {
     navigate("/");
   };
 
+  // Split navigation for different screen sizes
+  const primaryNavigation = navigation.slice(0, 4); // Home, Courses, Blog, Tutorials
+  const secondaryNavigation = navigation.slice(4); // About Us, Contact
+
   return (
     <nav className="bg-white backdrop-blur-md border-b border-border/60 sticky top-0 z-50 shadow-sm font-poppins">
       <div className="max-w-content mx-auto px-2 sm:px-6 lg:px-8">
@@ -72,60 +60,25 @@ export const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation - Show from large screens */}
+          <div className="hidden lg:flex items-center space-x-8">
             {navigation.map((item) => (
-              <div key={item.name} className="relative group">
-                {item.dropdown ? (
-                  <>
-                    <button
-                      onClick={() => toggleDropdown(item.name)}
-                      className={`flex items-center text-sm font-medium transition-colors hover:text-[#00aeef] py-2
-                        ${
-                          isActive(item.href) ||
-                          item.dropdown.some((d) => isActive(d.href))
-                            ? "text-[#00aeef]"
-                            : "text-muted-foreground"
-                        }`}
-                    >
-                      {item.name}
-                      <FontAwesomeIcon icon={faChevronDown} className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    <div className="absolute left-0 mt-3 w-56 rounded-lg shadow-xl bg-white backdrop-blur-md border border-border/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all duration-200">
-                      {item.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.name}
-                          to={dropdownItem.href}
-                          className={`block px-5 py-3 text-sm transition-colors hover:bg-blue-200
-                            ${
-                              isActive(dropdownItem.href)
-                                ? "text-[#00aeef] bg-muted/30 font-medium"
-                                : "text-muted-foreground"
-                            }`}
-                        >
-                          {dropdownItem.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <Link
-                    to={item.href}
-                    className={`text-sm font-medium transition-colors hover:text-[#00aeef] relative py-2
-                      ${
-                        isActive(item.href)
-                          ? "text-[#00aeef] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-[#00aeef] after:rounded-full"
-                          : "text-muted-foreground"
-                      }`}
-                  >
-                    {item.name}
-                  </Link>
-                )}
+              <div key={item.name} className="relative">
+                <Link
+                  to={item.href}
+                  className={`text-sm font-medium transition-colors hover:text-[#00aeef] relative py-2
+                    ${
+                      isActive(item.href)
+                        ? "text-[#00aeef] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-[#00aeef] after:rounded-full"
+                        : "text-muted-foreground"
+                    }`}
+                >
+                  {item.name}
+                </Link>
               </div>
             ))}
 
+            {/* Auth Buttons for Desktop */}
             <div className="flex items-center space-x-3 ml-6">
               {isAuthenticated ? (
                 <>
@@ -149,7 +102,8 @@ export const Navbar = () => {
                         className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
                       >
                         <FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" />
-                        <span className="hidden lg:inline">{user?.name || 'Account'}</span>
+                        <span className="hidden xl:inline">{user?.name || 'Account'}</span>
+                        <span className="xl:hidden">Account</span>
                         <FontAwesomeIcon icon={faChevronDown} className="ml-2 h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -199,7 +153,122 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile menu button + Auth Icons */}
+          {/* Medium Screen Navigation (768px - 1024px) */}
+          <div className="hidden md:flex lg:hidden items-center space-x-4 flex-1 justify-end">
+            {/* Show primary navigation items */}
+            <div className="flex items-center space-x-4">
+              {primaryNavigation.map((item) => (
+                <div key={item.name}>
+                  <Link
+                    to={item.href}
+                    className={`text-xs font-medium transition-colors hover:text-[#00aeef] px-2 py-1
+                      ${
+                        isActive(item.href)
+                          ? "text-[#00aeef]"
+                          : "text-muted-foreground"
+                      }`}
+                  >
+                    {item.name}
+                  </Link>
+                </div>
+              ))}
+              
+              {/* More dropdown for secondary items */}
+              {secondaryNavigation.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="text-xs font-medium text-muted-foreground hover:text-[#00aeef] px-2 py-1"
+                    >
+                      <FontAwesomeIcon icon={faEllipsisH} className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-40">
+                    {secondaryNavigation.map((item) => (
+                      <DropdownMenuItem key={item.name} asChild>
+                        <Link
+                          to={item.href}
+                          className={`cursor-pointer text-xs ${
+                            isActive(item.href)
+                              ? "text-[#00aeef] font-medium"
+                              : ""
+                          }`}
+                        >
+                          {item.name}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+
+            {/* Auth Buttons for Medium Screens */}
+            <div className="flex items-center space-x-2 ml-4 border-l border-gray-200 pl-4">
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                    >
+                      <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-[#00aeef]" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel className="text-xs">{user?.name}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center cursor-pointer text-xs">
+                        <FontAwesomeIcon icon={faGauge} className="mr-2 h-3 w-3" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    {user?.role === "admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center cursor-pointer text-xs">
+                          <FontAwesomeIcon icon={faUserShield} className="mr-2 h-3 w-3" />
+                          Admin
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={handleLogout}
+                      className="cursor-pointer text-red-600 focus:text-red-600 text-xs"
+                    >
+                      <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-3 w-3" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="px-3 py-1 text-xs rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button
+                      size="sm"
+                      className="px-3 py-1 text-xs rounded-full bg-[#00aeef] text-white hover:bg-[#0095cc]"
+                    >
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile menu button (below 768px) */}
           <div className="md:hidden flex items-center space-x-2">
             {isAuthenticated ? (
               <DropdownMenu>
@@ -276,63 +345,18 @@ export const Navbar = () => {
             <div className="px-4 pt-4 pb-6 space-y-2">
               {navigation.map((item) => (
                 <div key={item.name}>
-                  {item.dropdown ? (
-                    <div className="px-2 py-2">
-                      <button
-                        onClick={() => toggleDropdown(item.name)}
-                        className="flex items-center justify-between w-full text-base font-medium rounded-lg transition-colors hover:bg-gray-100 hover:text-[#00aeef] p-2"
-                      >
-                        <span
-                          className={
-                            isActive(item.href)
-                              ? "text-[#00aeef] font-semibold"
-                              : "text-gray-700"
-                          }
-                        >
-                          {item.name}
-                        </span>
-                        <FontAwesomeIcon
-                          icon={faChevronDown}
-                          className={`h-4 w-4 transition-transform ${
-                            activeDropdown === item.name ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      {activeDropdown === item.name && (
-                        <div className="mt-2 ml-4 space-y-1 border-l-2 border-[#00aeef]/20 pl-3">
-                          {item.dropdown.map((dropdownItem) => (
-                            <Link
-                              key={dropdownItem.name}
-                              to={dropdownItem.href}
-                              className={`block px-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-100 hover:text-[#00aeef]
-                                ${
-                                  isActive(dropdownItem.href)
-                                    ? "text-[#00aeef] bg-gray-50 font-medium"
-                                    : "text-gray-600"
-                                }`}
-                              onClick={() => setIsOpen(false)}
-                            >
-                              {dropdownItem.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      to={item.href}
-                      className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors hover:bg-gray-100 hover:text-[#00aeef]
-                        ${
-                          isActive(item.href)
-                            ? "text-[#00aeef] bg-gray-50 font-semibold"
-                            : "text-gray-700"
-                        }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  )}
+                  <Link
+                    to={item.href}
+                    className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors hover:bg-gray-100 hover:text-[#00aeef]
+                      ${
+                        isActive(item.href)
+                          ? "text-[#00aeef] bg-gray-50 font-semibold"
+                          : "text-gray-700"
+                      }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
                 </div>
               ))}
 
