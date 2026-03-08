@@ -46,7 +46,7 @@ export const Navbar = () => {
   const secondaryNavigation = navigation.slice(4); // About Us, Contact
 
   return (
-    <nav className="bg-white backdrop-blur-md border-b border-border/60 sticky top-0 z-50 shadow-sm font-poppins">
+    <nav className="bg-white backdrop-blur-md border-b border-border/60 sticky top-0 z-50 shadow-sm font-montserrat">
       <div className="max-w-content mx-auto px-2 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -55,7 +55,7 @@ export const Navbar = () => {
               <img
                 src={logo}
                 alt="Logo"
-                className="h-10 w-20 object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
+                className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
               />
             </Link>
           </div>
@@ -68,7 +68,7 @@ export const Navbar = () => {
                   to={item.href}
                   className={`text-sm font-medium transition-colors hover:text-[#00aeef] relative py-2
                     ${isActive(item.href)
-                      ? "text-[#00aeef] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-[#00aeef] after:rounded-full"
+                      ? "text-[#00aeef]"
                       : "text-muted-foreground"
                     }`}
                 >
@@ -188,8 +188,8 @@ export const Navbar = () => {
                         <Link
                           to={item.href}
                           className={`cursor-pointer text-xs ${isActive(item.href)
-                              ? "text-[#00aeef] font-medium"
-                              : ""
+                            ? "text-[#00aeef] font-medium"
+                            : ""
                             }`}
                         >
                           {item.name}

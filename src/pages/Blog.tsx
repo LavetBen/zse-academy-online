@@ -2,15 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -21,25 +13,8 @@ import {
 } from "@/components/ui/select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCalendar,
-  faUser,
-  faArrowRight,
   faSearch,
-  faClock,
-  faTag,
-  faFire,
-  faChartLine,
   faNewspaper,
-  faSpinner,
-  faStar,
-  faUsers,
-  faBookOpen,
-  faGraduationCap,
-  faPlayCircle,
-  faCheckCircle,
-  faChevronRight,
-  faArrowUpRightFromSquare,
-  faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 import { blogService, BlogPost } from "@/services/blog.service";
 import {
@@ -58,13 +33,6 @@ const categories = [
   "Sustainable Finance",
 ];
 
-// Trading/Finance background images (abstract patterns, charts, etc.)
-const BACKGROUND_IMAGES = [
-  "linear-gradient(rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.88)), url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=2000&q=80')",
-  "linear-gradient(rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.88)), url('https://images.unsplash.com/photo-1640340434855-6084b1f4901c?auto=format&fit=crop&w=2000&q=80')",
-  "linear-gradient(rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.88)), url('https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=2000&q=80')",
-];
-
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,9 +40,7 @@ const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeFilter, setActiveFilter] = useState("All");
-  const [backgroundImage] = useState(BACKGROUND_IMAGES[0]);
 
-  // Fetch blog posts - NO CHANGES TO API CALLS
   useEffect(() => {
     const fetchBlogPosts = async () => {
       try {
@@ -100,7 +66,6 @@ const Blog = () => {
     fetchBlogPosts();
   }, []);
 
-  // Filter posts based on search and category - NO CHANGES
   const filteredPosts = blogPosts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -117,23 +82,15 @@ const Blog = () => {
   const regularPosts = filteredPosts.filter((post) => !post.featured);
   const trendingPosts = [...filteredPosts]
     .sort(() => 0.5 - Math.random())
-    .slice(0, 3);
-
-  // Stats
-  const stats = {
-    totalArticles: blogPosts.length,
-    activeReaders: blogPosts.reduce(
-      (acc, post) => acc + (post as any).enrolled,
-      0
-    ),
-  };
+    .slice(0, 5);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 font-sans">
+      <div className="min-h-screen bg-white">
         <Navbar />
-        <div className="pt-24">
-          {/* Skeleton remains the same */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Skeleton loading omitted for brevity, would be here */}
+          <div className="h-64 bg-gray-100 animate-pulse mb-8" />
         </div>
         <Footer />
       </div>
@@ -142,19 +99,19 @@ const Blog = () => {
 
   if (error && blogPosts.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 font-sans">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh] pt-24">
           <div className="text-center">
-            <FontAwesomeIcon 
-              icon={faNewspaper} 
-              className="h-16 w-16 text-gray-400 mb-4" 
+            <FontAwesomeIcon
+              icon={faNewspaper}
+              className="h-16 w-16 text-gray-300 mb-4"
             />
             <h3 className="text-xl font-semibold mb-2">Unable to Load Blog</h3>
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button 
+            <Button
               onClick={() => window.location.reload()}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 rounded-none hover:bg-blue-700"
             >
               Try Again
             </Button>
@@ -166,446 +123,225 @@ const Blog = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white font-sans">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
 
-      {/* Hero Header with Background Image - Reduced Padding */}
-      <div 
-        className="relative text-white"
-        style={{
-          background: backgroundImage,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 relative z-10">
-          <div className="max-w-3xl">
-            <nav className="flex items-center space-x-2 text-sm text-gray-300 mb-4">
-              <Link to="/" className="hover:text-white transition hover:underline">
-                Home
-              </Link>
-              <FontAwesomeIcon icon={faChevronRight} className="h-3 w-3" />
-              <span className="text-white font-medium">Financial Insights</span>
-            </nav>
-
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4">
-              Master Financial Markets
-              <span className="block text-blue-400 mt-2">
-                Expert Insights & Analysis
-              </span>
+      {/* Flat Corporate Header */}
+      <div className="border-b border-gray-200 bg-gray-50 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+              Newsroom
             </h1>
-
-            <p className="text-lg text-gray-300 mb-6">
-              Join {stats.activeReaders.toLocaleString()}+ professionals learning investment strategies, 
-              market analysis, and financial management
+            <p className="text-lg leading-relaxed text-gray-600">
+              The latest financial insights, market analysis, and platform updates straight from the experts.
             </p>
+          </div>
 
-            {/* Stats in hero */}
-            <div className="flex items-center space-x-6 mb-6">
-              <div className="flex items-center">
-                <div className="text-2xl font-bold">{stats.totalArticles}</div>
-                <div className="ml-2 text-sm text-gray-300">Articles</div>
-              </div>
-              <div className="h-6 w-px bg-gray-600" />
-              <div className="flex items-center">
-                <div className="text-2xl font-bold">
-                  {(stats.activeReaders / 1000).toFixed(1)}K+
-                </div>
-                <div className="ml-2 text-sm text-gray-300">Readers</div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1 max-w-lg">
-                <FontAwesomeIcon
-                  icon={faSearch}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"
-                />
-                <Input
-                  placeholder="Search articles, topics, or strategies..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 py-5 text-base rounded-xl bg-white/10 border-white/30 text-white placeholder-gray-400 backdrop-blur-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
-                />
-              </div>
-              <Button 
-                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-6 py-5 text-base rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
-                onClick={() => {}}
-              >
-                <FontAwesomeIcon icon={faSearch} className="mr-2 h-5 w-5" />
-                Search
-              </Button>
+          {/* Simple Search */}
+          <div className="w-full md:w-auto flex items-center md:max-w-sm">
+            <div className="relative w-full">
+              <FontAwesomeIcon
+                icon={faSearch}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"
+              />
+              <Input
+                placeholder="Search articles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 h-11 w-full border-gray-300 border rounded-none focus:ring-0 focus:border-blue-600"
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Sidebar - Categories */}
-          <div className="lg:w-1/4">
-            <div className="sticky top-24 space-y-5">
-              {/* Categories Card */}
-              <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5">
-                <div className="flex items-center mb-4">
-                  <FontAwesomeIcon icon={faFilter} className="h-5 w-5 text-blue-600 mr-2" />
-                  <h3 className="text-lg font-bold text-gray-900">Categories</h3>
-                </div>
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => setActiveFilter(category)}
-                      className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${
-                        activeFilter === category
-                          ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200 shadow-sm"
-                          : "text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{category}</span>
-                        {activeFilter === category && (
-                          <FontAwesomeIcon
-                            icon={faChevronRight}
-                            className="h-4 w-4 text-blue-500"
-                          />
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+      {/* Main Grid Layout */}
+      <div className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        <div className="flex flex-col lg:flex-row gap-12">
 
-              {/* Stats Card */}
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-xl shadow-lg p-5">
-                <h3 className="text-lg font-bold mb-4 flex items-center">
-                  <FontAwesomeIcon icon={faChartLine} className="h-5 w-5 text-blue-400 mr-2" />
-                  Insights
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-gray-700">
-                    <span className="text-gray-300">Total Articles</span>
-                    <span className="font-bold text-lg">{stats.totalArticles}</span>
-                  </div>
-                  <div className="flex items-center justify-between pb-3 border-b border-gray-700">
-                    <span className="text-gray-300">Active Readers</span>
-                    <span className="font-bold text-lg">
-                      {(stats.activeReaders / 1000).toFixed(0)}K+
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Categories</span>
-                    <span className="font-bold text-lg">{categories.length - 1}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trending Articles */}
-              {trendingPosts.length > 0 && (
-                <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                    <FontAwesomeIcon icon={faFire} className="h-5 w-5 text-orange-500 mr-2" />
-                    Trending Now
-                  </h3>
-                  <div className="space-y-4">
-                    {trendingPosts.map((post, index) => (
-                      <div key={post.id} className="group">
-                        <Link 
-                          to={`/blog/${post.id}`}
-                          className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-all duration-200"
-                        >
-                          <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                              {post.title}
-                            </h4>
-                            <div className="flex items-center text-xs text-gray-500 mt-1">
-                              <FontAwesomeIcon icon={faClock} className="h-3 w-3 mr-1" />
-                              <span>{post.read_time}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Main Content Area */}
+          {/* Main Feed Column */}
           <div className="lg:w-3/4">
+
+            {/* Navigational Tabs (Categories) inside Main Feed Instead of Sidebar to ensure flat design */}
+            <div className="mb-8 border-b border-gray-200 overflow-x-auto">
+              <nav className="flex space-x-8 min-w-max">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setActiveFilter(category)}
+                    className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap
+                      ${activeFilter === category
+                        ? "border-blue-600 text-blue-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
             {/* Featured Article */}
-            {featuredPost && (
-              <div className="mb-8">
-                <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-xl relative">
-                  {/* Decorative elements */}
-                  <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-transparent rounded-full -translate-x-16 -translate-y-16" />
-                  <div className="absolute bottom-0 right-0 w-40 h-40 bg-gradient-to-tl from-blue-500/10 to-transparent rounded-full translate-x-20 translate-y-20" />
-                  
-                  <div className="p-6 md:p-8 relative z-10">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                      <div className="flex-1">
-                        <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-medium mb-4">
-                          <FontAwesomeIcon
-                            icon={faStar}
-                            className="h-3.5 w-3.5 mr-2"
-                          />
-                          Featured Article
-                        </div>
-                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight">
-                          {featuredPost.title}
-                        </h2>
-                        <p className="text-gray-300 mb-6 text-base max-w-2xl">
-                          {featuredPost.excerpt}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-4 text-gray-300 mb-6">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mr-2">
-                              <FontAwesomeIcon
-                                icon={faUser}
-                                className="h-4 w-4 text-blue-400"
-                              />
-                            </div>
-                            <span className="font-medium">
-                              {featuredPost.author?.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <FontAwesomeIcon
-                              icon={faCalendar}
-                              className="h-4 w-4 mr-2 text-gray-400"
-                            />
-                            <span className="text-sm">{formatDate(featuredPost.created_at)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <FontAwesomeIcon
-                              icon={faClock}
-                              className="h-4 w-4 mr-2 text-gray-400"
-                            />
-                            <span className="text-sm">{featuredPost.read_time}</span>
-                          </div>
-                        </div>
-                        <Button
-                          size="lg"
-                          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all group"
-                          asChild
-                        >
-                          <Link
-                            to={`/blog/${featuredPost.id}`}
-                            className="flex items-center"
-                          >
-                            <FontAwesomeIcon
-                              icon={faPlayCircle}
-                              className="h-5 w-5 mr-3"
-                            />
-                            Read Full Article
-                            <FontAwesomeIcon
-                              icon={faArrowRight}
-                              className="ml-3 h-4 w-4 transition-transform group-hover:translate-x-1"
-                            />
-                          </Link>
-                        </Button>
-                      </div>
-                      <div className="hidden md:block">
-                        <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/20 rounded-xl p-6 min-w-[200px]">
-                          <div className="flex items-center mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <FontAwesomeIcon
-                                key={i}
-                                icon={faStar}
-                                className={`h-4 w-4 ${
-                                  i <
-                                  Math.floor(
-                                    parseFloat((featuredPost as any).rating)
-                                  )
-                                    ? "text-yellow-400"
-                                    : "text-gray-400"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <div className="text-2xl font-bold text-white mb-1">
-                            {(featuredPost as any).rating}
-                          </div>
-                          <div className="text-gray-300 text-sm">
-                            Average Rating
-                          </div>
-                        </div>
-                      </div>
+            {featuredPost && activeFilter === "All" && searchTerm === "" && (
+              <div className="mb-12 group block">
+                <Link to={`/blog/${featuredPost.id}`}>
+                  <div className="relative h-80 md:h-[450px] w-full mb-6 bg-gray-100 overflow-hidden">
+                    <img
+                      src={featuredPost.image || getFallbackImage(featuredPost.id)}
+                      alt={featuredPost.title}
+                      className="w-full h-full object-cover transition duration-300 group-hover:opacity-90 grayscale-0 hover:grayscale-0"
+                      onError={(e) => {
+                        e.currentTarget.src = getFallbackImage(featuredPost.id);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-3">
+                      {featuredPost.category}
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+                      {featuredPost.title}
+                    </h2>
+                    <p className="text-gray-600 text-base md:text-lg mb-4 line-clamp-3">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div className="flex items-center text-sm text-gray-500 uppercase tracking-wider font-semibold">
+                      <span>{featuredPost.author?.name}</span>
+                      <span className="mx-2">·</span>
+                      <span>{formatDate(featuredPost.created_at)}</span>
                     </div>
                   </div>
-                </div>
+                </Link>
               </div>
             )}
 
-            {/* Article Grid */}
-            <div className="mb-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Latest Articles
-                  </h2>
-                  <p className="text-gray-600 mt-1 text-sm">
-                    {filteredPosts.length} articles • {blogPosts.length} total
-                  </p>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Select
-                    value={selectedCategory}
-                    onValueChange={setSelectedCategory}
-                  >
-                    <SelectTrigger className="w-40 bg-white border-gray-300 rounded-xl">
-                      <FontAwesomeIcon icon={faFilter} className="h-4 w-4 mr-2 text-gray-500" />
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="recent">Most Recent</SelectItem>
-                      <SelectItem value="popular">Most Popular</SelectItem>
-                      <SelectItem value="rating">Highest Rated</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            {/* Top Toolbar for regular posts (Filters & Sort if active) */}
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-900">Latest Updates</h3>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger className="w-[180px] rounded-none border-gray-300 bg-transparent shadow-none text-sm font-semibold h-10">
+                  <SelectValue placeholder="Sort" />
+                </SelectTrigger>
+                <SelectContent className="rounded-none shadow-sm border-gray-300">
+                  <SelectItem value="recent">Most Recent</SelectItem>
+                  <SelectItem value="popular">Most Popular</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Article List / Feed */}
+            {regularPosts.length === 0 ? (
+              <div className="py-12 border-t border-b border-gray-100 text-center">
+                <p className="text-gray-500 text-lg">There are no articles matching your criteria.</p>
+                <button
+                  onClick={() => { setSearchTerm(""); setActiveFilter("All"); }}
+                  className="mt-4 text-blue-600 hover:underline font-medium"
+                >
+                  Clear Search
+                </button>
               </div>
-
-              {regularPosts.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-xl border border-gray-200 shadow-sm">
-                  <FontAwesomeIcon
-                    icon={faSearch}
-                    className="h-12 w-12 text-gray-300 mb-4"
-                  />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    No articles found
-                  </h3>
-                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                    Try adjusting your search or filter criteria
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setActiveFilter("All");
-                    }}
-                    className="rounded-lg border-gray-300 hover:border-gray-400"
-                  >
-                    Clear All Filters
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-5">
-                  {regularPosts.map((post) => (
-                    <div
-                      key={post.id}
-                      className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group hover:-translate-y-1"
-                    >
-                      <div className="relative overflow-hidden">
-                        <img
-                          src={post.image || getFallbackImage(post.id)}
-                          alt={post.title}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            e.currentTarget.src = getFallbackImage(post.id);
-                          }}
-                        />
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-gradient-to-r from-blue-600 to-blue-500 text-white border-0 text-xs font-medium px-3 py-1">
-                            {post.category}
-                          </Badge>
+            ) : (
+              <div className="space-y-12">
+                {regularPosts.map((post) => (
+                  <article key={post.id} className="flex flex-col md:flex-row gap-8 group">
+                    {/* Image on left for list view */}
+                    <div className="w-full md:w-2/5 flex-shrink-0">
+                      <Link to={`/blog/${post.id}`}>
+                        <div className="h-48 md:h-full min-h-[160px] bg-gray-100 overflow-hidden relative border border-gray-100">
+                          <img
+                            src={post.image || getFallbackImage(post.id)}
+                            alt={post.title}
+                            className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+                            onError={(e) => {
+                              e.currentTarget.src = getFallbackImage(post.id);
+                            }}
+                          />
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-900/40 to-transparent" />
+                      </Link>
+                    </div>
+
+                    {/* Content on right */}
+                    <div className="w-full md:w-3/5 flex flex-col justify-center py-2">
+                      <div className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">
+                        {post.category}
                       </div>
-
-                      <div className="p-5">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center text-xs text-gray-600">
-                            <FontAwesomeIcon
-                              icon={faCalendar}
-                              className="h-3 w-3 mr-1.5"
-                            />
-                            <span>{formatDate(post.created_at)}</span>
-                          </div>
-                          <div className="flex items-center text-xs font-medium text-gray-700 bg-gray-100 px-2.5 py-1 rounded-full">
-                            <FontAwesomeIcon
-                              icon={faClock}
-                              className="h-3 w-3 mr-1.5"
-                            />
-                            <span>{post.read_time}</span>
-                          </div>
-                        </div>
-
-                        <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
-                          {post.title}
-                        </h3>
-
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                          {post.excerpt}
-                        </p>
-
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 flex items-center justify-center mr-3 border border-blue-200">
-                              <FontAwesomeIcon
-                                icon={faUser}
-                                className="h-3.5 w-3.5 text-blue-600"
-                              />
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">
-                                {post.author?.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center text-xs text-gray-600">
-                            <FontAwesomeIcon
-                              icon={faUsers}
-                              className="h-3.5 w-3.5 mr-1"
-                            />
-                            <span>{(post as any).enrolled.toLocaleString()}</span>
-                          </div>
-                        </div>
-
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {post.tags.slice(0, 2).map((tag, index) => (
-                              <span
-                                key={index}
-                                className="inline-block px-2.5 py-1 text-xs bg-gray-100 text-gray-700 rounded-lg border border-gray-200"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg py-3 transition-all group/btn"
-                          asChild
-                        >
-                          <Link
-                            to={`/blog/${post.id}`}
-                            className="flex items-center justify-center font-medium"
-                          >
-                            Read Full Article
-                            <FontAwesomeIcon
-                              icon={faArrowRight}
-                              className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"
-                            />
-                          </Link>
-                        </Button>
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        <Link to={`/blog/${post.id}`}>{post.title}</Link>
+                      </h3>
+                      <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-4 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                      <div className="mt-auto flex items-center text-xs text-gray-500 uppercase tracking-wider font-semibold">
+                        <span>{post.author?.name}</span>
+                        <span className="mx-2">|</span>
+                        <time>{formatDate(post.created_at)}</time>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {/* Empty space mimicking pagination bar */}
+            {regularPosts.length > 0 && (
+              <div className="mt-16 border-t border-gray-200 pt-8 flex justify-between">
+                {/* Real pagination could go here, currently static */}
+                <Button variant="outline" className="rounded-none border-gray-300 text-gray-700 bg-white shadow-none hover:bg-gray-50 transition-none" disabled>
+                  Previous Page
+                </Button>
+                <Button variant="outline" className="rounded-none border-gray-300 text-gray-700 bg-white shadow-none hover:bg-gray-50 transition-none" disabled={blogPosts.length < 10}>
+                  Next Page
+                </Button>
+              </div>
+            )}
           </div>
+
+          {/* Right Sidebar - Trending/Corporate Info */}
+          <div className="lg:w-1/4 pt-12 lg:pt-0">
+            <aside className="sticky top-28">
+              <div className="border-t-4 border-black pt-4 mb-10">
+                <h4 className="text-sm font-bold uppercase tracking-widest mb-6 text-gray-900">Trending Now</h4>
+                <ul className="space-y-6">
+                  {trendingPosts.map((post, index) => (
+                    <li key={post.id} className="group">
+                      <Link to={`/blog/${post.id}`} className="flex items-start gap-4">
+                        <span className="text-3xl font-bold text-gray-200 mt-[-4px]">
+                          0{index + 1}
+                        </span>
+                        <div>
+                          <h5 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 line-clamp-3 leading-snug">
+                            {post.title}
+                          </h5>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-gray-50 p-6 border border-gray-200">
+                <h4 className="text-sm font-bold uppercase tracking-widest mb-4">Newsletter</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  Get the latest insights and platform updates delivered straight to your inbox.
+                </p>
+                <div className="space-y-3">
+                  <Input
+                    type="email"
+                    placeholder="Email address"
+                    className="w-full rounded-none border-gray-300 bg-white shadow-none h-11 focus:border-blue-600 focus:ring-0"
+                  />
+                  <Button className="w-full rounded-none bg-blue-600 text-white font-bold tracking-wider h-11 hover:bg-blue-700">
+                    SUBSCRIBE
+                  </Button>
+                </div>
+              </div>
+            </aside>
+          </div>
+
         </div>
       </div>
 
