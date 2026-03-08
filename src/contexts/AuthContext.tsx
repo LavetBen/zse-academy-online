@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { authService } from "@/services/auth.service";
+import { apiClient } from "@/services/api";
 
 interface User {
   id: string;
+  name: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  experience?: string;
-  isVerified: boolean;
+  role?: string;
   createdAt: string;
 }
 
@@ -16,27 +15,16 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (userData: SignupData) => Promise<void>;
-  logout: () => Promise<void>;
-  updateProfile: (userData: Partial<User>) => Promise<void>;
-}
-
-interface SignupData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phone?: string;
-  experience?: string;
+  signup: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<void>;
+  logout: () => void;
+  getToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
 
@@ -44,45 +32,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize auth state
+  // Get token from localStorage
+  const getToken = () => localStorage.getItem("zse_training_token");
+
+  // Fetch current user if token exists
   useEffect(() => {
-    // Check for existing session in localStorage
-    const storedUser = localStorage.getItem("zse_training_user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error parsing stored user:", error);
-        localStorage.removeItem("zse_training_user");
+    const fetchUser = async () => {
+      const token = getToken();
+      if (!token) {
+        setIsLoading(false);
+        return;
       }
-    }
-    setIsLoading(false);
+      try {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUser(null);
+        localStorage.removeItem("zse_training_token");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  // Login
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Note: This is a placeholder implementation
-      // In a real app, this would integrate with Supabase Auth
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data - replace with actual Supabase authentication
-      const mockUser: User = {
-        id: "mock-user-id",
-        email,
-        firstName: "John",
-        lastName: "Doe",
-        isVerified: true,
-        createdAt: new Date().toISOString()
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem("zse_training_user", JSON.stringify(mockUser));
-      
-      // This would throw an error since Supabase isn't connected
-      throw new Error("Authentication requires Supabase integration");
+      const response = await authService.login({ email, password });
+      const token = response.token;
+      localStorage.setItem("zse_training_token", token);
+
+      // Fetch user profile
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -91,32 +77,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (userData: SignupData): Promise<void> => {
+  // Signup
+  const signup = async (name: string, email: string, password: string, passwordConfirmation: string) => {
     setIsLoading(true);
     try {
-      // Note: This is a placeholder implementation
-      // In a real app, this would integrate with Supabase Auth
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user creation - replace with actual Supabase user creation
-      const newUser: User = {
-        id: "mock-new-user-id",
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone,
-        experience: userData.experience,
-        isVerified: false,
-        createdAt: new Date().toISOString()
-      };
-      
-      setUser(newUser);
-      localStorage.setItem("zse_training_user", JSON.stringify(newUser));
-      
-      // This would throw an error since Supabase isn't connected
-      throw new Error("User registration requires Supabase integration");
+      const response = await authService.register({
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+      });
+      const token = response.token;
+      localStorage.setItem("zse_training_token", token);
+
+      // Fetch user profile
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
     } catch (error) {
       console.error("Signup error:", error);
       throw error;
@@ -125,51 +101,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      // Clear user data
-      setUser(null);
-      localStorage.removeItem("zse_training_user");
-      
-      // Note: In a real app, this would also invalidate the Supabase session
-    } catch (error) {
-      console.error("Logout error:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateProfile = async (userData: Partial<User>): Promise<void> => {
-    if (!user) throw new Error("No user logged in");
-    
-    setIsLoading(true);
-    try {
-      // Note: This would integrate with Supabase to update user profile
-      const updatedUser = { ...user, ...userData };
-      setUser(updatedUser);
-      localStorage.setItem("zse_training_user", JSON.stringify(updatedUser));
-    } catch (error) {
-      console.error("Profile update error:", error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const value: AuthContextType = {
-    user,
-    isLoading,
-    isAuthenticated: !!user,
-    login,
-    signup,
-    logout,
-    updateProfile
+  // Logout
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("zse_training_token");
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        login,
+        signup,
+        logout,
+        getToken,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

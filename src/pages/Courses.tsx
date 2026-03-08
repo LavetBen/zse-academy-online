@@ -1,232 +1,441 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { courseService } from "@/services/course.service";
+import { useAuth } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Users, Star, Search, Filter } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faClock, 
+  faUsers, 
+  faStar, 
+  faSearch, 
+  faSpinner, 
+  faCheckCircle,
+  faPlayCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { useToast } from "@/hooks/use-toast";
 
-const courses = [
-  {
-    id: 1,
-    title: "Zimbabwe Stock Exchange Fundamentals",
-    description: "Complete introduction to ZSE operations, market structure, and basic trading principles.",
-    instructor: "Dr. Sarah Mukamuri",
-    duration: "8 weeks",
-    students: 2340,
-    rating: 4.9,
-    level: "Beginner",
-    price: "$199",
-    category: "Fundamentals",
-    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop"
-  },
-  {
-    id: 2,
-    title: "Advanced Technical Analysis",
-    description: "Master chart patterns, technical indicators, and advanced trading strategies for ZSE.",
-    instructor: "James Chigumba",
-    duration: "12 weeks",
-    students: 1890,
-    rating: 4.8,
-    level: "Advanced",
-    price: "$299",
-    category: "Technical Analysis",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=240&fit=crop"
-  },
-  {
-    id: 3,
-    title: "Portfolio Management Strategies",
-    description: "Learn professional portfolio construction and management techniques for optimal returns.",
-    instructor: "Prof. Michael Tendai",
-    duration: "10 weeks",
-    students: 1567,
-    rating: 4.9,
-    level: "Intermediate",
-    price: "$249",
-    category: "Portfolio Management",
-    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=240&fit=crop"
-  },
-  {
-    id: 4,
-    title: "Risk Management Essentials",
-    description: "Comprehensive guide to identifying, measuring, and managing investment risks.",
-    instructor: "Alice Nyamadzawo",
-    duration: "6 weeks",
-    students: 1234,
-    rating: 4.7,
-    level: "Intermediate",
-    price: "$179",
-    category: "Risk Management",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=240&fit=crop"
-  },
-  {
-    id: 5,
-    title: "Financial Markets Analysis",
-    description: "Deep dive into Zimbabwe's financial markets including bonds, derivatives, and commodities.",
-    instructor: "Robert Mpofu",
-    duration: "14 weeks",
-    students: 987,
-    rating: 4.8,
-    level: "Advanced",
-    price: "$349",
-    category: "Market Analysis",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=240&fit=crop"
-  },
-  {
-    id: 6,
-    title: "Compliance and Regulations",
-    description: "Navigate ZSE regulations, compliance requirements, and legal frameworks effectively.",
-    instructor: "Dr. Grace Chivasa",
-    duration: "4 weeks",
-    students: 756,
-    rating: 4.6,
-    level: "Professional",
-    price: "$149",
-    category: "Compliance",
-    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=240&fit=crop"
-  }
-];
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  category_id?: number;
+  level: string;
+  price: number;
+  thumbnail_url: string;
+  is_published: boolean;
+  instructor?: string;
+  duration?: string;
+  students?: number;
+  rating?: number;
+  reviews_count?: number;
+  reviews_avg_rating?: number | string;
+  is_enrolled?: boolean;
+  progress?: number;
+  user_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
 
 const Courses = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [enrolling, setEnrolling] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all-levels");
   const [selectedCategory, setSelectedCategory] = useState("all-categories");
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const coursesData = await courseService.getAllCourses();
+        const coursesWithEnhancedData = coursesData.map((course: any) => {
+          // Calculate rating from backend data - only use if available
+          const backendRating = course.reviews_avg_rating !== null && course.reviews_avg_rating !== undefined
+            ? parseFloat(course.reviews_avg_rating.toString())
+            : null;
+          
+          // Calculate student count from backend data - only use if available
+          const backendStudents = course.enrollments_count || course.students_count || null;
+          
+          return {
+            ...course,
+            instructor: course.instructor?.name || course.instructor?.username || "ZSE Expert Instructor",
+            duration: course.duration || `${Math.floor(Math.random() * 12) + 4} weeks`,
+            // Only use mock students if no backend data available
+            students: backendStudents !== null ? backendStudents : Math.floor(Math.random() * 2000) + 500,
+            // Only use backend rating, don't add mock ratings
+            rating: backendRating,
+            reviews_count: course.reviews_count || 0,
+            category: course.category?.name || course.category || "General",
+            level: course.level || "Beginner",
+            thumbnail_url: course.thumbnail_url || course.thumbnail || "",
+            is_published: course.is_published !== undefined ? Boolean(course.is_published) : true,
+            is_enrolled: course.is_enrolled !== undefined ? Boolean(course.is_enrolled) : false,
+            progress: course.progress || 0,
+            price: typeof course.price === 'string' ? parseFloat(course.price) : course.price,
+          };
+        });
+        setCourses(coursesWithEnhancedData);
+      } catch (error: any) {
+        console.error("Failed to fetch courses:", error);
+        toast({
+          title: "Error",
+          description: "Unable to load courses. Please try again later.",
+          variant: "destructive",
+        });
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, [toast]);
+
+  const handleEnroll = async (courseId: number) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to enroll in courses",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setEnrolling(courseId);
+    try {
+      await courseService.enrollInCourse(courseId);
+      setCourses(prevCourses => 
+        prevCourses.map(course => 
+          course.id === courseId 
+            ? { ...course, is_enrolled: true, progress: 0 }
+            : course
+        )
+      );
+      toast({
+        title: "Success!",
+        description: "You have successfully enrolled in the course",
+        className: "bg-green-50 text-green-900 border-green-200",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Enrollment Failed",
+        description: "Failed to enroll in course. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setEnrolling(null);
+    }
+  };
 
   const filteredCourses = courses.filter(course => {
     return (
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (selectedLevel === "all-levels" || selectedLevel === "" || course.level === selectedLevel) &&
-      (selectedCategory === "all-categories" || selectedCategory === "" || course.category === selectedCategory)
+      (selectedCategory === "all-categories" || selectedCategory === "" || course.category === selectedCategory) &&
+      course.is_published
     );
   });
 
+  const categories = Array.from(new Set(courses.map(course => course.category).filter(Boolean)));
+  const levels = Array.from(new Set(courses.map(course => course.level).filter(Boolean)));
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: price % 1 === 0 ? 0 : 2,
+    }).format(price);
+  };
+
+  const getThumbnail = (course: Course) => {
+    if (course.thumbnail_url) return course.thumbnail_url;
+    const defaultThumbnails: Record<string, string> = {
+      'Fundamentals': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop',
+      'Technical Analysis': 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=240&fit=crop',
+      'Portfolio Management': 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=240&fit=crop',
+      'DevOps': 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&h=240&fit=crop',
+      'Security': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=240&fit=crop',
+      'intro': 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=400&h=240&fit=crop',
+    };
+    return defaultThumbnails[course.category] || 
+           'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
+  };
+
+  // Function to render star rating
+  const renderRating = (course: Course) => {
+    const rating = course.rating;
+    const reviewsCount = course.reviews_count || course.students || 0;
+    
+    // If no rating data exists, don't show rating section
+    if (rating === undefined || rating === null) {
+      return (
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs text-gray-500">No ratings yet</span>
+        </div>
+      );
+    }
+
+    // If rating is 0, show it as 0
+    const displayRating = rating === 0 ? 0 : rating;
+    
+    return (
+      <div className="flex items-center gap-2 mb-3">
+        <span className="font-bold text-sm text-gray-900">{displayRating.toFixed(1)}</span>
+        <div className="flex items-center">
+          {[...Array(5)].map((_, i) => (
+            <FontAwesomeIcon 
+              key={i} 
+              icon={faStar} 
+              className={`h-3 w-3 ${
+                i < Math.floor(displayRating) 
+                  ? 'text-orange-400' 
+                  : displayRating % 1 > 0 && i === Math.floor(displayRating)
+                  ? 'text-orange-200'
+                  : 'text-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+        <span className="text-xs text-gray-500">({reviewsCount.toLocaleString()})</span>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 font-poppins">
+        <Navbar />
+        
+        {/* Hero Skeleton */}
+        <section className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl space-y-4">
+              <div className="h-12 bg-purple-500/30 rounded-md w-3/4 animate-pulse" />
+              <div className="h-6 bg-purple-500/30 rounded-md w-full animate-pulse" />
+            </div>
+          </div>
+        </section>
+
+        {/* Filter Bar Skeleton */}
+        <section className="border-b bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+              <div className="flex-1 max-w-xl w-full h-10 bg-muted rounded-md animate-pulse" />
+              <div className="flex gap-3 w-full md:w-auto">
+                <div className="w-full md:w-48 h-10 bg-muted rounded-md animate-pulse" />
+                <div className="w-full md:w-40 h-10 bg-muted rounded-md animate-pulse" />
+              </div>
+            </div>
+            <div className="h-4 bg-muted rounded-md w-32 animate-pulse" />
+          </div>
+        </section>
+
+        {/* Courses Grid Skeleton */}
+        <section className="py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {[...Array(8)].map((_, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="aspect-video bg-muted animate-pulse" />
+                  <CardContent className="p-4 space-y-3">
+                    <div className="h-5 bg-muted rounded animate-pulse" />
+                    <div className="h-4 bg-muted rounded w-3/4 animate-pulse" />
+                    <div className="h-4 bg-muted rounded w-1/2 animate-pulse" />
+                    <div className="flex items-center justify-between pt-3">
+                      <div className="h-6 bg-muted rounded w-20 animate-pulse" />
+                      <div className="h-8 bg-muted rounded w-16 animate-pulse" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 font-poppins">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="bg-hero text-white py-16">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-              Professional Training Courses
+      {/* Hero Section - Udemy Style */}
+      <section className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Learn from the best courses
             </h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Master Zimbabwe Stock Exchange with our comprehensive range of expert-led courses
+            <p className="text-lg md:text-xl text-purple-100">
+              Explore our comprehensive catalog of courses designed to help you master trading and financial markets
             </p>
           </div>
         </div>
       </section>
 
-      {/* Filters Section */}
-      <section className="py-8 bg-accent/30">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      {/* Filter Bar - Sticky */}
+      <section className="border-b bg-white sticky top-16 z-40 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Search */}
+            <div className="relative flex-1 max-w-xl w-full">
+              <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Search courses..."
+                placeholder="Search for courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-gray-300 focus:border-primary"
               />
             </div>
             
-            <div className="flex gap-4">
-              <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all-levels">All Levels</SelectItem>
-                  <SelectItem value="Beginner">Beginner</SelectItem>
-                  <SelectItem value="Intermediate">Intermediate</SelectItem>
-                  <SelectItem value="Advanced">Advanced</SelectItem>
-                  <SelectItem value="Professional">Professional</SelectItem>
-                </SelectContent>
-              </Select>
-
+            {/* Filters */}
+            <div className="flex gap-3 w-full md:w-auto">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full md:w-48 border-gray-300">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all-categories">All Categories</SelectItem>
-                  <SelectItem value="Fundamentals">Fundamentals</SelectItem>
-                  <SelectItem value="Technical Analysis">Technical Analysis</SelectItem>
-                  <SelectItem value="Portfolio Management">Portfolio Management</SelectItem>
-                  <SelectItem value="Risk Management">Risk Management</SelectItem>
-                  <SelectItem value="Market Analysis">Market Analysis</SelectItem>
-                  <SelectItem value="Compliance">Compliance</SelectItem>
+                  {categories.map(category => (
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                <SelectTrigger className="w-full md:w-40 border-gray-300">
+                  <SelectValue placeholder="Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-levels">All Levels</SelectItem>
+                  {levels.map(level => (
+                    <SelectItem key={level} value={level}>{level}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
+
+          {/* Results Count */}
+          <div className="mt-4">
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold text-gray-900">{filteredCourses.length}</span> {filteredCourses.length === 1 ? 'course' : 'courses'} found
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Courses Grid */}
-      <section className="section-padding">
-        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((course) => (
-              <Card key={course.id} className="card-hover overflow-hidden">
-                <div className="aspect-video overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
-                      {course.level}
-                    </Badge>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{course.rating}</span>
+      {/* Courses Grid - Udemy Style */}
+      <section className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {filteredCourses.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="max-w-md mx-auto">
+                <FontAwesomeIcon icon={faSearch} className="h-16 w-16 text-gray-300 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No courses found</h3>
+                <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {filteredCourses.map((course) => (
+                <Card key={course.id} className="group overflow-hidden border hover:shadow-xl transition-all duration-300 bg-white">
+                  {/* Course Thumbnail */}
+                  <Link to={`/courses/${course.id}`}>
+                    <div className="relative aspect-video overflow-hidden bg-gray-100">
+                      <img
+                        src={getThumbnail(course)}
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
+                        }}
+                      />
+                      {course.is_enrolled && (
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-green-500 hover:bg-green-500 text-white border-0">
+                            <FontAwesomeIcon icon={faCheckCircle} className="h-3 w-3 mr-1" />
+                            Enrolled
+                          </Badge>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <CardTitle className="text-xl line-clamp-2">{course.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {course.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="text-sm text-muted-foreground">
-                      Instructor: {course.instructor}
-                    </div>
+                  </Link>
+                  
+                  {/* Course Info */}
+                  <CardContent className="p-4">
+                    <Link to={`/courses/${course.id}`}>
+                      <h3 className="font-bold text-base text-gray-900 line-clamp-2 mb-2 group-hover:text-purple-600 transition-colors">
+                        {course.title}
+                      </h3>
+                    </Link>
                     
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
+                    <p className="text-xs text-gray-600 mb-2">{course.instructor}</p>
+                    
+                    {/* Rating - Only shows if rating data exists */}
+                    {renderRating(course)}
+
+                    {/* Price & CTA */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div>
+                        <span className="text-lg font-bold text-gray-900">{formatPrice(course.price)}</span>
+                        {course.price === 0 && (
+                          <Badge variant="secondary" className="ml-2 text-xs">
+                            Free
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {course.is_enrolled ? (
+                        <Link to={`/learn/${course.id}`}>
+                          <Button size="sm" variant="outline" className="text-xs h-8">
+                            <FontAwesomeIcon icon={faPlayCircle} className="h-3 w-3 mr-1" />
+                            Continue
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button 
+                          size="sm"
+                          onClick={() => handleEnroll(course.id)}
+                          disabled={enrolling === course.id}
+                          className="text-xs h-8 bg-purple-600 hover:bg-purple-700"
+                        >
+                          {enrolling === course.id ? (
+                            <FontAwesomeIcon icon={faSpinner} className="h-3 w-3 animate-spin" />
+                          ) : course.price === 0 ? (
+                            "Get Started"
+                          ) : (
+                            "Enroll Now"
+                          )}
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="flex items-center gap-3 text-xs text-gray-500 mt-3">
+                      <div className="flex items-center gap-1">
+                        <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
                         <span>{course.duration}</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-4 w-4" />
-                        <span>{course.students.toLocaleString()} students</span>
-                      </div>
+                      <Badge variant="outline" className="text-xs py-0 px-2 h-5">
+                        {course.level}
+                      </Badge>
                     </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="text-2xl font-bold text-primary">{course.price}</div>
-                      <Button variant="hero">Enroll Now</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {filteredCourses.length === 0 && (
-            <div className="text-center py-12">
-              <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-secondary mb-2">No courses found</h3>
-              <p className="text-muted-foreground">Try adjusting your search criteria</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </div>
