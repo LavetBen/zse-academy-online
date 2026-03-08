@@ -4,10 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faStar, 
-  faUsers, 
-  faClock, 
+import {
+  faStar,
+  faUsers,
+  faClock,
   faSpinner,
   faArrowRight,
   faFire,
@@ -56,11 +56,11 @@ export const PopularTopics = () => {
       try {
         setLoading(true);
         const response = await fetch('http://127.0.0.1:8000/api/courses/latest');
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch courses: ${response.status}`);
         }
-        
+
         const data = await response.json();
         setCourses(data.data || []);
       } catch (err) {
@@ -106,7 +106,7 @@ export const PopularTopics = () => {
   // Get default thumbnail if none provided
   const getThumbnail = (course: Course) => {
     if (course.thumbnail_url) return course.thumbnail_url;
-    
+
     const defaultThumbnails: Record<string, string> = {
       'Trading': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop',
       'Technical Analysis': 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=240&fit=crop',
@@ -114,16 +114,16 @@ export const PopularTopics = () => {
       'Risk Management': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=240&fit=crop',
       'Portfolio Management': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=240&fit=crop',
     };
-    
+
     const categoryName = getCategoryName(course.category);
-    return defaultThumbnails[categoryName] || 
-           'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
+    return defaultThumbnails[categoryName] ||
+      'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
   };
 
   // Render Udemy-style star rating
   const renderRating = (rating: number, reviewCount?: number) => {
     const fullStars = Math.floor(rating);
-    
+
     return (
       <div className="flex items-center gap-1 mb-2">
         <span className="font-bold text-sm text-gray-900">{rating?.toFixed(1)}</span>
@@ -204,8 +204,8 @@ export const PopularTopics = () => {
             <FontAwesomeIcon icon={faSpinner} className="h-12 w-12 text-red-500 mb-4" />
             <h3 className="text-xl font-semibold text-red-800 mb-2">Failed to load courses</h3>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <Button
+              onClick={() => window.location.reload()}
               className="bg-[#0095cc] hover:bg-[#0077a3] text-white px-6 py-2"
             >
               Try Again
@@ -235,12 +235,12 @@ export const PopularTopics = () => {
     <section className="py-16 bg-white font-poppins">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header - Udemy Style */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Featured Courses
+        <div className="mb-12 text-left w-full">
+          <h2 className="text-3xl font-bold text-[#1c1d1f] mb-2 tracking-tight">
+            A broad selection of ZSE courses
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl">
-            Learn from industry experts and advance your trading career with our most popular courses
+          <p className="text-lg text-[#1c1d1f] max-w-3xl">
+            Choose from online video courses with new additions published every month
           </p>
         </div>
 
@@ -248,21 +248,21 @@ export const PopularTopics = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {courses.map((course) => {
             const transformedCourse = transformCourseData(course);
-            
+
             return (
-              <Card 
-                key={transformedCourse.id} 
-                className="group bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden"
+              <div
+                key={transformedCourse.id}
+                className="group bg-white overflow-hidden flex flex-col"
               >
                 {/* Course Image - Udemy Style */}
-                <Link to={`/courses/${transformedCourse.id}`}>
+                <Link to={`/courses/${transformedCourse.id}`} className="block border border-gray-200">
                   <div className="relative aspect-video overflow-hidden bg-gray-100">
-                    <img 
-                      src={getThumbnail(transformedCourse)} 
-                      alt={transformedCourse.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    <img
+                      src={getThumbnail(transformedCourse)}
+                      alt={transformedCourse.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    
+
                     {/* Bestseller Badge - Udemy Style */}
                     {transformedCourse.is_bestseller && (
                       <div className="absolute top-2 left-2">
@@ -276,66 +276,42 @@ export const PopularTopics = () => {
                 </Link>
 
                 {/* Content - Udemy Style */}
-                <div className="p-4">
+                <div className="pt-2 pb-4 flex flex-col flex-grow text-left">
                   {/* Course Title */}
                   <Link to={`/courses/${transformedCourse.id}`}>
-                    <h3 className="font-bold text-base text-gray-900 leading-tight group-hover:text-[#0095cc] transition-colors mb-2 line-clamp-2 min-h-[2.5rem]">
+                    <h3 className="font-bold text-base text-[#1c1d1f] leading-tight mb-1 line-clamp-2">
                       {truncateTitle(transformedCourse.title, 70)}
                     </h3>
                   </Link>
-                  
+
                   {/* Instructor */}
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-1">
+                  <p className="text-xs text-[#6a6f73] mb-1 line-clamp-1 font-normal break-words">
                     {transformedCourse.instructor}
                   </p>
 
                   {/* Rating - Udemy Style */}
                   {renderRating(transformedCourse.rating || 4.5, transformedCourse.review_count)}
 
-                  {/* Course Metadata */}
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                    <div className="flex items-center gap-1">
-                      <FontAwesomeIcon icon={faClock} className="h-3 w-3" />
-                      <span>{transformedCourse.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <FontAwesomeIcon icon={faSignal} className={`h-3 w-3 ${getLevelIcon(transformedCourse.level)}`} />
-                      <span className={`font-medium ${getLevelColor(transformedCourse.level)}`}>
-                        {transformedCourse.level}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Student Count */}
-                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-4">
-                    <FontAwesomeIcon icon={faUsers} className="h-3 w-3" />
-                    <span>{(transformedCourse.students || 0).toLocaleString()} students</span>
-                  </div>
-
-                  {/* Enroll Button - Updated Color */}
-                  <div>
-                    <Link to={`/courses/${transformedCourse.id}`}>
-                      <Button className="w-full bg-[#00aeef] g hover:bg-[#0077a3] text-white font-semibold py-3 rounded-sm text-sm transition-all duration-200 hover:shadow-md">
-                        Enroll Now
-                      </Button>
-                    </Link>
+                  {/* Price */}
+                  <div className="font-bold text-[#1c1d1f] flex items-center space-x-2 mt-auto">
+                    <span>Free</span>
                   </div>
                 </div>
-              </Card>
+              </div>
             );
           })}
         </div>
 
         {/* View All Courses Link - Left Aligned with Reduced Margin */}
         <div className="text-left mt-8">
-          <Link 
+          <Link
             to="/courses"
             className="inline-flex items-center text-[#0095cc] rounded-sm hover:text-[#0077a3] transition-all group font-semibold text-lg border border-[#0095cc] hover:border-[#0077a3] px-6 py-2"
           >
             View All Courses
-            <FontAwesomeIcon 
-              icon={faArrowRight} 
-              className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" 
+            <FontAwesomeIcon
+              icon={faArrowRight}
+              className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
             />
           </Link>
         </div>

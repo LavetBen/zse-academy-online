@@ -10,30 +10,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faChevronDown, faUser, faGauge, faRightFromBracket, faUserShield, faSignInAlt, faUserPlus, faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faTimes,
+  faSearch,
+  faUser,
+  faGauge,
+  faRightFromBracket,
+  faUserShield,
+  faHeart,
+  faBell,
+  faGlobe
+} from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "../assets/logo.png";
+import { Input } from "@/components/ui/input";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
 
-  const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Courses", href: "/courses" },
-    { name: "Blog", href: "/blog" },
-    { name: "Tutorials", href: "/tutorials" },
-    { name: "About Us", href: "/about" },
-    { name: "Contact", href: "/contact" },
-  ];
-
-  const isActive = (path: string) => location.pathname === path;
-
-  const toggleDropdown = (name: string) => {
-    setActiveDropdown(activeDropdown === name ? null : name);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/courses?search=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const handleLogout = () => {
@@ -41,390 +45,252 @@ export const Navbar = () => {
     navigate("/");
   };
 
-  // Split navigation for different screen sizes
-  const primaryNavigation = navigation.slice(0, 4); // Home, Courses, Blog, Tutorials
-  const secondaryNavigation = navigation.slice(4); // About Us, Contact
-
   return (
-    <nav className="bg-white backdrop-blur-md border-b border-border/60 sticky top-0 z-50 shadow-sm font-montserrat">
-      <div className="max-w-content mx-auto px-2 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center group">
+    <nav className="bg-white border-b border-[#d1d7dc] sticky top-0 z-50 h-[72px] flex items-center font-montserrat shadow-none">
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto">
+        <div className="flex justify-between items-center gap-4 lg:gap-8">
+
+          {/* Mobile Menu Trigger & Logo */}
+          <div className="flex items-center gap-2 lg:gap-4 shrink-0">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2 text-[#1c1d1f] hover:bg-gray-100 transition-colors"
+            >
+              <FontAwesomeIcon icon={isOpen ? faTimes : faBars} className="h-6 w-6" />
+            </button>
+            <Link to="/" className="flex items-center">
               <img
                 src={logo}
-                alt="Logo"
-                className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
+                alt="ZSE Academy"
+                className="h-11 md:h-14 w-auto object-contain"
               />
             </Link>
           </div>
 
-          {/* Desktop Navigation - Show from large screens */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <div key={item.name} className="relative">
-                <Link
-                  to={item.href}
-                  className={`text-sm font-medium transition-colors hover:text-[#00aeef] relative py-2
-                    ${isActive(item.href)
-                      ? "text-[#00aeef]"
-                      : "text-muted-foreground"
-                    }`}
-                >
-                  {item.name}
-                </Link>
-              </div>
-            ))}
-
-            {/* Auth Buttons for Desktop */}
-            <div className="flex items-center space-x-3 ml-6">
-              {isAuthenticated ? (
-                <>
-                  {user?.role === "admin" && (
-                    <Link to="/admin">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
-                      >
-                        <FontAwesomeIcon icon={faUserShield} className="mr-2 h-4 w-4" />
-                        Admin
-                      </Button>
-                    </Link>
-                  )}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
-                      >
-                        <FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" />
-                        <span className="hidden xl:inline">{user?.name || 'Account'}</span>
-                        <span className="xl:hidden">Account</span>
-                        <FontAwesomeIcon icon={faChevronDown} className="ml-2 h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard" className="flex items-center cursor-pointer">
-                          <FontAwesomeIcon icon={faGauge} className="mr-2 h-4 w-4" />
-                          Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => {
-                          handleLogout();
-                        }}
-                        className="cursor-pointer text-red-600 focus:text-red-600"
-                      >
-                        <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-4 w-4" />
-                        Logout
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
-              ) : (
-                <>
-                  <Link to="/login">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="px-5 py-2 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 hover:shadow-sm transition"
-                    >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button
-                      size="sm"
-                      className="px-6 py-2 rounded-full bg-[#00aeef] text-white shadow-md hover:bg-[#0095cc] transition"
-                    >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+          {/* Categories Dropdown Label - Udemy Style */}
+          <div className="hidden lg:flex items-center">
+            <Link to="/courses" className="text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors">
+              Categories
+            </Link>
           </div>
 
-          {/* Medium Screen Navigation (768px - 1024px) */}
-          <div className="hidden md:flex lg:hidden items-center space-x-4 flex-1 justify-end">
-            {/* Show primary navigation items */}
-            <div className="flex items-center space-x-4">
-              {primaryNavigation.map((item) => (
-                <div key={item.name}>
-                  <Link
-                    to={item.href}
-                    className={`text-xs font-medium transition-colors hover:text-[#00aeef] px-2 py-1
-                      ${isActive(item.href)
-                        ? "text-[#00aeef]"
-                        : "text-muted-foreground"
-                      }`}
-                  >
-                    {item.name}
-                  </Link>
-                </div>
-              ))}
-
-              {/* More dropdown for secondary items */}
-              {secondaryNavigation.length > 0 && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="text-xs font-medium text-muted-foreground hover:text-[#00aeef] px-2 py-1"
-                    >
-                      <FontAwesomeIcon icon={faEllipsisH} className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="center" className="w-40">
-                    {secondaryNavigation.map((item) => (
-                      <DropdownMenuItem key={item.name} asChild>
-                        <Link
-                          to={item.href}
-                          className={`cursor-pointer text-xs ${isActive(item.href)
-                            ? "text-[#00aeef] font-medium"
-                            : ""
-                            }`}
-                        >
-                          {item.name}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+          {/* Search Bar - Desktop */}
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex flex-1 max-w-[800px] relative items-center group"
+          >
+            <div className="absolute left-4 text-gray-500 group-focus-within:text-[#1c1d1f]">
+              <FontAwesomeIcon icon={faSearch} className="h-4 w-4" />
             </div>
+            <Input
+              type="text"
+              placeholder="Search for anything"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-[48px] pl-12 pr-4 rounded-full border border-[#1c1d1f] bg-[#f7f9fa] border-none focus-visible:ring-1 focus-visible:ring-[#1c1d1f] focus:bg-white transition-all text-sm placeholder:text-gray-500"
+            />
+          </form>
 
-            {/* Auth Buttons for Medium Screens */}
-            <div className="flex items-center space-x-2 ml-4 border-l border-gray-200 pl-4">
-              {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                    >
-                      <FontAwesomeIcon icon={faUser} className="h-4 w-4 text-[#00aeef]" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuLabel className="text-xs">{user?.name}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard" className="flex items-center cursor-pointer text-xs">
-                        <FontAwesomeIcon icon={faGauge} className="mr-2 h-3 w-3" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    {user?.role === "admin" && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin" className="flex items-center cursor-pointer text-xs">
-                          <FontAwesomeIcon icon={faUserShield} className="mr-2 h-3 w-3" />
-                          Admin
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      className="cursor-pointer text-red-600 focus:text-red-600 text-xs"
-                    >
-                      <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-3 w-3" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <>
-                  <Link to="/login">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="px-3 py-1 text-xs rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10"
-                    >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button
-                      size="sm"
-                      className="px-3 py-1 text-xs rounded-full bg-[#00aeef] text-white hover:bg-[#0095cc]"
-                    >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+          {/* Right Section Nav Links - Desktop */}
+          <div className="hidden min-[1100px]:flex items-center gap-6 shrink-0">
+            <Link to="/about" className="text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors whitespace-nowrap">
+              ZSE for Business
+            </Link>
+            <Link to="/contact" className="text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors whitespace-nowrap">
+              Teach on ZSE Academy
+            </Link>
           </div>
 
-          {/* Mobile menu button (below 768px) */}
-          <div className="md:hidden flex items-center space-x-2">
+          {/* Auth & Profile Section */}
+          <div className="flex items-center gap-2 lg:gap-4 shrink-0">
             {isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                  >
-                    <FontAwesomeIcon icon={faUser} className="h-5 w-5 text-[#00aeef]" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard" className="flex items-center cursor-pointer">
-                      <FontAwesomeIcon icon={faGauge} className="mr-2 h-4 w-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  {user?.role === "admin" && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/admin" className="flex items-center cursor-pointer">
-                        <FontAwesomeIcon icon={faUserShield} className="mr-2 h-4 w-4" />
-                        Admin
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="cursor-pointer text-red-600 focus:text-red-600"
-                  >
-                    <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Link to="/dashboard" className="hidden sm:flex items-center px-3 h-10 text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors">
+                  My Learning
+                </Link>
+
+                <Link to="/dashboard" className="p-2.5 text-[#1c1d1f] hover:text-[#00aeef] transition-colors">
+                  <FontAwesomeIcon icon={faHeart} className="h-5 w-5" />
+                </Link>
+
+                <button className="p-2.5 text-[#1c1d1f] hover:text-[#00aeef] transition-colors hidden sm:block">
+                  <FontAwesomeIcon icon={faBell} className="h-5 w-5" />
+                </button>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="ml-1 h-9 w-9 bg-[#1c1d1f] text-white rounded-full flex items-center justify-center font-bold text-sm uppercase outline-none focus:ring-2 focus:ring-[#00aeef] focus:ring-offset-2">
+                      {user?.name?.charAt(0) || 'U'}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[280px] p-0 rounded-none border-[#d1d7dc] shadow-xl mt-1">
+                    <div className="flex items-center gap-3 p-4 bg-white hover:bg-gray-50 cursor-pointer border-b border-gray-100" onClick={() => navigate('/dashboard')}>
+                      <div className="h-16 w-16 bg-[#1c1d1f] text-white rounded-full flex items-center justify-center font-bold text-2xl uppercase shrink-0">
+                        {user?.name?.charAt(0) || 'U'}
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="font-bold text-[#1c1d1f] text-lg leading-tight line-clamp-1">{user?.name}</span>
+                        <span className="text-xs text-gray-500 truncate">{user?.email}</span>
+                      </div>
+                    </div>
+                    <div className="py-2">
+                      <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 transition-colors">
+                        <Link to="/dashboard" className="flex items-center w-full text-sm">
+                          My Learning
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 transition-colors">
+                        <Link to="/dashboard" className="flex items-center w-full text-sm">
+                          My Cart
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 transition-colors">
+                        <Link to="/dashboard" className="flex items-center w-full text-sm">
+                          Wishlist
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+                    <DropdownMenuSeparator className="m-0" />
+                    <div className="py-2">
+                      <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 transition-colors">
+                        <Link to="/contact" className="flex items-center w-full text-sm">
+                          Notifications
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 transition-colors">
+                        <Link to="/contact" className="flex items-center w-full text-sm">
+                          Messages
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+                    <DropdownMenuSeparator className="m-0" />
+                    <div className="py-2">
+                      {user?.role === "admin" && (
+                        <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 font-bold text-[#00aeef]">
+                          <Link to="/admin" className="flex items-center w-full">
+                            Admin Panel
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem asChild className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50">
+                        <Link to="/dashboard" className="flex items-center w-full text-sm">
+                          Account settings
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+                    <DropdownMenuSeparator className="m-0" />
+                    <div className="py-2">
+                      <DropdownMenuItem
+                        onClick={handleLogout}
+                        className="px-4 py-2.5 cursor-pointer rounded-none hover:bg-gray-50 focus:bg-gray-50 text-red-600 font-medium"
+                      >
+                        Log out
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             ) : (
-              <>
-                <Link to="/login">
+              <div className="flex items-center gap-2">
+                <Link to="/login" className="hidden lg:block">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
+                    variant="outline"
+                    className="h-10 px-5 rounded-none border border-[#1c1d1f] text-[#1c1d1f] hover:bg-gray-100 font-bold text-sm transition-all"
                   >
-                    <FontAwesomeIcon icon={faSignInAlt} className="h-5 w-5 text-[#00aeef]" />
+                    Log in
                   </Button>
                 </Link>
-                <Link to="/signup">
+                <Link to="/signup" className="hidden lg:block">
                   <Button
-                    size="icon"
-                    className="h-9 w-9 bg-[#00aeef] hover:bg-[#0095cc]"
+                    className="h-10 px-5 rounded-none bg-[#1c1d1f] text-white hover:bg-[#1c1d1f]/90 font-bold text-sm shadow-none transition-all"
                   >
-                    <FontAwesomeIcon icon={faUserPlus} className="h-5 w-5" />
+                    Sign up
                   </Button>
                 </Link>
-              </>
+                <button className="h-10 w-10 border border-[#1c1d1f] flex items-center justify-center hover:bg-gray-100 transition-colors hidden lg:flex">
+                  <FontAwesomeIcon icon={faGlobe} className="h-5 w-5 text-[#1c1d1f]" />
+                </button>
+
+                {/* Mobile Auth Icons */}
+                <button
+                  className="lg:hidden p-2 text-[#1c1d1f] hover:bg-gray-50 transition-colors"
+                  onClick={() => navigate('/login')}
+                >
+                  <FontAwesomeIcon icon={faSearch} className="h-5 w-5" />
+                </button>
+              </div>
             )}
-
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:text-[#00aeef] hover:bg-gray-100 transition-colors"
-            >
-              {isOpen ? <FontAwesomeIcon icon={faTimes} className="h-7 w-7" /> : <FontAwesomeIcon icon={faBars} className="h-7 w-7" />}
-            </button>
           </div>
-        </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden animate-slideDown bg-white border-t border-gray-200 rounded-b-xl shadow-lg">
-            <div className="px-4 pt-4 pb-6 space-y-2">
-              {navigation.map((item) => (
-                <div key={item.name}>
-                  <Link
-                    to={item.href}
-                    className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors hover:bg-gray-100 hover:text-[#00aeef]
-                      ${isActive(item.href)
-                        ? "text-[#00aeef] bg-gray-50 font-semibold"
-                        : "text-gray-700"
-                      }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Overlay & Drawer */}
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-[#1c1d1f]/60 z-40 lg:hidden backdrop-blur-[1px]"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-50 lg:hidden overflow-y-auto animate-slide-in-left shadow-2xl flex flex-col">
+            {/* Drawer Header */}
+            <div className="p-6 bg-[#f7f9fa] border-b border-gray-200">
+              {isAuthenticated ? (
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-[#1c1d1f] text-white rounded-full flex items-center justify-center font-bold text-xl uppercase shrink-0">
+                    {user?.name?.charAt(0) || 'U'}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="font-bold text-[#1c1d1f] text-lg leading-tight line-clamp-1">Hi, {user?.name?.split(' ')[0]}</span>
+                    <span className="text-xs text-gray-500">Welcome back</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <Link to="/login" className="text-[#00aeef] font-bold text-lg" onClick={() => setIsOpen(false)}>Log in</Link>
+                  <Link to="/signup" className="text-[#00aeef] font-bold text-lg" onClick={() => setIsOpen(false)}>Sign up</Link>
+                </div>
+              )}
+            </div>
+
+            {/* Main Drawer Navigation */}
+            <div className="flex-1 px-4 py-6 flex flex-col gap-8">
+
+              <div>
+                <h3 className="px-2 text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Most Popular</h3>
+                <div className="flex flex-col">
+                  <Link to="/courses" className="flex items-center justify-between px-2 py-3 text-lg text-[#1c1d1f] hover:text-[#00aeef]" onClick={() => setIsOpen(false)}>
+                    <span>Categories</span>
+                    <FontAwesomeIcon icon={faUser} className="h-3 w-3 text-gray-300" />
                   </Link>
                 </div>
-              ))}
+              </div>
 
-              {/* Auth Buttons */}
-              <div className="pt-5 border-t border-gray-200">
-                {isAuthenticated ? (
-                  <div className="space-y-2">
-                    {user?.role === "admin" && (
-                      <Link to="/admin" className="block">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <FontAwesomeIcon icon={faUserShield} className="mr-2 h-4 w-4" />
-                          Admin
-                        </Button>
-                      </Link>
-                    )}
-                    <Link to="/dashboard" className="block">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <FontAwesomeIcon icon={faGauge} className="mr-2 h-4 w-4" />
-                        Dashboard
-                      </Button>
-                    </Link>
-                    <Button
-                      onClick={() => {
-                        handleLogout();
-                        setIsOpen(false);
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="w-full rounded-full border-red-500 text-red-500 hover:bg-red-500/10 transition"
-                    >
-                      <FontAwesomeIcon icon={faRightFromBracket} className="mr-2 h-4 w-4" />
-                      Logout
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between gap-3">
-                    <Link to="/login" className="w-1/2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Login
-                      </Button>
-                    </Link>
-                    <Link to="/signup" className="w-1/2">
-                      <Button
-                        size="sm"
-                        className="w-full rounded-full bg-[#00aeef] text-white shadow-md hover:bg-[#0095cc] transition"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Sign Up
-                      </Button>
-                    </Link>
-                  </div>
+              <div>
+                <h3 className="px-2 text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Account</h3>
+                <div className="flex flex-col">
+                  <Link to="/dashboard" className="px-2 py-3 text-lg text-[#1c1d1f]" onClick={() => setIsOpen(false)}>My Learning</Link>
+                  <Link to="/dashboard" className="px-2 py-3 text-lg text-[#1c1d1f]" onClick={() => setIsOpen(false)}>Messages</Link>
+                  <Link to="/dashboard" className="px-2 py-3 text-lg text-[#1c1d1f]" onClick={() => setIsOpen(false)}>Account settings</Link>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-8">
+                <Link to="/about" className="block px-2 py-3 text-[#1c1d1f]" onClick={() => setIsOpen(false)}>ZSE for Business</Link>
+                <Link to="/contact" className="block px-2 py-3 text-[#1c1d1f]" onClick={() => setIsOpen(false)}>Teach on ZSE Academy</Link>
+                {isAuthenticated && (
+                  <button
+                    onClick={() => { handleLogout(); setIsOpen(false); }}
+                    className="px-2 py-3 text-lg font-bold text-red-600"
+                  >
+                    Log out
+                  </button>
                 )}
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </nav>
   );
 };

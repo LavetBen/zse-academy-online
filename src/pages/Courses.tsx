@@ -10,12 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faClock, 
-  faUsers, 
-  faStar, 
-  faSearch, 
-  faSpinner, 
+import {
+  faClock,
+  faUsers,
+  faStar,
+  faSearch,
+  faSpinner,
   faCheckCircle,
   faPlayCircle,
 } from "@fortawesome/free-solid-svg-icons";
@@ -63,10 +63,10 @@ const Courses = () => {
           const backendRating = course.reviews_avg_rating !== null && course.reviews_avg_rating !== undefined
             ? parseFloat(course.reviews_avg_rating.toString())
             : null;
-          
+
           // Calculate student count from backend data - only use if available
           const backendStudents = course.enrollments_count || course.students_count || null;
-          
+
           return {
             ...course,
             instructor: course.instructor?.name || course.instructor?.username || "ZSE Expert Instructor",
@@ -114,9 +114,9 @@ const Courses = () => {
     setEnrolling(courseId);
     try {
       await courseService.enrollInCourse(courseId);
-      setCourses(prevCourses => 
-        prevCourses.map(course => 
-          course.id === courseId 
+      setCourses(prevCourses =>
+        prevCourses.map(course =>
+          course.id === courseId
             ? { ...course, is_enrolled: true, progress: 0 }
             : course
         )
@@ -167,15 +167,15 @@ const Courses = () => {
       'Security': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=240&fit=crop',
       'intro': 'https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?w=400&h=240&fit=crop',
     };
-    return defaultThumbnails[course.category] || 
-           'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
+    return defaultThumbnails[course.category] ||
+      'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop';
   };
 
   // Function to render star rating
   const renderRating = (course: Course) => {
     const rating = course.rating;
     const reviewsCount = course.reviews_count || course.students || 0;
-    
+
     // If no rating data exists, don't show rating section
     if (rating === undefined || rating === null) {
       return (
@@ -187,22 +187,21 @@ const Courses = () => {
 
     // If rating is 0, show it as 0
     const displayRating = rating === 0 ? 0 : rating;
-    
+
     return (
       <div className="flex items-center gap-2 mb-3">
         <span className="font-bold text-sm text-gray-900">{displayRating.toFixed(1)}</span>
         <div className="flex items-center">
           {[...Array(5)].map((_, i) => (
-            <FontAwesomeIcon 
-              key={i} 
-              icon={faStar} 
-              className={`h-3 w-3 ${
-                i < Math.floor(displayRating) 
-                  ? 'text-orange-400' 
+            <FontAwesomeIcon
+              key={i}
+              icon={faStar}
+              className={`h-3 w-3 ${i < Math.floor(displayRating)
+                  ? 'text-orange-400'
                   : displayRating % 1 > 0 && i === Math.floor(displayRating)
-                  ? 'text-orange-200'
-                  : 'text-gray-300'
-              }`}
+                    ? 'text-orange-200'
+                    : 'text-gray-300'
+                }`}
             />
           ))}
         </div>
@@ -215,7 +214,7 @@ const Courses = () => {
     return (
       <div className="min-h-screen bg-gray-50 font-poppins">
         <Navbar />
-        
+
         {/* Hero Skeleton */}
         <section className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -270,7 +269,7 @@ const Courses = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-poppins">
       <Navbar />
-      
+
       {/* Hero Section - Udemy Style */}
       <section className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -299,7 +298,7 @@ const Courses = () => {
                 className="pl-10 border-gray-300 focus:border-primary"
               />
             </div>
-            
+
             {/* Filters */}
             <div className="flex gap-3 w-full md:w-auto">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -373,7 +372,7 @@ const Courses = () => {
                       )}
                     </div>
                   </Link>
-                  
+
                   {/* Course Info */}
                   <CardContent className="p-4">
                     <Link to={`/courses/${course.id}`}>
@@ -381,9 +380,9 @@ const Courses = () => {
                         {course.title}
                       </h3>
                     </Link>
-                    
+
                     <p className="text-xs text-gray-600 mb-2">{course.instructor}</p>
-                    
+
                     {/* Rating - Only shows if rating data exists */}
                     {renderRating(course)}
 
@@ -397,7 +396,7 @@ const Courses = () => {
                           </Badge>
                         )}
                       </div>
-                      
+
                       {course.is_enrolled ? (
                         <Link to={`/learn/${course.id}`}>
                           <Button size="sm" variant="outline" className="text-xs h-8">
@@ -406,7 +405,7 @@ const Courses = () => {
                           </Button>
                         </Link>
                       ) : (
-                        <Button 
+                        <Button
                           size="sm"
                           onClick={() => handleEnroll(course.id)}
                           disabled={enrolling === course.id}

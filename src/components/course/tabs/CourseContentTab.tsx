@@ -1,7 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight, faPlay } from "@fortawesome/free-solid-svg-icons";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { faChevronDown, faPlayCircle, faFileAlt } from "@fortawesome/free-solid-svg-icons";
 
 interface Slide {
   id: number;
@@ -31,53 +29,57 @@ export const CourseContentTab = ({
   onContentClick,
 }: CourseContentTabProps) => {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-left">Course Content</h2>
-          <div className="text-sm text-muted-foreground">
-            {contents.length} modules • {totalLessons} lessons
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-end mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Course content</h2>
+        <div className="text-sm text-gray-600">
+          {contents.length} sections • {totalLessons} lectures
         </div>
+      </div>
 
-        <div className="space-y-4">
-          {contents.map((content, contentIndex) => (
-            <div key={content.id} className="border rounded-lg overflow-hidden">
-              <div className="bg-muted/50 p-4 font-medium flex items-center justify-between">
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4 mr-2" />
-                  <span>
-                    Module {contentIndex + 1}: {content.title}
-                  </span>
-                </div>
-                <Badge variant="outline">{content.slides.length} lessons</Badge>
+      <div className="border border-gray-200">
+        {contents.map((content, contentIndex) => (
+          <div key={content.id} className="border-b last:border-b-0 border-gray-200">
+            {/* Section Header */}
+            <div className="bg-[#f7f9fa] p-4 flex items-center justify-between border-b border-gray-200 last:border-b-0">
+              <div className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faChevronDown} className="h-3 w-3 text-gray-900" />
+                <span className="font-bold text-gray-900">
+                  Section {contentIndex + 1}: {content.title}
+                </span>
               </div>
-
-              <div className="divide-y">
-                {content.slides.map((slide, slideIndex) => (
-                  <button
-                    key={slide.id}
-                    onClick={() => onContentClick(content, slide, slideIndex)}
-                    className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors text-left"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-                        <FontAwesomeIcon icon={faPlay} className="h-3 w-3 text-primary" />
-                      </div>
-                      <div>
-                        <div className="font-medium">{slide.title}</div>
-                        <div className="text-xs text-muted-foreground capitalize">
-                          {slide.type}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+              <div className="text-sm text-gray-600">
+                {content.slides.length} lectures
               </div>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+
+            {/* Lecture list */}
+            <div className="bg-white">
+              {content.slides.map((slide, slideIndex) => (
+                <button
+                  key={slide.id}
+                  onClick={() => onContentClick(content, slide, slideIndex)}
+                  className="w-full flex items-center justify-between px-6 py-3 hover:bg-[#f7f9fa] transition-colors group border-b last:border-b-0 border-gray-100"
+                >
+                  <div className="flex items-center gap-4">
+                    <FontAwesomeIcon
+                      icon={slide.type === "video" ? faPlayCircle : faFileAlt}
+                      className={`h-3.5 w-3.5 ${slide.type === "video" ? "text-gray-900" : "text-gray-500"}`}
+                    />
+                    <div className="flex flex-col text-left">
+                      <span className="text-sm text-gray-700 group-hover:underline">{slide.title}</span>
+                      <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">{slide.type}</span>
+                    </div>
+                  </div>
+                  {slide.type === "video" && (
+                    <div className="text-xs text-[#00aeef] font-bold group-hover:underline">Preview</div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };

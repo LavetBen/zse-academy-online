@@ -88,14 +88,15 @@ const CourseDetail = () => {
     totalSlides: number;
     contentId: number;
     slides: Slide[];
-    moduleId: number; // FIX
-    courseId: number; // FIX
+    moduleId: number;
+    courseId: number;
   } | null>(null);
 
   useEffect(() => {
     if (id) {
       loadCourseData(id);
     }
+    window.scrollTo(0, 0);
   }, [id]);
 
   const loadCourseData = async (courseId: string) => {
@@ -137,7 +138,6 @@ const CourseDetail = () => {
     setIsWishlisted(!isWishlisted);
   };
 
-  // ✅ FIX: pass correct courseId & moduleId
   const handleContentClick = (
     content: Content,
     slide: Slide,
@@ -155,8 +155,8 @@ const CourseDetail = () => {
       totalSlides: content.slides.length,
       contentId: content.id,
       slides: content.slides,
-      moduleId: content.id, // FIX
-      courseId: content.course_id, // FIX
+      moduleId: content.id,
+      courseId: content.course_id,
     });
   };
 
@@ -174,18 +174,17 @@ const CourseDetail = () => {
     setCurrentContent((prev) =>
       prev
         ? {
-            ...prev,
-            title: newSlide.title,
-            type: newSlide.type,
-            url: newSlide.url,
-            youtubeId: youtubeId || undefined,
-            currentSlideIndex: newIndex,
-          }
+          ...prev,
+          title: newSlide.title,
+          type: newSlide.type,
+          url: newSlide.url,
+          youtubeId: youtubeId || undefined,
+          currentSlideIndex: newIndex,
+        }
         : null
     );
   };
 
-  // ✅ FIX: correct finish API call
   const handleFinishContent = async () => {
     if (!currentContent) return;
 
@@ -194,12 +193,9 @@ const CourseDetail = () => {
         currentContent.courseId,
         currentContent.moduleId
       );
-
-      console.log("Finished module:", currentContent.moduleId);
-
       closeContentModal();
     } catch (err) {
-      console.log("Finish erro--r:", err);
+      console.log("Finish error:", err);
     }
   };
 
@@ -237,12 +233,12 @@ const CourseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background font-poppins">
+      <div className="min-h-screen bg-white font-montserrat">
         <Navbar />
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="mt-4 text-muted-foreground">Loading course...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00aeef] mx-auto mb-4"></div>
+            <p className="mt-4 text-gray-500">Loading course...</p>
           </div>
         </div>
         <Footer />
@@ -252,15 +248,15 @@ const CourseDetail = () => {
 
   if (error || !course) {
     return (
-      <div className="min-h-screen bg-background font-poppins">
+      <div className="min-h-screen bg-white font-montserrat">
         <Navbar />
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-destructive">Error</h2>
-            <p className="mt-2 text-muted-foreground">
+            <h2 className="text-2xl font-bold text-red-600">Error</h2>
+            <p className="mt-2 text-gray-600">
               {error || "Course not found"}
             </p>
-            <Button asChild className="mt-4">
+            <Button asChild className="mt-4 bg-[#00aeef] hover:bg-[#009ad1]">
               <Link to="/courses">Back to Courses</Link>
             </Button>
           </div>
@@ -273,7 +269,7 @@ const CourseDetail = () => {
   const totalLessons = getTotalLessons();
 
   return (
-    <div className="min-h-screen bg-background font-poppins">
+    <div className="min-h-screen bg-white font-montserrat">
       <Navbar />
 
       {/* Content Modal */}
@@ -286,172 +282,65 @@ const CourseDetail = () => {
         />
       )}
 
-      {/* Breadcrumb */}
-      <div className="bg-muted/40 py-3">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link
-              to="/courses"
-              className="hover:text-primary transition-colors"
-            >
-              All courses
-            </Link>
-            <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
-            <span className="text-foreground font-medium">
-              {course.category?.name || "Uncategorized"}
-            </span>
-          </nav>
-        </div>
-      </div>
+      {/* Udemy Header Section */}
+      <section className="bg-[#1c1d1f] text-white py-8 md:py-12">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-3 gap-8 relative">
+            {/* Left Content Column */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Breadcrumb - White on Dark */}
+              <nav className="flex items-center space-x-2 text-sm text-[#cec0fc] font-bold">
+                <Link to="/courses" className="hover:underline">
+                  Courses
+                </Link>
+                <FontAwesomeIcon icon={faChevronRight} className="h-3 w-3" />
+                <span className="text-[#cec0fc]">
+                  {course.category?.name || "Topic"}
+                </span>
+              </nav>
 
-      {/* Main Section */}
-      <section className="py-8 lg:py-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge
-                    variant="secondary"
-                    className="bg-emerald-100 text-emerald-800 border-emerald-200"
-                  >
-                    {course.is_enrolled ? "Enrolled" : "Available"}
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-primary/10 text-primary"
-                  >
-                    {course.level}
-                  </Badge>
-                  <Badge variant="outline" className="text-accent-foreground">
-                    {course.category.name}
-                  </Badge>
-                </div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-left leading-tight">
+                {course.title}
+              </h1>
 
-                <h1 className="text-3xl lg:text-4xl font-bold text-left leading-tight">
-                  {course.title}
-                </h1>
+              <p className="text-lg leading-relaxed text-gray-200">
+                {course.description}
+              </p>
 
-                <p className="text-lg leading-relaxed text-muted-foreground">
-                  {course.description}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-4 text-left">
-                  <div className="flex items-center space-x-1">
-                    <span className="font-bold text-primary">4.7</span>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-5 w-5 ${
-                            i < 4
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground/30"
+              <div className="flex flex-wrap items-center gap-4 text-left">
+                <div className="flex items-center space-x-1">
+                  <span className="font-bold text-[#f3ca8c]">4.7</span>
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < 4
+                            ? "fill-[#f3ca8c] text-[#f3ca8c]"
+                            : "text-gray-600"
                           }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-muted-foreground">
-                      (2850 ratings)
-                    </span>
+                      />
+                    ))}
                   </div>
-                  <div className="text-muted-foreground">12,453 students</div>
+                  <span className="text-[#cec0fc] hover:underline cursor-pointer">
+                    (2,850 ratings)
+                  </span>
                 </div>
+                <div className="text-sm">12,453 students</div>
               </div>
 
-              {/* Enhanced Tabs */}
-              <Tabs
-                value={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full"
-              >
-                <TabsList className="w-full grid grid-cols-5 h-auto p-1 bg-muted/50 rounded-lg gap-1">
-                  <TabsTrigger
-                    value="overview"
-                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
-                  >
-                    <FontAwesomeIcon icon={faBookOpen} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      Overview
-                    </span>
-                  </TabsTrigger>
-
-                  <TabsTrigger
-                    value="content"
-                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
-                  >
-                    <FontAwesomeIcon icon={faList} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      Content
-                    </span>
-                  </TabsTrigger>
-
-                  <TabsTrigger
-                    value="instructor"
-                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
-                  >
-                    <FontAwesomeIcon
-                      icon={faChalkboardTeacher}
-                      className="h-4 w-4"
-                    />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      Instructor
-                    </span>
-                  </TabsTrigger>
-
-                  <TabsTrigger
-                    value="reviews"
-                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
-                  >
-                    <FontAwesomeIcon icon={faStar} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      Reviews
-                    </span>
-                  </TabsTrigger>
-
-                  <TabsTrigger
-                    value="quizzes"
-                    className="flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border rounded-md"
-                  >
-                    <FontAwesomeIcon icon={faFileAlt} className="h-4 w-4" />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      Quizzes
-                    </span>
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="mt-6">
-                  <TabsContent value="overview" className="m-0">
-                    <CourseOverviewTab
-                      totalLessons={totalLessons}
-                      modulesCount={course.contents.length}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="content" className="m-0">
-                    <CourseContentTab
-                      contents={course.contents}
-                      totalLessons={totalLessons}
-                      onContentClick={handleContentClick}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="instructor" className="m-0">
-                    <CourseInstructorTab instructor={course.instructor} />
-                  </TabsContent>
-
-                  <TabsContent value="reviews" className="m-0">
-                    {id && <CourseReviewsTab courseId={id} />}
-                  </TabsContent>
-
-                  <TabsContent value="quizzes" className="m-0">
-                    {id && <QuizzesSection courseId={id} />}
-                  </TabsContent>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+                <div>
+                  Created by <span className="text-[#cec0fc] hover:underline cursor-pointer">{course.instructor?.name || "ZSE Academy"}</span>
                 </div>
-              </Tabs>
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faFileAlt} className="mr-2 h-3.5 w-3.5" />
+                  Last updated {new Date(course.updated_at).toLocaleDateString()}
+                </div>
+              </div>
             </div>
 
-            <div className="lg:col-span-1">
+            {/* Sidebar Card - Only shows on desktop/tablet nicely */}
+            <div className="hidden lg:block absolute right-0 top-0 translate-y-[-20px] z-50">
               <CourseSidebarCard
                 thumbnailUrl={
                   course.thumbnail_url || course.thumbnail || "/placeholder.svg"
@@ -466,9 +355,89 @@ const CourseDetail = () => {
                 hasSampleVideos={totalLessons > 0}
               />
             </div>
-          </div>
 
-          <SimilarCoursesSection courses={similarCourses} />
+            {/* Mobile Sidebar Card - Simplified */}
+            <div className="lg:hidden">
+              <img
+                src={course.thumbnail_url || course.thumbnail || "/placeholder.svg"}
+                alt={course.title}
+                className="w-full aspect-video object-cover border border-white/20 mb-4"
+              />
+              <div className="flex flex-col gap-3">
+                <div className="text-3xl font-bold mb-2">${parseFloat(course.price.toString()).toFixed(2)}</div>
+                {course.is_enrolled ? (
+                  <Button className="w-full rounded-none h-12 bg-white text-black hover:bg-gray-100 font-bold" asChild>
+                    <Link to={`/learn/${course.id}`}>Go to course</Link>
+                  </Button>
+                ) : (
+                  <Button onClick={handleEnrollNow} className="w-full rounded-none h-12 bg-[#00aeef] hover:bg-[#009ad1] text-white font-bold">
+                    Buy Now
+                  </Button>
+                )}
+                <div className="text-center text-xs text-gray-400">30-Day Money-Back Guarantee</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <section className="py-8 bg-white overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2 space-y-8">
+              {/* Udemy Styled Tabs - Sticky or Flat */}
+              <div className="border-b border-gray-200">
+                <div className="flex overflow-x-auto space-x-8 no-scrollbar">
+                  {["overview", "content", "instructor", "reviews", "quizzes"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`py-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap capitalize ${activeTab === tab
+                          ? "border-black text-black"
+                          : "border-transparent text-gray-500 hover:text-black"
+                        }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8 transition-all duration-300">
+                {activeTab === "overview" && (
+                  <CourseOverviewTab
+                    totalLessons={totalLessons}
+                    modulesCount={course.contents.length}
+                  />
+                )}
+                {activeTab === "content" && (
+                  <CourseContentTab
+                    contents={course.contents}
+                    totalLessons={totalLessons}
+                    onContentClick={handleContentClick}
+                  />
+                )}
+                {activeTab === "instructor" && (
+                  <CourseInstructorTab instructor={course.instructor} />
+                )}
+                {activeTab === "reviews" && id && (
+                  <CourseReviewsTab courseId={id} />
+                )}
+                {activeTab === "quizzes" && id && (
+                  <QuizzesSection courseId={id} />
+                )}
+              </div>
+
+              {/* Similar Courses Section - Standard Udemy Bottom grid */}
+              <div className="pt-12 border-t border-gray-200">
+                <SimilarCoursesSection courses={similarCourses} />
+              </div>
+            </div>
+
+            {/* Empty space for the sticky card overflow */}
+            <div className="hidden lg:block lg:col-span-1"></div>
+          </div>
         </div>
       </section>
 

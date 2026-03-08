@@ -1,109 +1,46 @@
-import { Card } from "@/components/ui/card";
-
-// Custom SVG icons
-const features = [
-  {
-    id: 1,
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-8 w-8 text-blue-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 14v6m0-6c3.866 0 7 1.343 7 3v3M12 14c-3.866 0-7 1.343-7 3v3"
-        />
-      </svg>
-    ),
-    title: "Revenue Responsibility",
-    description:
-      "We take responsibility for the revenue impact of our services.",
-  },
-  {
-    id: 2,
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-8 w-8 text-blue-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 20l9-7-9-7-9 7 9 7z"
-        />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 20V10" />
-      </svg>
-    ),
-    title: "Holistic Perspective",
-    description:
-      "Our experts examine and hone in to optimize your strategy at every level.",
-  },
-  {
-    id: 3,
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-8 w-8 text-blue-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
-      </svg>
-    ),
-    title: "Results Oriented",
-    description:
-      "We offer impeccable implementation, with ongoing analysis focus on your line.",
-  },
-];
+import logo from "../assets/logo.png";
+import vfexLogo from "../assets/vfex-logo.png";
 
 export const WhatWeOffer = () => {
   return (
-    <section className="section-padding bg-white font-poppins">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8 text-left">
-          <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-2 text-left">
-            What we offer
-          </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl text-left">
-            Build your trading skills and gain expertise in Zimbabwe's financial markets.
-          </p>
+    <section className="py-12 bg-[#f7f9fa] border-y border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-10">
+          Professional Training for Zimbabwe's Leading Financial Platforms
+        </h2>
+
+        <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24">
+          {/* ZSE Logo */}
+          <div className="flex flex-col items-center gap-3 group">
+            <div className="h-16 md:h-20 w-auto flex items-center justify-center grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300">
+              <img
+                src={logo}
+                alt="Zimbabwe Stock Exchange"
+                className="h-full w-auto object-contain"
+              />
+            </div>
+            <span className="text-[10px] font-bold text-gray-400 tracking-tighter uppercase group-hover:text-gray-600 transition-colors">
+              Zimbabwe Stock Exchange
+            </span>
+          </div>
+
+          {/* VFEX Logo */}
+          <div className="flex flex-col items-center gap-3 group">
+            <div className="h-16 md:h-20 w-auto flex items-center justify-center grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300">
+              <img
+                src={vfexLogo}
+                alt="Victoria Falls Stock Exchange"
+                className="h-full w-auto object-contain"
+              />
+            </div>
+            <span className="text-[10px] font-bold text-gray-400 tracking-tighter uppercase group-hover:text-gray-600 transition-colors">
+              Victoria Falls Stock Exchange
+            </span>
+          </div>
         </div>
 
-        {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature) => (
-            <Card
-              key={feature.id}
-              className="bg-white rounded-2xl p-8 border shadow-sm hover:shadow-2xl transition-transform hover:scale-[1.05] text-center"
-            >
-              <div className="flex flex-col items-center mb-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {feature.title}
-                </h3>
-              </div>
-              <p className="text-base text-gray-600">{feature.description}</p>
-            </Card>
-          ))}
+        <div className="mt-12 text-gray-400 text-xs italic">
+          Gain recognized expertise in both Zimbabwe Dollar and US Dollar denominated markets.
         </div>
       </div>
     </section>
