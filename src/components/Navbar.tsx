@@ -66,7 +66,7 @@ export const Navbar = () => {
                 </button>
 
                 {/* Dropdown Menu */}
-                <div className="absolute left-0 mt-3 w-56 rounded-lg shadow-xl bg-black/95 backdrop-blur-md border border-border/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all duration-200">
+                <div className="absolute left-0 mt-3 w-56 rounded-lg shadow-xl bg-white/95 backdrop-blur-md border border-border/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all duration-200">
                   {item.dropdown.map((dropdownItem) => (
                     <Link
                       key={dropdownItem.name}
@@ -133,7 +133,7 @@ export const Navbar = () => {
 
     {/* Mobile Navigation */}
     {isOpen && (
-      <div className="md:hidden animate-slideDown bg-black/95 backdrop-blur-md border-t border-border/60 rounded-b-xl shadow-lg">
+      <div className="md:hidden animate-slideDown bg-white/95 backdrop-blur-md border-t border-border/60 rounded-b-xl shadow-lg">
         <div className="px-2 pt-3 pb-5 space-y-1">
           {navigation.map((item) => (
             <div key={item.name}>
@@ -201,7 +201,7 @@ export const Navbar = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
+                className="w-full m-4 rounded-full border-[#00aeef] text-[#00aeef] hover:bg-[#00aeef]/10 transition"
               >
                 Login
               </Button>
