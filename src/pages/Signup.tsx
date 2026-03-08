@@ -77,7 +77,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background font-poppins">
+    <div className="min-h-screen bg-background font-montserrat">
       <Navbar />
       <section className="section-padding">
         <div className="max-w-lg mx-auto px-4">

@@ -35,7 +35,7 @@ export const BlogPreview = () => {
 
   if (loading) {
     return (
-      <section className="section-padding bg-muted/30 font-poppins">
+      <section className="section-padding bg-muted/30 font-montserrat">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-left">
             <h2 className="text-3xl sm:text-4xl font-bold text-secondary mb-2">
@@ -61,7 +61,7 @@ export const BlogPreview = () => {
   }
 
   return (
-    <section className="section-padding bg-muted/30 font-poppins">
+    <section className="section-padding bg-muted/30 font-montserrat">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-left w-full">
           <h2 className="text-3xl font-bold text-[#1c1d1f] mb-2 tracking-tight">

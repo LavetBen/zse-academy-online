@@ -124,7 +124,7 @@ const Dashboard = () => {
   const learningStreak = 7; // This could come from API if available
 
   return (
-    <div className="min-h-screen bg-background font-poppins">
+    <div className="min-h-screen bg-background font-montserrat">
       {/* Mobile Header */}
       <header className="lg:hidden bg-white border-b border-border px-4 py-3 sticky top-0 z-50">
         <div className="flex items-center justify-between">

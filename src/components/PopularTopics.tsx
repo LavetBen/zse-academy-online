@@ -165,7 +165,7 @@ export const PopularTopics = () => {
   // Loading skeleton
   if (loading) {
     return (
-      <section className="py-16 bg-white font-poppins">
+      <section className="py-16 bg-white font-montserrat">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Skeleton */}
           <div className="mb-12">
@@ -198,7 +198,7 @@ export const PopularTopics = () => {
   // Error state
   if (error) {
     return (
-      <section className="py-16 bg-white font-poppins">
+      <section className="py-16 bg-white font-montserrat">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 max-w-md mx-auto">
             <FontAwesomeIcon icon={faSpinner} className="h-12 w-12 text-red-500 mb-4" />
@@ -219,7 +219,7 @@ export const PopularTopics = () => {
   // No courses state
   if (courses.length === 0) {
     return (
-      <section className="py-16 bg-white font-poppins">
+      <section className="py-16 bg-white font-montserrat">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 max-w-md mx-auto">
             <FontAwesomeIcon icon={faStar} className="h-12 w-12 text-yellow-500 mb-4" />
@@ -232,12 +232,12 @@ export const PopularTopics = () => {
   }
 
   return (
-    <section className="py-16 bg-white font-poppins">
+    <section className="section-padding bg-white font-montserrat">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header - Udemy Style */}
         <div className="mb-12 text-left w-full">
           <h2 className="text-3xl font-bold text-[#1c1d1f] mb-2 tracking-tight">
-            A broad selection of ZSE courses
+            Top Courses
           </h2>
           <p className="text-lg text-[#1c1d1f] max-w-3xl">
             Choose from online video courses with new additions published every month

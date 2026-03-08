@@ -212,7 +212,7 @@ const Courses = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 font-poppins">
+      <div className="min-h-screen bg-gray-50 font-montserrat">
         <Navbar />
 
         {/* Hero Skeleton */}
@@ -267,7 +267,7 @@ const Courses = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-poppins">
+    <div className="min-h-screen bg-gray-50 font-montserrat">
       <Navbar />
 
       {/* Hero Section - Udemy Style */}

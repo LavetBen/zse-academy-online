@@ -47,7 +47,7 @@ export const Navbar = () => {
 
   return (
     <nav className="bg-white border-b border-[#d1d7dc] sticky top-0 z-50 h-[72px] flex items-center font-montserrat shadow-none">
-      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto">
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex justify-between items-center gap-4 lg:gap-8">
 
           {/* Mobile Menu Trigger & Logo */}
@@ -62,7 +62,7 @@ export const Navbar = () => {
               <img
                 src={logo}
                 alt="ZSE Academy"
-                className="h-11 md:h-14 w-auto object-contain"
+                className="h-8 md:h-10 w-auto object-contain"
               />
             </Link>
           </div>
