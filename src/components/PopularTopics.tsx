@@ -33,7 +33,7 @@ interface Course {
   price: number;
   thumbnail_url: string;
   is_published: boolean;
-  instructor?: string;
+  instructor?: any;
   duration?: string;
   students?: number;
   rating?: number;
@@ -145,10 +145,19 @@ export const PopularTopics = () => {
 
   // Transform course data
   const transformCourseData = (course: Course) => {
+    let instructorName = 'Expert Instructor';
+    if (course.instructor) {
+      if (typeof course.instructor === 'string') {
+        instructorName = course.instructor;
+      } else if (typeof course.instructor === 'object') {
+        instructorName = course.instructor.name || course.instructor.username || 'Expert Instructor';
+      }
+    }
+
     return {
       ...course,
       category: getCategoryName(course.category),
-      instructor: course.instructor || 'Expert Instructor',
+      instructor: instructorName,
       duration: course.duration || `${Math.floor(Math.random() * 10) + 5} hours`,
       students: course.students || Math.floor(Math.random() * 50000) + 1000,
       rating: course.rating || 4.5 + Math.random() * 0.5,

@@ -69,15 +69,7 @@ export const CourseOverviewTab = ({
         </div>
       </div>
 
-      {/* Who this course is for */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-900">Who this course is for:</h2>
-        <ul className="list-disc pl-5 space-y-2">
-          <li className="text-sm text-gray-700">Aspiring investors looking to start their journey on the ZSE</li>
-          <li className="text-sm text-gray-700">Financial students seeking practical market knowledge</li>
-          <li className="text-sm text-gray-700">Professional traders wanting to refine their strategies</li>
-        </ul>
-      </div>
+
     </div>
   );
 };

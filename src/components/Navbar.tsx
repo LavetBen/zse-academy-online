@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +32,24 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const [wishlistCount, setWishlistCount] = useState(() => {
+    try {
+      const wishlist = JSON.parse(localStorage.getItem("zse_wishlist") || "[]");
+      return wishlist.length;
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    const updateWishlistCount = () => {
+      const wishlist = JSON.parse(localStorage.getItem("zse_wishlist") || "[]");
+      setWishlistCount(wishlist.length);
+    };
+    updateWishlistCount();
+    window.addEventListener("wishlist-updated", updateWishlistCount);
+    return () => window.removeEventListener("wishlist-updated", updateWishlistCount);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,8 +127,13 @@ export const Navbar = () => {
                   My Learning
                 </Link>
 
-                <Link to="/dashboard" className="p-2.5 text-[#1c1d1f] hover:text-[#00aeef] transition-colors">
+                <Link to="/dashboard" className="p-2.5 text-[#1c1d1f] hover:text-[#00aeef] transition-colors relative">
                   <FontAwesomeIcon icon={faHeart} className="h-5 w-5" />
+                  {wishlistCount > 0 && (
+                    <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                      {wishlistCount}
+                    </span>
+                  )}
                 </Link>
 
                 <button className="p-2.5 text-[#1c1d1f] hover:text-[#00aeef] transition-colors hidden sm:block">

@@ -6,6 +6,16 @@ export const COURSE_KEYS = {
   lists: () => [...COURSE_KEYS.all, "list"] as const,
   detail: (id: string | number) => [...COURSE_KEYS.all, "detail", id] as const,
   similar: (id: string | number) => [...COURSE_KEYS.all, "similar", id] as const,
+  myCourses: () => [...COURSE_KEYS.all, "myCourses"] as const,
+};
+
+export const useMyCourses = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: COURSE_KEYS.myCourses(),
+    queryFn: () => courseService.getMyCourses(),
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
 };
 
 export const useCourses = () => {

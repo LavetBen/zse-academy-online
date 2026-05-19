@@ -43,15 +43,18 @@ interface Course {
   updated_at?: string;
 }
 
-import { useCourses, useEnrollMutation } from "@/hooks/useCourses";
+import { useCourses, useEnrollMutation, useMyCourses } from "@/hooks/useCourses";
 
 const Courses = () => {
   const { data: courses = [], isLoading: loading, error } = useCourses();
   const enrollMutation = useEnrollMutation();
   const [searchTerm, setSearchTerm] = useState("");
+  const [showFullDesc, setShowFullDesc] = useState(false);
+  const heroDescription = "Explore our comprehensive catalog of courses designed to help you master trading and financial markets";
   const [selectedLevel, setSelectedLevel] = useState("all-levels");
   const [selectedCategory, setSelectedCategory] = useState("all-categories");
   const { user } = useAuth();
+  const { data: myCourses = [] } = useMyCourses(!!user);
   const { toast } = useToast();
   const [enrolling, setEnrolling] = useState<number | null>(null);
 
@@ -84,6 +87,8 @@ const Courses = () => {
     }
   };
 
+  const enrolledCourseIds = new Set(myCourses.map((mc: any) => mc.id));
+
   const filteredCourses = courses.filter(course => {
     return (
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -91,7 +96,10 @@ const Courses = () => {
       (selectedCategory === "all-categories" || selectedCategory === "" || course.category === selectedCategory) &&
       course.is_published
     );
-  });
+  }).map(course => ({
+    ...course,
+    is_enrolled: course.is_enrolled || enrolledCourseIds.has(course.id)
+  }));
 
   const categories = Array.from(new Set(courses.map(course => course.category).filter(Boolean)));
   const levels = Array.from(new Set(courses.map(course => course.level).filter(Boolean)));
@@ -217,8 +225,14 @@ const Courses = () => {
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Learn from the best courses
             </h1>
-            <p className="text-lg md:text-xl text-purple-100">
-              Explore our comprehensive catalog of courses designed to help you master trading and financial markets
+            <p className="text-lg md:text-xl text-purple-100 transition-all duration-300">
+              {showFullDesc ? heroDescription : `${heroDescription.substring(0, 25)}...`}
+              <button
+                onClick={() => setShowFullDesc(!showFullDesc)}
+                className="ml-2 underline font-bold hover:text-white text-purple-200 transition-colors text-sm"
+              >
+                {showFullDesc ? "Read Less" : "Read More"}
+              </button>
             </p>
           </div>
         </div>
@@ -322,6 +336,23 @@ const Courses = () => {
                     </Link>
 
                     <p className="text-xs text-gray-600 mb-2">{course.instructor}</p>
+
+                    <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                      {course.description ? (
+                        course.description.length > 50 ? (
+                          <>
+                            {course.description.substring(0, 50)}...
+                            <Link to={`/courses/${course.id}`} className="text-purple-600 hover:text-purple-800 font-semibold ml-1">
+                              Read More
+                            </Link>
+                          </>
+                        ) : (
+                          course.description
+                        )
+                      ) : (
+                        "No description available."
+                      )}
+                    </p>
 
                     {/* Rating - Only shows if rating data exists */}
                     {renderRating(course)}

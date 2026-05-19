@@ -21,6 +21,7 @@ interface CourseSidebarCardProps {
   onPreviewClick?: () => void;
   onEnrollClick?: () => void;
   onWishlistClick?: () => void;
+  onShareClick?: () => void;
 }
 
 export const CourseSidebarCard = ({
@@ -34,10 +35,11 @@ export const CourseSidebarCard = ({
   onPreviewClick,
   onEnrollClick,
   onWishlistClick,
+  onShareClick,
 }: CourseSidebarCardProps) => {
 
   return (
-    <Card className="sticky top-10 w-[340px] shadow-2xl border border-gray-200 rounded-none bg-white z-50">
+    <Card className="sticky top-[96px] w-[340px] shadow-2xl border border-gray-200 rounded-none bg-white z-50">
       <div className="relative aspect-video overflow-hidden group cursor-pointer" onClick={onPreviewClick}>
         <img
           src={thumbnailUrl}
@@ -60,8 +62,8 @@ export const CourseSidebarCard = ({
         <div className="space-y-4">
           <div className="pt-2 space-y-3">
             {isEnrolled ? (
-              <Button asChild className="w-full h-12 bg-black hover:bg-gray-800 text-white font-bold rounded-none text-base">
-                <Link to={`/learn/${courseId}`}>Go to course</Link>
+              <Button className="w-full h-12 bg-green-600 hover:bg-green-600 text-white font-bold rounded-none text-base cursor-default">
+                Enrolled
               </Button>
             ) : (
               <Button className="w-full h-12 bg-[#00aeef] hover:bg-[#009ad1] text-white font-bold rounded-none text-base" onClick={onEnrollClick}>
@@ -80,6 +82,7 @@ export const CourseSidebarCard = ({
               <Button
                 variant="outline"
                 className="w-full rounded-none border-black text-black font-bold h-10 hover:bg-gray-50"
+                onClick={onShareClick}
               >
                 Share
               </Button>

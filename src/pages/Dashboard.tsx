@@ -23,6 +23,7 @@ import Certificates from "./dashboard/Certificates";
 import Profile from "./dashboard/Profile";
 import SettingsPage from "./dashboard/Settings";
 import Analytics from "./dashboard/Analytics";
+import logo from "../assets/logo.png";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -140,10 +141,11 @@ const Dashboard = () => {
                 className="h-5 w-5 text-foreground" 
               />
             </Button>
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-lg text-secondary">ZSE</span>
+            <img
+              src={logo}
+              alt="ZSE Academy"
+              className="h-8 w-auto object-contain"
+            />
           </div>
           
           <div className="flex items-center space-x-3">
@@ -172,22 +174,22 @@ const Dashboard = () => {
       `}>
         <div className="p-4 h-full flex flex-col">
           {/* Desktop Logo & Toggle */}
-          <div className="hidden lg:flex items-center space-x-3 mb-8">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
-            </div>
-            {!sidebarCollapsed && (
-              <span className="font-bold text-lg text-secondary">ZSE</span>
-            )}
+          <div className="hidden lg:flex items-center justify-between mb-8">
+            <img
+              src={logo}
+              alt="ZSE Academy"
+              className={sidebarCollapsed ? "h-6 w-auto mx-auto object-contain" : "h-8 w-auto object-contain"}
+            />
           </div>
 
           {/* Mobile Header in Sidebar */}
           <div className="lg:hidden flex items-center justify-between mb-6 pb-4 border-b border-border">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <FontAwesomeIcon icon={faArrowTrendUp} className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-lg text-secondary">ZSE</span>
+              <img
+                src={logo}
+                alt="ZSE Academy"
+                className="h-8 w-auto object-contain"
+              />
             </div>
             <Button
               variant="ghost"

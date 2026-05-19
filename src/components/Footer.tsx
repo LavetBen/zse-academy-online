@@ -5,22 +5,23 @@ import ZSELogo from "@/assets/logo.png";
 
 const footerLinks = {
   courses: [
-    { name: "Stock Market Basics", href: "/courses/basics" },
-    { name: "Technical Analysis", href: "/courses/technical" },
-    { name: "Portfolio Management", href: "/courses/portfolio" },
-    { name: "Risk Management", href: "/courses/risk" },
+    { name: "Stock Market Basics", href: "/courses" },
+    { name: "Technical Analysis", href: "/courses" },
+    { name: "Portfolio Management", href: "/courses" },
+    { name: "Risk Management", href: "/courses" },
   ],
   company: [
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
-    { name: "Careers", href: "/careers" },
-    { name: "Privacy Policy", href: "/privacy" },
   ],
   support: [
-    { name: "Help Center", href: "/help" },
-    { name: "Student Portal", href: "/portal" },
-    { name: "Course Catalog", href: "/catalog" },
-    { name: "Certificates", href: "/certificates" },
+    { name: "Student Portal", href: "/login" },
+    { name: "Course Catalog", href: "/courses" },
+  ],
+  platforms: [
+    { name: "ZSE Direct", href: "https://www.zsedirect.co.zw" },
+    { name: "VFEX Direct", href: "https://www.vfexdirect.co.zw" },
+    { name: "Data Direct", href: "https://datadirect.zse.co.zw" },
   ],
 };
 
@@ -33,16 +34,16 @@ const socialLinks = [
 
 export const Footer = () => {
   return (
-    <footer className="bg-[#0B1E39] text-gray-300 font-montserrat">
+    <footer className="bg-[#151515] text-gray-300 font-montserrat">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
           {/* Brand / About */}
           <div className="lg:col-span-2">
             <Link to="/" className="inline-flex items-center space-x-2 mb-5">
               <img
                 src={ZSELogo}
                 alt="Zimbabwe Stock Exchange"
-                className="h-10 w-auto"
+                className="h-10 w-auto brightness-110"
               />
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed max-w-md">
@@ -50,6 +51,15 @@ export const Footer = () => {
               Zimbabwe’s financial markets. Learn from experts and earn
               certifications recognized locally and regionally.
             </p>
+            
+            <div className="text-gray-400 space-y-2 text-sm max-w-md border-t border-gray-800 pt-4 mt-4">
+              <p>
+                <strong className="text-white font-medium">Address:</strong> 44 Ridgeway North, Highlands, Harare, Zimbabwe
+              </p>
+              <p>
+                <strong className="text-white font-medium">Trading Hours:</strong> Monday - Friday: 09:00 AM - 1:00 PM CAT
+              </p>
+            </div>
           </div>
 
           {/* Links Sections */}
@@ -61,12 +71,23 @@ export const Footer = () => {
               <ul className="space-y-2 text-sm">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="hover:text-white transition-colors"
-                    >
-                      {link.name}
-                    </Link>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -75,7 +96,7 @@ export const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-gray-700 mt-12 pt-8">
+        <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm mb-4 md:mb-0 text-center md:text-left">
               © {new Date().getFullYear()} Zimbabwe Stock Exchange Training. All
