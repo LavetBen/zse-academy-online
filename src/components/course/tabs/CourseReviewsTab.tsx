@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faPen } from "@fortawesome/free-solid-svg-icons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
@@ -33,7 +34,6 @@ interface Review {
   };
 }
 
-// Helper: get initials and color for avatars
 const getUserAvatarInfo = (name: string) => {
   const initials = name
     .split(" ")
@@ -42,20 +42,18 @@ const getUserAvatarInfo = (name: string) => {
     .slice(0, 2);
 
   const colors = [
-    "bg-blue-500",
-    "bg-green-500",
-    "bg-purple-500",
-    "bg-orange-500",
-    "bg-pink-500",
-    "bg-indigo-500",
-    "bg-teal-500",
-    "bg-red-500",
+    "bg-[#00aeef]",
+    "bg-indigo-600",
+    "bg-teal-600",
+    "bg-amber-600",
+    "bg-[#1c1d1f]",
+    "bg-emerald-600",
+    "bg-pink-600",
   ];
   const colorIndex = name.length % colors.length;
   return { initials, color: colors[colorIndex] };
 };
 
-// Star rating display
 const StarRating = ({
   rating,
   size = "sm",
@@ -64,33 +62,31 @@ const StarRating = ({
   size?: "sm" | "md" | "lg";
 }) => {
   const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
+    sm: "h-3.5 w-3.5",
+    md: "h-4.5 w-4.5",
+    lg: "h-5.5 w-5.5",
   };
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0.5">
       {[...Array(5)].map((_, i) => (
         <FontAwesomeIcon
           key={i}
           icon={faStar}
           className={`${sizeClasses[size]} ${
-            i < rating ? "text-yellow-400" : "text-gray-300"
+            i < Math.round(rating) ? "text-amber-400" : "text-gray-200"
           }`}
         />
       ))}
-      <span className="text-sm font-medium text-gray-600 ml-1">{rating}.0</span>
     </div>
   );
 };
 
-// User avatar
 const UserAvatar = ({ name, className = "" }: { name: string; className?: string }) => {
   const { initials, color } = getUserAvatarInfo(name);
   return (
     <div
-      className={`flex items-center justify-center rounded-full ${color} text-white font-semibold ${className}`}
+      className={`flex items-center justify-center rounded-full ${color} text-white font-semibold tracking-wide ${className}`}
     >
       {initials}
     </div>
@@ -101,6 +97,7 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [averageRating, setAverageRating] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const token = localStorage.getItem("zse_training_token");
@@ -119,6 +116,7 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
       );
 
       setReviews(response.data.reviews || []);
+      setAverageRating(Number(response.data.average_rating || 0));
     } catch (error) {
       console.error("Error fetching reviews:", error);
       setReviews([]);
@@ -165,130 +163,181 @@ export const CourseReviewsTab = ({ courseId }: Props) => {
     }
   };
 
+  // Calculate Star breakdown
+  const totalReviews = reviews.length;
+  const starCounts = [0, 0, 0, 0, 0]; // 5-star to 1-star
+  reviews.forEach((review) => {
+    const star = Math.max(1, Math.min(5, Math.round(review.rating)));
+    starCounts[5 - star]++;
+  });
+
   return (
-    <Card className="border-0 shadow-sm">
-      <CardContent className="p-4 sm:p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          {/* Add Review Button */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base">
-                Add Review
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-lg sm:text-xl font-semibold">Add Your Review</DialogTitle>
-              </DialogHeader>
+    <Card className="rounded-none border border-gray-200 bg-white">
+      <CardContent className="p-6 md:p-8 space-y-8">
+        
+        {/* Dynamic Student Feedback Summary Section */}
+        <div className="border-b border-gray-100 pb-8">
+          <h3 className="text-xl font-extrabold text-gray-900 mb-6">Student Feedback</h3>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Big Star Block */}
+            <div className="md:col-span-3 text-center space-y-2 flex flex-col items-center justify-center md:border-r border-gray-100 md:pr-8 py-2">
+              <span className="text-6xl font-black text-amber-500">
+                {averageRating ? averageRating.toFixed(1) : "0.0"}
+              </span>
+              <StarRating rating={averageRating || 0} size="md" />
+              <span className="text-xs font-bold text-gray-500 tracking-wide uppercase mt-1">
+                Course Rating
+              </span>
+            </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="rating">Rating</Label>
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <Input
-                      id="rating"
-                      type="number"
-                      min={1}
-                      max={5}
-                      value={rating}
-                      onChange={(e) =>
-                        setRating(Math.max(1, Math.min(5, Number(e.target.value))))
-                      }
-                      className="w-16 sm:w-20"
-                    />
-                    <StarRating rating={rating} size="md" />
+            {/* Right Progress Bars Block */}
+            <div className="md:col-span-6 space-y-2.5">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = starCounts[5 - star];
+                const pct = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-4 text-xs font-medium text-gray-600">
+                    <div className="w-12 text-right">
+                      {star} {star === 1 ? "star" : "stars"}
+                    </div>
+                    <Progress value={pct} className="h-2 flex-1 bg-gray-100 [&>div]:bg-amber-400 rounded-none" />
+                    <div className="w-10 text-right font-bold text-gray-900">
+                      {pct.toFixed(0)}%
+                    </div>
                   </div>
-                </div>
+                );
+              })}
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="comment">Your Review</Label>
-                  <Textarea
-                    id="comment"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Share your experience..."
-                    rows={3}
-                    className="resize-none"
-                  />
-                </div>
+            {/* CTA Review Button */}
+            <div className="md:col-span-3 text-center md:pl-8 flex justify-center">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="rounded-none bg-[#1c1d1f] hover:bg-gray-800 text-white font-bold h-11 px-6 text-sm flex items-center gap-2">
+                    <FontAwesomeIcon icon={faPen} className="h-3 w-3" />
+                    <span>Write a Review</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md rounded-none border border-gray-200 bg-white">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold text-gray-900">Write Your Review</DialogTitle>
+                  </DialogHeader>
 
-                <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                >
-                  {submitting ? "Submitting..." : "Submit Review"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+                  <div className="space-y-4 pt-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="rating" className="text-sm font-bold text-gray-700">Rating</Label>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          id="rating"
+                          type="number"
+                          min={1}
+                          max={5}
+                          value={rating}
+                          onChange={(e) =>
+                            setRating(Math.max(1, Math.min(5, Number(e.target.value))))
+                          }
+                          className="w-20 rounded-none border-gray-300 focus:ring-black"
+                        />
+                        <StarRating rating={rating} size="md" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="comment" className="text-sm font-bold text-gray-700">Your Review</Label>
+                      <Textarea
+                        id="comment"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        placeholder="Tell other students what you liked or disliked about this course..."
+                        rows={4}
+                        className="resize-none rounded-none border-gray-300 focus:border-black"
+                      />
+                    </div>
+
+                    <Button
+                      className="w-full rounded-none bg-[#00aeef] hover:bg-[#009ad1] text-white font-bold h-11"
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                    >
+                      {submitting ? "Submitting..." : "Submit Review"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+          </div>
         </div>
 
         {/* Reviews List */}
-        <div className="space-y-4">
-          {loading
-            ? Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="border">
-                  <CardContent className="p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
-                    <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-3 w-24 sm:w-32" />
-                      <Skeleton className="h-3 w-full" />
-                      <Skeleton className="h-3 w-3/4" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            : reviews.length === 0
-            ? (
-              <Card className="border-dashed border-2">
-                <CardContent className="p-6 text-center">
-                  <FontAwesomeIcon icon={faStar} className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-3" />
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Reviews Yet</h3>
-                  <p className="text-sm text-gray-600 mb-3">Be the first to share your experience!</p>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="text-sm sm:text-base">Write First Review</Button>
-                    </DialogTrigger>
-                  </Dialog>
-                </CardContent>
-              </Card>
-            )
-            : reviews.map((review) => (
-                <Card
+        <div className="space-y-6">
+          <h4 className="text-lg font-bold text-gray-900">Reviews ({reviews.length})</h4>
+          
+          {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex gap-4 items-start pb-6 border-b border-gray-100">
+                <Skeleton className="h-12 w-12 rounded-full shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-5/6" />
+                </div>
+              </div>
+            ))
+          ) : reviews.length === 0 ? (
+            <div className="border border-dashed border-gray-200 p-8 text-center bg-gray-50">
+              <FontAwesomeIcon icon={faStar} className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+              <h3 className="text-base font-bold text-gray-900 mb-1">No Reviews Yet</h3>
+              <p className="text-sm text-gray-500 mb-4">Be the first to share your thoughts about this course!</p>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="rounded-none bg-[#00aeef] hover:bg-[#009ad1] text-white font-bold">
+                    Write First Review
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {reviews.map((review) => (
+                <div
                   key={review.id}
-                  className="border hover:shadow-sm transition-shadow"
+                  className="flex flex-col sm:flex-row gap-4 items-start py-6 first:pt-0 last:pb-0"
                 >
-                  <CardContent className="p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                    <UserAvatar
-                      name={review.user.name}
-                      className="h-10 w-10 sm:h-12 sm:w-12 text-base sm:text-lg shadow-sm"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:justify-between mb-1 sm:mb-2 gap-1 sm:gap-2 items-start sm:items-center">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900 text-sm sm:text-base">
-                            {review.user.name}
+                  <UserAvatar
+                    name={review.user.name}
+                    className="h-12 w-12 text-base shrink-0 shadow-sm"
+                  />
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                      <div>
+                        <span className="font-bold text-gray-900 text-base block">
+                          {review.user.name}
+                        </span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <StarRating rating={review.rating} />
+                          <span className="text-xs text-gray-400">
+                            {new Date(review.created_at).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
                           </span>
-                          <Badge variant="outline" className="text-xs">Student</Badge>
                         </div>
-                        <StarRating rating={review.rating} size="sm" />
                       </div>
-                      <p className="text-gray-700 leading-relaxed text-sm sm:text-base mb-1">
-                        {review.comment}
-                      </p>
-                      <span className="text-xs sm:text-sm text-gray-500">
-                        {new Date(review.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </span>
+                      <Badge variant="outline" className="text-xs font-bold text-gray-500 border-gray-200 rounded-none w-max">
+                        Verified Student
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
+                    <p className="text-[#1c1d1f] text-sm leading-relaxed">
+                      {review.comment}
+                    </p>
+                  </div>
+                </div>
               ))}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

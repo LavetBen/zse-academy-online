@@ -88,6 +88,31 @@ const CourseDetail = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [reviewsData, setReviewsData] = useState<{
+    average_rating: number;
+    reviews: any[];
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/courses/${id}/reviews`);
+        if (response.ok) {
+          const data = await response.json();
+          setReviewsData({
+            average_rating: Number(data.average_rating || 0),
+            reviews: data.reviews || [],
+          });
+        }
+      } catch (err) {
+        console.error("Error loading reviews info:", err);
+      }
+    };
+    if (id) {
+      fetchReviews();
+    }
+  }, [id]);
+
   const { data: course, isLoading: loading, error: fetchError } = useCourse(id);
   const { data: similarCourses = [] } = useSimilarCourses(id);
   const enrollMutation = useEnrollMutation();
@@ -359,20 +384,27 @@ const CourseDetail = () => {
 
               <div className="flex flex-wrap items-center gap-4 text-left">
                 <div className="flex items-center space-x-1">
-                  <span className="font-bold text-[#f3ca8c]">4.7</span>
+                  <span className="font-bold text-[#f3ca8c]">
+                    {reviewsData?.average_rating 
+                      ? reviewsData.average_rating.toFixed(1) 
+                      : (course.rating || 4.7).toFixed(1)}
+                  </span>
                   <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${i < 4
-                            ? "fill-[#f3ca8c] text-[#f3ca8c]"
-                            : "text-gray-600"
-                          }`}
-                      />
-                    ))}
+                    {[...Array(5)].map((_, i) => {
+                      const ratingVal = reviewsData?.average_rating || course.rating || 4.7;
+                      return (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${i < Math.round(ratingVal)
+                              ? "fill-[#f3ca8c] text-[#f3ca8c]"
+                              : "text-gray-600"
+                            }`}
+                        />
+                      );
+                    })}
                   </div>
-                  <span className="text-[#cec0fc] hover:underline cursor-pointer">
-                    (2,850 ratings)
+                  <span className="text-[#cec0fc] hover:underline cursor-pointer" onClick={() => setActiveTab("reviews")}>
+                    ({reviewsData?.reviews?.length ?? 0} {reviewsData?.reviews?.length === 1 ? "rating" : "ratings"})
                   </span>
                 </div>
               </div>
@@ -398,7 +430,11 @@ const CourseDetail = () => {
                 className="w-full aspect-video object-cover border border-white/20 mb-4"
               />
               <div className="flex flex-col gap-3">
-                {course.is_enrolled ? (
+                {course.progress === 100 || (course as any).is_completed ? (
+                  <Button className="w-full rounded-none h-12 bg-green-700 hover:bg-green-700 text-white font-bold cursor-default">
+                    Completed
+                  </Button>
+                ) : course.is_enrolled ? (
                   <Button className="w-full rounded-none h-12 bg-green-600 hover:bg-green-600 text-white font-bold cursor-default">
                     Enrolled
                   </Button>
@@ -474,6 +510,7 @@ const CourseDetail = () => {
                   }
                   title={course.title}
                   isEnrolled={course.is_enrolled}
+                  isCompleted={course.progress === 100 || (course as any).is_completed}
                   totalLessons={totalLessons}
                   modulesCount={course.contents?.length || 0}
                   onEnrollClick={handleEnrollNow}

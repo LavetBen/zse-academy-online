@@ -8,12 +8,12 @@ import {
   faDownload,
   faAward,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
 
 interface CourseSidebarCardProps {
   thumbnailUrl: string;
   title: string;
   isEnrolled: boolean;
+  isCompleted?: boolean;
   totalLessons: number;
   modulesCount: number;
   hasSampleVideos: boolean;
@@ -28,10 +28,10 @@ export const CourseSidebarCard = ({
   thumbnailUrl,
   title,
   isEnrolled,
+  isCompleted,
   totalLessons,
   modulesCount,
   hasSampleVideos,
-  courseId,
   onPreviewClick,
   onEnrollClick,
   onWishlistClick,
@@ -61,7 +61,11 @@ export const CourseSidebarCard = ({
       <CardContent className="p-6">
         <div className="space-y-4">
           <div className="pt-2 space-y-3">
-            {isEnrolled ? (
+            {isCompleted ? (
+              <Button className="w-full h-12 bg-green-700 hover:bg-green-700 text-white font-bold rounded-none text-base cursor-default">
+                Completed
+              </Button>
+            ) : isEnrolled ? (
               <Button className="w-full h-12 bg-green-600 hover:bg-green-600 text-white font-bold rounded-none text-base cursor-default">
                 Enrolled
               </Button>
