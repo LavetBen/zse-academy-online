@@ -61,10 +61,10 @@ const Signup = () => {
     try {
       await signup(formData.name, formData.email, formData.password, formData.passwordConfirmation);
       toast({
-        title: "Welcome!",
-        description: "Your account has been created successfully.",
+        title: "Registration Successful!",
+        description: "Please check your email for the verification code.",
       });
-      navigate("/dashboard");
+      navigate(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       toast({
         title: "Registration Failed",
@@ -83,7 +83,7 @@ const Signup = () => {
         <div className="max-w-lg mx-auto px-4">
           <Card className="card-gradient shadow-strong">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-secondary">Join ZSE Training</CardTitle>
+              <CardTitle className="text-2xl font-bold text-secondary">Sign Up</CardTitle>
               <CardDescription>Create your account to start your financial education journey</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

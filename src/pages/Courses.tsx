@@ -28,7 +28,6 @@ interface Course {
   category: string;
   category_id?: number;
   level: string;
-  price: number;
   thumbnail_url: string;
   is_published: boolean;
   instructor?: string;
@@ -44,62 +43,17 @@ interface Course {
   updated_at?: string;
 }
 
+import { useCourses, useEnrollMutation } from "@/hooks/useCourses";
+
 const Courses = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [enrolling, setEnrolling] = useState<number | null>(null);
+  const { data: courses = [], isLoading: loading, error } = useCourses();
+  const enrollMutation = useEnrollMutation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all-levels");
   const [selectedCategory, setSelectedCategory] = useState("all-categories");
   const { user } = useAuth();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const coursesData = await courseService.getAllCourses();
-        const coursesWithEnhancedData = coursesData.map((course: any) => {
-          // Calculate rating from backend data - only use if available
-          const backendRating = course.reviews_avg_rating !== null && course.reviews_avg_rating !== undefined
-            ? parseFloat(course.reviews_avg_rating.toString())
-            : null;
-
-          // Calculate student count from backend data - only use if available
-          const backendStudents = course.enrollments_count || course.students_count || null;
-
-          return {
-            ...course,
-            instructor: course.instructor?.name || course.instructor?.username || "ZSE Expert Instructor",
-            duration: course.duration || `${Math.floor(Math.random() * 12) + 4} weeks`,
-            // Only use mock students if no backend data available
-            students: backendStudents !== null ? backendStudents : Math.floor(Math.random() * 2000) + 500,
-            // Only use backend rating, don't add mock ratings
-            rating: backendRating,
-            reviews_count: course.reviews_count || 0,
-            category: course.category?.name || course.category || "General",
-            level: course.level || "Beginner",
-            thumbnail_url: course.thumbnail_url || course.thumbnail || "",
-            is_published: course.is_published !== undefined ? Boolean(course.is_published) : true,
-            is_enrolled: course.is_enrolled !== undefined ? Boolean(course.is_enrolled) : false,
-            progress: course.progress || 0,
-            price: typeof course.price === 'string' ? parseFloat(course.price) : course.price,
-          };
-        });
-        setCourses(coursesWithEnhancedData);
-      } catch (error: any) {
-        console.error("Failed to fetch courses:", error);
-        toast({
-          title: "Error",
-          description: "Unable to load courses. Please try again later.",
-          variant: "destructive",
-        });
-        setCourses([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourses();
-  }, [toast]);
+  const [enrolling, setEnrolling] = useState<number | null>(null);
 
   const handleEnroll = async (courseId: number) => {
     if (!user) {
@@ -111,16 +65,9 @@ const Courses = () => {
       return;
     }
 
-    setEnrolling(courseId);
     try {
-      await courseService.enrollInCourse(courseId);
-      setCourses(prevCourses =>
-        prevCourses.map(course =>
-          course.id === courseId
-            ? { ...course, is_enrolled: true, progress: 0 }
-            : course
-        )
-      );
+      setEnrolling(courseId);
+      await enrollMutation.mutateAsync(courseId);
       toast({
         title: "Success!",
         description: "You have successfully enrolled in the course",
@@ -149,13 +96,6 @@ const Courses = () => {
   const categories = Array.from(new Set(courses.map(course => course.category).filter(Boolean)));
   const levels = Array.from(new Set(courses.map(course => course.level).filter(Boolean)));
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: price % 1 === 0 ? 0 : 2,
-    }).format(price);
-  };
 
   const getThumbnail = (course: Course) => {
     if (course.thumbnail_url) return course.thumbnail_url;
@@ -386,15 +326,12 @@ const Courses = () => {
                     {/* Rating - Only shows if rating data exists */}
                     {renderRating(course)}
 
-                    {/* Price & CTA */}
+                    {/* CTA */}
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div>
-                        <span className="text-lg font-bold text-gray-900">{formatPrice(course.price)}</span>
-                        {course.price === 0 && (
-                          <Badge variant="secondary" className="ml-2 text-xs">
-                            Free
-                          </Badge>
-                        )}
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs bg-green-50 text-green-700 hover:bg-green-50">
+                          Free Course
+                        </Badge>
                       </div>
 
                       {course.is_enrolled ? (
@@ -413,8 +350,6 @@ const Courses = () => {
                         >
                           {enrolling === course.id ? (
                             <FontAwesomeIcon icon={faSpinner} className="h-3 w-3 animate-spin" />
-                          ) : course.price === 0 ? (
-                            "Get Started"
                           ) : (
                             "Enroll Now"
                           )}

@@ -11,9 +11,6 @@ export const SimilarCoursesSection = ({ courses }: SimilarCoursesSectionProps) =
     return null;
   }
 
-  const formatPrice = (price: string | number): string => {
-    return `$${parseFloat(price.toString()).toFixed(2)}`;
-  };
 
   return (
     <section className="mt-12">
@@ -38,7 +35,7 @@ export const SimilarCoursesSection = ({ courses }: SimilarCoursesSectionProps) =
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-primary">
-                    {formatPrice(course.price)}
+                    Free Course
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {course.level}

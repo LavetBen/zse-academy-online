@@ -11,6 +11,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import VerifyOtp from "./pages/VerifyOtp";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageCourseContent from "./pages/admin/ManageCourseContent";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/blog/:id" element={<BlogPost />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -40,6 +40,12 @@ const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activeFilter, setActiveFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 4;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeFilter]);
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
@@ -83,6 +89,11 @@ const Blog = () => {
   const trendingPosts = [...filteredPosts]
     .sort(() => 0.5 - Math.random())
     .slice(0, 5);
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = regularPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(regularPosts.length / postsPerPage);
 
   if (loading) {
     return (
@@ -246,7 +257,7 @@ const Blog = () => {
               </div>
             ) : (
               <div className="space-y-12">
-                {regularPosts.map((post) => (
+                {currentPosts.map((post) => (
                   <article key={post.id} className="flex flex-col md:flex-row gap-8 group">
                     {/* Image on left for list view */}
                     <div className="w-full md:w-2/5 flex-shrink-0">
@@ -287,13 +298,23 @@ const Blog = () => {
             )}
 
             {/* Empty space mimicking pagination bar */}
-            {regularPosts.length > 0 && (
-              <div className="mt-16 border-t border-gray-200 pt-8 flex justify-between">
-                {/* Real pagination could go here, currently static */}
-                <Button variant="outline" className="rounded-none border-gray-300 text-gray-700 bg-white shadow-none hover:bg-gray-50 transition-none" disabled>
+            {regularPosts.length > 0 && totalPages > 1 && (
+              <div className="mt-16 border-t border-gray-200 pt-8 flex justify-between items-center">
+                <Button 
+                  variant="outline" 
+                  className="rounded-none border-gray-300 text-gray-700 bg-white shadow-none hover:bg-gray-50 transition-none" 
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                >
                   Previous Page
                 </Button>
-                <Button variant="outline" className="rounded-none border-gray-300 text-gray-700 bg-white shadow-none hover:bg-gray-50 transition-none" disabled={blogPosts.length < 10}>
+                <span className="text-sm text-gray-500">Page {currentPage} of {totalPages}</span>
+                <Button 
+                  variant="outline" 
+                  className="rounded-none border-gray-300 text-gray-700 bg-white shadow-none hover:bg-gray-50 transition-none" 
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                >
                   Next Page
                 </Button>
               </div>

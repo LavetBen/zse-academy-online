@@ -37,6 +37,7 @@ interface Slide {
   position: number;
   created_at: string;
   updated_at: string;
+  is_locked?: boolean;
 }
 
 interface Content {
@@ -70,14 +71,17 @@ interface CourseDetail extends CourseType {
   contents: Content[];
 }
 
+import { useCourse, useSimilarCourses, useEnrollMutation } from "@/hooks/useCourses";
+import { useToast } from "@/hooks/use-toast";
+
 const CourseDetail = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("overview");
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [course, setCourse] = useState<CourseDetail | null>(null);
-  const [similarCourses, setSimilarCourses] = useState<CourseType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: course, isLoading: loading, error: fetchError } = useCourse(id);
+  const { data: similarCourses = [] } = useSimilarCourses(id);
+  const enrollMutation = useEnrollMutation();
+  const { toast } = useToast();
 
   const [currentContent, setCurrentContent] = useState<{
     title: string;
@@ -93,44 +97,25 @@ const CourseDetail = () => {
   } | null>(null);
 
   useEffect(() => {
-    if (id) {
-      loadCourseData(id);
-    }
     window.scrollTo(0, 0);
   }, [id]);
-
-  const loadCourseData = async (courseId: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [courseData, similarCoursesData] = await Promise.all([
-        courseService.getCourseById(courseId),
-        courseService.getSimilarCourses(courseId),
-      ]);
-
-      setCourse(courseData as CourseDetail);
-      setSimilarCourses(similarCoursesData);
-    } catch (err) {
-      console.error("Error loading course:", err);
-      setError("Failed to load course details");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleEnrollNow = async () => {
     if (!course) return;
 
     try {
-      await courseService.enrollInCourse(course.id);
-      alert("Successfully enrolled in the course!");
-      if (id) {
-        loadCourseData(id);
-      }
+      await enrollMutation.mutateAsync(course.id);
+      toast({
+        title: "Success!",
+        description: "Successfully enrolled in the course!",
+      });
     } catch (error) {
       console.error("Error enrolling in course:", error);
-      alert("Failed to enroll in course");
+      toast({
+        title: "Error",
+        description: "Failed to enroll in course",
+        variant: "destructive",
+      });
     }
   };
 
@@ -143,6 +128,15 @@ const CourseDetail = () => {
     slide: Slide,
     slideIndex: number
   ) => {
+    if (slide.is_locked && !course?.is_enrolled) {
+      toast({
+        title: "Access Restricted",
+        description: "Please log in or enroll to unlock this premium lesson slide.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const youtubeId =
       slide.type === "video" ? getYouTubeId(slide.url) : undefined;
 
@@ -224,9 +218,9 @@ const CourseDetail = () => {
   };
 
   const getTotalLessons = (): number => {
-    if (!course) return 0;
+    if (!course || !course.contents) return 0;
     return course.contents.reduce(
-      (total, content) => total + content.slides.length,
+      (total, content) => total + (content.slides?.length || 0),
       0
     );
   };
@@ -246,7 +240,7 @@ const CourseDetail = () => {
     );
   }
 
-  if (error || !course) {
+  if (fetchError || !course) {
     return (
       <div className="min-h-screen bg-white font-montserrat">
         <Navbar />
@@ -254,7 +248,7 @@ const CourseDetail = () => {
           <div className="text-center">
             <h2 className="text-2xl font-bold text-red-600">Error</h2>
             <p className="mt-2 text-gray-600">
-              {error || "Course not found"}
+              {fetchError ? "Failed to load course details" : "Course not found"}
             </p>
             <Button asChild className="mt-4 bg-[#00aeef] hover:bg-[#009ad1]">
               <Link to="/courses">Back to Courses</Link>
@@ -346,10 +340,9 @@ const CourseDetail = () => {
                   course.thumbnail_url || course.thumbnail || "/placeholder.svg"
                 }
                 title={course.title}
-                price={course.price}
                 isEnrolled={course.is_enrolled}
                 totalLessons={totalLessons}
-                modulesCount={course.contents.length}
+                modulesCount={course.contents?.length || 0}
                 onEnrollClick={handleEnrollNow}
                 onWishlistClick={handleAddToWishlist}
                 hasSampleVideos={totalLessons > 0}
@@ -364,17 +357,15 @@ const CourseDetail = () => {
                 className="w-full aspect-video object-cover border border-white/20 mb-4"
               />
               <div className="flex flex-col gap-3">
-                <div className="text-3xl font-bold mb-2">${parseFloat(course.price.toString()).toFixed(2)}</div>
                 {course.is_enrolled ? (
                   <Button className="w-full rounded-none h-12 bg-white text-black hover:bg-gray-100 font-bold" asChild>
                     <Link to={`/learn/${course.id}`}>Go to course</Link>
                   </Button>
                 ) : (
                   <Button onClick={handleEnrollNow} className="w-full rounded-none h-12 bg-[#00aeef] hover:bg-[#009ad1] text-white font-bold">
-                    Buy Now
+                    Enroll Now
                   </Button>
                 )}
-                <div className="text-center text-xs text-gray-400">30-Day Money-Back Guarantee</div>
               </div>
             </div>
           </div>
@@ -408,7 +399,8 @@ const CourseDetail = () => {
                 {activeTab === "overview" && (
                   <CourseOverviewTab
                     totalLessons={totalLessons}
-                    modulesCount={course.contents.length}
+                    modulesCount={course.contents?.length || 0}
+                    description={course.description}
                   />
                 )}
                 {activeTab === "content" && (
@@ -416,6 +408,7 @@ const CourseDetail = () => {
                     contents={course.contents}
                     totalLessons={totalLessons}
                     onContentClick={handleContentClick}
+                    isEnrolled={course.is_enrolled}
                   />
                 )}
                 {activeTab === "instructor" && (

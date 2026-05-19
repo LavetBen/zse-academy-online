@@ -5,6 +5,8 @@ export const API_ENDPOINTS = {
   // Auth endpoints
   LOGIN: "/login",
   REGISTER: "/register",
+  VERIFY_OTP: "/verify-otp",
+  RESEND_OTP: "/resend-otp",
   ME: "/me",
   LOGOUT: "/logout",
 

@@ -32,6 +32,16 @@ export const authService = {
     return response.data;
   },
 
+  verifyOtp: async (email: string, otp: string) => {
+    const response = await apiClient.post(API_ENDPOINTS.VERIFY_OTP, { email, otp });
+    return response.data;
+  },
+
+  resendOtp: async (email: string) => {
+    const response = await apiClient.post(API_ENDPOINTS.RESEND_OTP, { email });
+    return response.data;
+  },
+
   getCurrentUser: async (): Promise<User> => {
     const response = await apiClient.get(API_ENDPOINTS.ME);
     return response.data;

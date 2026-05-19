@@ -6,9 +6,11 @@ import {
 interface CourseOverviewTabProps {
   totalLessons: number;
   modulesCount: number;
+  description?: string;
 }
 
 export const CourseOverviewTab = ({
+  description,
 }: CourseOverviewTabProps) => {
   const learningObjectives = [
     "Master key concepts and practical skills in trading",
@@ -48,16 +50,22 @@ export const CourseOverviewTab = ({
       <div className="space-y-4">
         <h2 className="text-2xl font-bold text-gray-900">Description</h2>
         <div className="text-sm text-gray-700 leading-relaxed space-y-4">
-          <p>
-            This comprehensive course is designed for anyone looking to master the Zimbabwe Stock Exchange.
-            Whether you are a complete beginner or an experienced trader, our structured curriculum will guide you
-            through the complexities of market analysis, risk management, and strategic trading.
-          </p>
-          <p>
-            You'll gain access to over {10} hours of high-quality video content, downloadable resources,
-            and a community of like-minded investors. By the end of this course, you'll have the confidence
-            to make informed investment decisions and build a profitable portfolio.
-          </p>
+          {description ? (
+            <p className="whitespace-pre-wrap">{description}</p>
+          ) : (
+            <>
+              <p>
+                This comprehensive course is designed for anyone looking to master the Zimbabwe Stock Exchange.
+                Whether you are a complete beginner or an experienced trader, our structured curriculum will guide you
+                through the complexities of market analysis, risk management, and strategic trading.
+              </p>
+              <p>
+                You'll gain access to over {10} hours of high-quality video content, downloadable resources,
+                and a community of like-minded investors. By the end of this course, you'll have the confidence
+                to make informed investment decisions and build a profitable portfolio.
+              </p>
+            </>
+          )}
         </div>
       </div>
 

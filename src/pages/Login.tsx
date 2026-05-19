@@ -42,12 +42,21 @@ const Login = () => {
         description: "Successfully logged in.",
       });
       // Don't auto-redirect, let user use the profile menu to go to dashboard
-    } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      const errorData = error.response?.data;
+      if (error.response?.status === 403 && errorData?.not_verified) {
+        toast({
+          title: "Account Not Verified",
+          description: "Please verify your email to continue.",
+        });
+        navigate(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        toast({
+          title: "Login Failed",
+          description: errorData?.error || "Please check your credentials and try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

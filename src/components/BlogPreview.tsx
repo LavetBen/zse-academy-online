@@ -20,7 +20,7 @@ export const BlogPreview = () => {
         setLoading(true);
         setError(null);
         const data = await blogService.getLatestPosts();
-        const transformedPosts = data.map(transformBlogPost);
+        const transformedPosts = data.slice(0, 4).map(transformBlogPost);
         setBlogPosts(transformedPosts);
       } catch (err) {
         console.error('Error fetching latest blogs:', err);
@@ -85,7 +85,7 @@ export const BlogPreview = () => {
             <p className="text-muted-foreground">No blog posts available at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {blogPosts.map((post, index) => (
               <div key={post.id} className="group bg-white overflow-hidden flex flex-col border border-gray-200">
                 <Link to={`/blog/${post.id}`} className="block block">

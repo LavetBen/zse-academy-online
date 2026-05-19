@@ -93,7 +93,7 @@ const BlogPostPage = () => {
           </p>
           <Button asChild className="bg-gray-900 text-white hover:bg-gray-800 rounded-none h-12 px-8 font-bold">
             <Link to="/blog">
-              Back to Newsroom
+              Back to Blog
             </Link>
           </Button>
         </div>
@@ -113,7 +113,7 @@ const BlogPostPage = () => {
           {/* Breadcrumbs */}
           <nav className="flex items-center space-x-2 text-sm text-[#cec8c2] font-semibold mb-6">
             <Link to="/blog" className="hover:text-white transition">
-              Newsroom
+              Blog
             </Link>
             <FontAwesomeIcon icon={faChevronRight} className="h-2.5 w-2.5" />
             <span className="hover:text-white transition cursor-pointer">

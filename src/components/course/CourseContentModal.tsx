@@ -19,6 +19,7 @@ interface Slide {
   url: string;
   file_path: string | null;
   position: number;
+  is_locked?: boolean;
 }
 
 interface CourseContentModalProps {
@@ -94,6 +95,11 @@ export const CourseContentModal = ({
   };
 
   const handleNavigate = (newIndex: number) => {
+    const targetSlide = content.slides[newIndex];
+    if (targetSlide?.is_locked) {
+      alert("This slide is locked. Please log in or enroll to unlock premium lessons.");
+      return;
+    }
     setSlideDirection(newIndex > content.currentSlideIndex ? "right" : "left");
     setTimeout(() => onNavigateSlide(newIndex), 50);
   };
@@ -166,8 +172,8 @@ export const CourseContentModal = ({
             className="text-sm border rounded px-2 py-1 bg-background"
           >
             {content.slides.map((slide, index) => (
-              <option key={index} value={index}>
-                Slide {index + 1}: {slide.title}
+              <option key={index} value={index} disabled={slide.is_locked}>
+                Slide {index + 1}: {slide.title} {slide.is_locked ? "🔒" : ""}
               </option>
             ))}
           </select>
@@ -249,13 +255,16 @@ export const CourseContentModal = ({
 
           {/* Slide Indicators */}
           <div className="flex justify-center space-x-2">
-            {content.slides.map((_, index) => (
+            {content.slides.map((slide, index) => (
               <button
                 key={index}
                 onClick={() => handleNavigate(index)}
+                disabled={slide.is_locked}
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === content.currentSlideIndex
                     ? "bg-primary scale-125"
+                    : slide.is_locked
+                    ? "bg-amber-500 cursor-not-allowed opacity-50"
                     : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 }`}
               />

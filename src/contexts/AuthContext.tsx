@@ -15,8 +15,10 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<void>;
-  logout: () => void;
+  signup: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<any>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
+  logout: () => Promise<void>;
   getToken: () => string | null;
 }
 
@@ -77,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Signup
+  // Signup - Now returns response for OTP handling
   const signup = async (name: string, email: string, password: string, passwordConfirmation: string) => {
     setIsLoading(true);
     try {
@@ -87,12 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         password_confirmation: passwordConfirmation,
       });
-      const token = response.token;
-      localStorage.setItem("zse_training_token", token);
-
-      // Fetch user profile
-      const userData = await authService.getCurrentUser();
-      setUser(userData);
+      return response; // Return to handle redirection to OTP page
     } catch (error) {
       console.error("Signup error:", error);
       throw error;
@@ -101,10 +98,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Verify OTP - Now just verifies, doesn't log in
+  const verifyOtp = async (email: string, otp: string) => {
+    setIsLoading(true);
+    try {
+      await authService.verifyOtp(email, otp);
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Resend OTP
+  const resendOtp = async (email: string) => {
+    try {
+      await authService.resendOtp(email);
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+      throw error;
+    }
+  };
+
   // Logout
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("zse_training_token");
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("zse_training_token");
+    }
   };
 
   return (
@@ -115,6 +141,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         login,
         signup,
+        verifyOtp,
+        resendOtp,
         logout,
         getToken,
       }}

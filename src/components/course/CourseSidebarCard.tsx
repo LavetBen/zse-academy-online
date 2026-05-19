@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 interface CourseSidebarCardProps {
   thumbnailUrl: string;
   title: string;
-  price?: string | number;
   isEnrolled: boolean;
   totalLessons: number;
   modulesCount: number;
@@ -27,7 +26,6 @@ interface CourseSidebarCardProps {
 export const CourseSidebarCard = ({
   thumbnailUrl,
   title,
-  price = 0,
   isEnrolled,
   totalLessons,
   modulesCount,
@@ -60,14 +58,6 @@ export const CourseSidebarCard = ({
 
       <CardContent className="p-6">
         <div className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <div className="text-3xl font-bold text-gray-900">${parseFloat(price.toString()).toFixed(2)}</div>
-            <div className="flex items-center gap-2 text-sm text-red-600 font-bold">
-              <span>85% off</span>
-              <span className="line-through text-gray-400 font-normal mt-0.5">${(parseFloat(price.toString()) * 6.5).toFixed(2)}</span>
-            </div>
-          </div>
-
           <div className="pt-2 space-y-3">
             {isEnrolled ? (
               <Button asChild className="w-full h-12 bg-black hover:bg-gray-800 text-white font-bold rounded-none text-base">
@@ -78,10 +68,6 @@ export const CourseSidebarCard = ({
                 Enroll Now
               </Button>
             )}
-
-            <div className="text-center text-xs text-gray-500 py-2">
-              30-Day Money-Back Guarantee
-            </div>
 
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -133,10 +119,6 @@ export const CourseSidebarCard = ({
               <span>Certificate of completion</span>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <button className="text-sm font-bold text-gray-900 hover:text-gray-700 underline">Apply Coupon</button>
         </div>
       </CardContent>
     </Card>
