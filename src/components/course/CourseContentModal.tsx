@@ -184,7 +184,7 @@ export const CourseContentModal = ({
           <div className={`w-full h-full ${slideAnimationClass}`}>
             {content.type === "video" ? (
               <YouTubePlayer content={content} />
-            ) : content.type === "ppt" ? (
+            ) : content.type === "ppt" || content.type === "powerpoint" ? (
               <iframe
                 src={getPowerPointEmbedUrl(content.url)}
                 className="w-full h-full"

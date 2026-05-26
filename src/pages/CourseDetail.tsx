@@ -46,6 +46,7 @@ interface Slide {
   created_at: string;
   updated_at: string;
   is_locked?: boolean;
+  download_url?: string;
 }
 
 interface Content {
@@ -210,7 +211,7 @@ const CourseDetail = () => {
     setCurrentContent({
       title: slide.title,
       type: slide.type,
-      url: slide.url,
+      url: slide.download_url || slide.url,
       youtubeId: youtubeId || undefined,
       currentSlideIndex: slideIndex,
       totalSlides: content.slides.length,
@@ -238,7 +239,7 @@ const CourseDetail = () => {
           ...prev,
           title: newSlide.title,
           type: newSlide.type,
-          url: newSlide.url,
+          url: newSlide.download_url || newSlide.url,
           youtubeId: youtubeId || undefined,
           currentSlideIndex: newIndex,
         }
