@@ -32,6 +32,7 @@ interface Course {
   level: string;
   price: number;
   thumbnail_url: string;
+  presigned_url?: string;
   is_published: boolean;
   instructor?: any;
   duration?: string;
@@ -105,6 +106,7 @@ export const PopularTopics = () => {
 
   // Get default thumbnail if none provided
   const getThumbnail = (course: Course) => {
+    if (course.presigned_url) return course.presigned_url;
     if (course.thumbnail_url) return course.thumbnail_url;
 
     const defaultThumbnails: Record<string, string> = {

@@ -29,6 +29,7 @@ interface Course {
   category_id?: number;
   level: string;
   thumbnail_url: string;
+  presigned_url?: string;
   is_published: boolean;
   instructor?: string;
   duration?: string;
@@ -106,6 +107,7 @@ const Courses = () => {
 
 
   const getThumbnail = (course: Course) => {
+    if (course.presigned_url) return course.presigned_url;
     if (course.thumbnail_url) return course.thumbnail_url;
     const defaultThumbnails: Record<string, string> = {
       'Fundamentals': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop',

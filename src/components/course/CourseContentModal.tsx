@@ -180,11 +180,21 @@ export const CourseContentModal = ({
         </div>
 
         {/* MAIN CONTENT */}
-        <div className="flex-1 relative bg-muted">
-          <div className={`w-full h-full ${slideAnimationClass}`}>
+        <div className="flex-1 relative bg-muted min-h-0">
+          <div className={`w-full h-full ${slideAnimationClass} flex items-center justify-center`}>
             {content.type === "video" ? (
-              <YouTubePlayer content={content} />
-            ) : content.type === "ppt" || content.type === "powerpoint" ? (
+              <video
+                className="w-full h-full bg-black object-contain"
+                controls
+                controlsList="nodownload"
+                autoPlay
+                muted
+                key={content.url}
+              >
+                <source src={content.url} type="video/mp4" />
+                Your browser does not support videos.
+              </video>
+            ) : content.type === "ppt" || content.type === "powerpoint" || content.type === "pdf" ? (
               <iframe
                 src={getPowerPointEmbedUrl(content.url)}
                 className="w-full h-full"
