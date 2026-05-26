@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/business-analyst-looking-into-statistics-reports-detect-any-obstacles.jpg";
+import heroImage from "@/assets/banner.jpg";
 
 export const HeroSection = () => {
   return (
-    <section className="relative w-full text-gray-900 bg-white min-h-[500px] h-[60vh] md:h-[65vh] max-h-[600px] overflow-hidden">
+    <section className="relative w-full text-gray-900 bg-white h-[100vh] overflow-hidden">
       {/* Background Image Container */}
       <div className="absolute inset-0 w-full h-full">
         <img

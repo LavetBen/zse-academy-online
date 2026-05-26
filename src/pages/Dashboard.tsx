@@ -21,8 +21,6 @@ import { useNavigate } from "react-router-dom";
 import MyCourses from "./dashboard/MyCourses";
 import Certificates from "./dashboard/Certificates";
 import Profile from "./dashboard/Profile";
-import SettingsPage from "./dashboard/Settings";
-import Analytics from "./dashboard/Analytics";
 import logo from "../assets/logo.png";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
@@ -37,9 +35,7 @@ const sidebarItems = [
   { icon: faHome, label: "Dashboard", key: "dashboard" },
   { icon: faBook, label: "My Courses", key: "courses" },
   { icon: faGraduationCap, label: "Certificates", key: "certificates" },
-  { icon: faChartColumn, label: "Analytics", key: "analytics" },
-  { icon: faUser, label: "Profile", key: "profile" },
-  { icon: faCog, label: "Settings", key: "settings" }
+  { icon: faUser, label: "Profile", key: "profile" }
 ];
 
 const Dashboard = () => {
@@ -560,9 +556,7 @@ const Dashboard = () => {
           
           {activeSection === "courses" && <MyCourses />}
           {activeSection === "certificates" && <Certificates />}
-          {activeSection === "analytics" && <Analytics />}
           {activeSection === "profile" && <Profile />}
-          {activeSection === "settings" && <SettingsPage />}
         </main>
       </div>
     </div>

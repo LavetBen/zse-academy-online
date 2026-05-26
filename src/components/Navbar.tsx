@@ -88,7 +88,7 @@ export const Navbar = () => {
           {/* Categories Dropdown Label - Udemy Style */}
           <div className="hidden lg:flex items-center">
             <Link to="/courses" className="text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors">
-              Categories
+              Courses
             </Link>
           </div>
 
@@ -112,10 +112,10 @@ export const Navbar = () => {
           {/* Right Section Nav Links - Desktop */}
           <div className="hidden min-[1100px]:flex items-center gap-6 shrink-0">
             <Link to="/about" className="text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors whitespace-nowrap">
-              ZSE for Business
+              About Us
             </Link>
             <Link to="/contact" className="text-sm font-normal text-[#1c1d1f] hover:text-[#00aeef] transition-colors whitespace-nowrap">
-              Teach on ZSE Academy
+              Contact Us
             </Link>
           </div>
 

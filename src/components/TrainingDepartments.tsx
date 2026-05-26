@@ -1,90 +1,238 @@
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import bentoImage from "@/assets/bento.jpg";
+import image2 from "@/assets/hero-image.jpg";
+import image3 from "@/assets/business-analyst-looking-into-statistics-reports-detect-any-obstacles.jpg";
+
+const bentoImages = [bentoImage, image2, image3];
 
 export const TrainingDepartments = () => {
-    const departments = [
-        {
-            category: "Market Operations",
-            items: [
-                { name: "Listing and Trading Training", learners: "2,450 learners" },
-                { name: "Products Training", learners: "1,820 learners" },
-            ]
-        },
-        {
-            category: "Infrastructure",
-            items: [
-                { name: "Market Data & Technology Training", learners: "950 learners" },
-                { name: "Risk Management & Compliance", learners: "1,200 learners" },
-            ]
-        },
-        {
-            category: "Governance & Literacy",
-            items: [
-                { name: "Corporate Governance Training", learners: "740 learners" },
-                { name: "Financial Education Training", learners: "5,600 learners" },
-            ]
-        }
-    ];
-    return (
-        <section className="section-padding bg-white font-montserrat border-t border-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-2xl font-bold text-[#1c1d1f] mb-8">Popular Training Pathways</h2>
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-                <div className="grid lg:grid-cols-[1.2fr_1fr_1fr_1fr] gap-x-12 gap-y-12">
-                    {/* Left Hero Box */}
-                    <div className="flex flex-col">
-                        <h3 className="text-2xl font-bold text-[#1c1d1f] leading-tight mb-4">
-                            ZSE Academy is the hub for market expertise
-                        </h3>
-                        <p className="text-sm text-[#6a6f73] mb-6">
-                            The ZSE offers professional Trainings under our six key specialized departments to help you master every facet of the capital markets.
-                        </p>
-                        <Link
-                            to="/courses"
-                            className="group flex items-center text-[#5624d0] font-bold text-sm hover:text-[#401b9c] transition-colors mb-2"
-                        >
-                            Explore all departments
-                            <FontAwesomeIcon icon={faChevronRight} className="ml-2 h-3 w-3" />
-                        </Link>
-                        <div className="text-xs text-[#6a6f73]">12,760+ combined learners</div>
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % bentoImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-                        <div className="mt-8">
-                            <Button
-                                asChild
-                                variant="outline"
-                                className="rounded-none border-[#1c1d1f] text-[#1c1d1f] font-bold h-12 hover:bg-gray-50 flex items-center gap-2"
-                            >
-                                <Link to="/courses">
-                                    Show all training modules
-                                    <FontAwesomeIcon icon={faExternalLinkAlt} className="h-3 w-3" />
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
+  return (
+    <section className="py-20 bg-[#f8fafc] font-sans border-t border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                    {/* Department Columns */}
-                    {departments.map((dept, idx) => (
-                        <div key={idx} className="flex flex-col gap-8">
-                            <h4 className="text-lg font-bold text-[#1c1d1f]">{dept.category}</h4>
-                            <div className="flex flex-col gap-6">
-                                {dept.items.map((item, itemIdx) => (
-                                    <div key={itemIdx} className="group cursor-pointer">
-                                        <Link to="/courses" className="flex items-center gap-2 mb-1">
-                                            <span className="text-sm font-bold text-[#5624d0] group-hover:text-[#401b9c] underline decoration-0 group-hover:underline underline-offset-4 decoration-current transition-all">
-                                                {item.name}
-                                            </span>
-                                            <FontAwesomeIcon icon={faChevronRight} className="h-2 w-2 text-[#5624d0] opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        </Link>
-                                        <div className="text-xs text-[#6a6f73]">{item.learners}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+        {/* Section Header */}
+        <div className="mb-12 text-center sm:text-left">
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900">
+            Our Direct Ecosystem & Platforms
+          </h2>
+          <p className="text-gray-650 mt-2 max-w-2xl text-sm leading-relaxed">
+            Connecting retail and institutional investors to Zimbabwe's leading trading hubs.
+          </p>
+        </div>
+
+        {/* Bento Grid Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+
+          {/* COLUMN 1: LEFT STACK */}
+          <div className="flex flex-col gap-6">
+
+            {/* Box 1: ZSE Direct (Dark Background) */}
+            <div className="bg-[#1c1d1f] text-white p-8 flex flex-col justify-between min-h-[250px] shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div className="space-y-6">
+                {/* Stopwatch Icon - Accented with ZSE Blue */}
+                <div className="w-12 h-12">
+                  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" strokeWidth="2">
+                    <circle cx="12" cy="13" r="8" stroke="#00aeef" fill="none" />
+                    <path d="M5 6L2 7M6 4L4 2" stroke="white" strokeLinecap="round" />
+                    <path d="M12 5V3M15 4l1-1.5" stroke="white" strokeLinecap="round" />
+                    <path d="M12 13L15 10" stroke="#00aeef" strokeLinecap="round" />
+                  </svg>
                 </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black tracking-tight">Faster Execution</h3>
+                  <p className="text-xs text-gray-400 leading-relaxed">
+                    Trade equities, debt, and ETFs online on ZSE Direct. Lightning-quick order processing and live portfolio tracking.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <a
+                  href="https://www.zsedirect.co.zw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-[#00aeef] hover:underline"
+                >
+                  <span>Go to ZSE Direct</span>
+                  <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2 h-3 w-3" />
+                </a>
+              </div>
             </div>
-        </section>
-    );
+
+            {/* Box 2: Data Direct (Light Background) */}
+            <div className="bg-white text-gray-900 p-8 border border-gray-200 flex flex-col justify-between min-h-[250px] flex-1 shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div className="space-y-6">
+                {/* Chart Line / Index Icon - Accented with ZSE Blue */}
+                <div className="w-12 h-12">
+                  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" strokeWidth="2">
+                    <path d="M4 20L18 6M18 6H12M18 6V12" stroke="#00aeef" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="3" y="14" width="2" height="6" fill="#1c1d1f" />
+                    <rect x="8" y="10" width="2" height="10" fill="#1c1d1f" />
+                    <rect x="13" y="12" width="2" height="8" fill="#1c1d1f" />
+                  </svg>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black tracking-tight text-gray-900">Advanced Charting</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Access institutional-grade real-time market tickers, historical statistics, order books, and price API feeds.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <a
+                  href="https://datadirect.zse.co.zw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-gray-900 hover:text-[#00aeef] transition-colors"
+                >
+                  <span>Explore Data Direct</span>
+                  <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2 h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          {/* COLUMN 2: CENTER TALL CARD */}
+          <div className="relative overflow-hidden group min-h-[500px] lg:min-h-full flex flex-col justify-end shadow-sm hover:shadow-md transition-shadow duration-300">
+            {/* Background portrait images with slideshow */}
+            {bentoImages.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`ZSE Academy Velocity ${index + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ${
+                  index === currentImageIndex ? "opacity-100 z-0" : "opacity-0 -z-10"
+                }`}
+              />
+            ))}
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/20" />
+
+            {/* Slideshow Indicators */}
+            <div className="absolute top-4 right-4 z-20 flex gap-2">
+              {bentoImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex ? "bg-[#00aeef] w-6" : "bg-white/50 w-2 hover:bg-white/75"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Content overlay */}
+            <div className="relative z-10 p-8 space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-3xl font-black text-white tracking-tight leading-tight pt-2">
+                  ZSE Training
+                </h3>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Experience the future of trading education. Access professional investment modules, tutorials, and certifications directly from Zimbabwe's capital markets hub.
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  to="/courses"
+                  className="inline-flex items-center justify-center bg-[#00aeef] hover:bg-[#008cc0] text-white font-bold text-sm h-12 px-6 transition-colors w-full sm:w-auto"
+                >
+                  Start Learning Now
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* COLUMN 3: RIGHT STACK */}
+          <div className="flex flex-col gap-6">
+
+            {/* Box 4: VFEX Direct (Light Background) */}
+            <div className="bg-white text-gray-900 p-8 border border-gray-200 flex flex-col justify-between min-h-[250px] shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div className="space-y-6">
+                {/* Candlesticks Icon - Accented with ZSE Blue */}
+                <div className="w-12 h-12">
+                  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" strokeWidth="2">
+                    <path d="M6 3v18M12 5v14M18 7v10" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" />
+                    <rect x="4" y="8" width="4" height="7" fill="#1c1d1f" stroke="none" />
+                    <rect x="10" y="6" width="4" height="9" fill="#00aeef" stroke="none" />
+                    <rect x="16" y="10" width="4" height="4" fill="#1c1d1f" stroke="none" />
+                  </svg>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black tracking-tight text-gray-900">Multi-Asset Trading</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Access USD trading on the Victoria Falls Stock Exchange securely. Invest in global and offshore listings seamlessly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <a
+                  href="https://www.vfexdirect.co.zw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-gray-900 hover:text-[#00aeef] transition-colors"
+                >
+                  <span>Go to VFEX Direct</span>
+                  <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2 h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Box 5: Trade Anywhere (Vibrant ZSE Blue Background - rgb(0, 174, 239)) */}
+            <div className="bg-[#00aeef] text-white p-8 flex flex-col justify-between min-h-[250px] flex-1 shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div className="space-y-6">
+                {/* Responsive Devices Icon - Styled in White for high contrast */}
+                <div className="w-12 h-12">
+                  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <rect x="2" y="5" width="13" height="9" rx="1" fill="none" />
+                    <path d="M6 14v3h5v-3" strokeLinecap="round" />
+                    <rect x="16" y="8" width="5" height="9" rx="1" fill="white" />
+                    <circle cx="18.5" cy="14" r="0.75" fill="#00aeef" />
+                  </svg>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black tracking-tight text-white">Trade Anywhere</h3>
+                  <p className="text-xs text-blue-50 leading-relaxed">
+                    Access your investment portfolios on mobile, tablet, or web. Stay connected to Zimbabwe's leading trading boards everywhere.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <Link
+                  to="/about"
+                  className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-white hover:underline"
+                >
+                  <span>Learn More</span>
+                  <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2 h-3 w-3 text-blue-100" />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
 };
